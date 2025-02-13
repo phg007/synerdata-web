@@ -11,7 +11,7 @@ const compat = new FlatCompat({
 
 const eslintConfig = [
   ...compat.config({
-    plugins: ["tailwindcss-animate"],
+    // plugins: ["tailwindcss-animate"],
     extends: ["next/core-web-vitals", "next/typescript", "prettier"],
     rules: {
       semi: ["error"],
