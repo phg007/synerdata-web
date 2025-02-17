@@ -118,7 +118,7 @@ export default function HomePage() {
                 className="bg-black hover:bg-black/90 text-white"
                 asChild
               >
-                <Link href="/solicitar-demonstracao">
+                <Link href="/demonstration">
                   Agende sua demonstração
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
@@ -338,7 +338,7 @@ export default function HomePage() {
                         asChild
                       >
                         <Link
-                          href={`/solicitar-demonstracao?plano=${encodeURIComponent(plan)}`}
+                          href={`/demonstration?plano=${encodeURIComponent(plan)}`}
                         >
                           Solicitar demonstração
                         </Link>
