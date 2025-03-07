@@ -1,9 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-// import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { signIn } from "next-auth/react";
 import { Button } from "@/components/ui/button";
@@ -17,16 +16,35 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { toast, Toaster } from "sonner";
+import { useSearchParams } from "next/navigation";
 
 export default function LoginPage() {
+  const searchParams = useSearchParams();
+  const error = searchParams.get("error");
+
+  useEffect(() => {
+    if (error === "CredentialsSignin") {
+      toast("Erro de Login", {
+        description: "Usuário ou senha incorretos.",
+        action: {
+          label: "Undo",
+          onClick: () => console.log("Undo"),
+        },
+      });
+    }
+  }, [error]);
+
   async function login(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+
     const formData = new FormData(e.currentTarget);
     const data = {
       email: formData.get("email"),
       password: formData.get("password"),
     };
-    signIn("credentials", {
+
+    await signIn("credentials", {
       ...data,
       callbackUrl: "/dashboard",
     });
@@ -34,15 +52,6 @@ export default function LoginPage() {
 
   const [email, setemail] = useState("");
   const [password, setPassword] = useState("");
-  // const router = useRouter();
-
-  // const handleSubmit = (e: React.FormEvent) => {
-  //   e.preventDefault();
-  //   // Here you would implement the actual authentication logic
-  //   console.log("Login attempt:", { email, password });
-  //   // For now, we'll just redirect to the dashboard
-  //   router.push("/dashboard");
-  // };
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col justify-center items-center p-4">
@@ -96,6 +105,7 @@ export default function LoginPage() {
                 />
               </div>
             </div>
+            <Toaster />
             <Button
               className="w-full mt-6 bg-black text-white hover:bg-black/90"
               type="submit"
@@ -106,7 +116,7 @@ export default function LoginPage() {
         </CardContent>
         <CardFooter className="flex flex-col items-center">
           <p className="text-sm text-muted-foreground mt-2">
-            Não tem uma conta?{" "}
+            Não tem uma conta?{"CredentialsSignin"}
             <Link
               href="/solicitar-demonstracao"
               className="text-black hover:underline"

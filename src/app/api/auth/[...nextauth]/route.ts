@@ -24,7 +24,6 @@ const handler = NextAuth({
             senha: credentials.password,
           });
 
-          console.log("Body da requisição:", bodyData);
           const response = await fetch(
             "http://host.docker.internal:3000/api/auth/sign-in",
             {
@@ -34,27 +33,21 @@ const handler = NextAuth({
               headers: { "Content-Type": "application/json" },
             }
           );
-          console.log(`retorno  ${response.status}`);
-          console.log(`retorno  ${credentials.email}`);
-          console.log(`retorno  ${credentials.password}`);
 
           if (response.status !== 200) return null;
           const authData = await response.json();
 
-          console.log(authData.data);
-
           if (!authData.data.access_token) return null;
 
-          (await cookies()).set("jwt", authData.jwt);
+          (await cookies()).set("jwt", authData.data.access_token);
 
           return {
             id: "1",
             // email:"paulo.henriqueicm2011@gmail.com", //authData.user.email,
             // name:"PAULO", //authData.user.name,
           };
-
-          // return { token: authData.data.access_token, email: credentials.email };
         } catch (e) {
+          console.log(e);
           return null;
         }
       },
