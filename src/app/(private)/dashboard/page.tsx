@@ -245,6 +245,16 @@ export default function DashboardPage() {
       )
     );
   };
+  const handleStatusChange = (
+    userId: string,
+    newStatus: "ativo" | "inativo"
+  ) => {
+    setUsers(
+      users.map((user) =>
+        user.id === userId ? { ...user, status: newStatus } : user
+      )
+    );
+  };
 
   return (
     <div className="flex flex-col h-screen bg-gray-100">
@@ -328,6 +338,7 @@ export default function DashboardPage() {
                       <TableHead>Nome</TableHead>
                       <TableHead>E-mail</TableHead>
                       <TableHead>Função</TableHead>
+                      <TableHead>Status</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -355,6 +366,25 @@ export default function DashboardPage() {
                               <SelectItem value="viewer">
                                 Visualizador
                               </SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </TableCell>
+                        <TableCell>
+                          <Select
+                            value={user.status}
+                            onValueChange={(newStatus) =>
+                              handleStatusChange(
+                                user.id,
+                                newStatus as "ativo" | "inativo"
+                              )
+                            }
+                          >
+                            <SelectTrigger className="w-[120px]">
+                              <SelectValue placeholder="Selecione o status" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="ativo">Ativo</SelectItem>
+                              <SelectItem value="inativo">Inativo</SelectItem>
                             </SelectContent>
                           </Select>
                         </TableCell>
