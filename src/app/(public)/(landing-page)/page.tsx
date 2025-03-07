@@ -94,7 +94,7 @@ export default function HomePage() {
             size="sm"
             asChild
           >
-            <Link href="/login">Acesse sua conta</Link>
+            <Link href="/sign-in">Acesse sua conta</Link>
           </Button>
         </div>
       </header>
