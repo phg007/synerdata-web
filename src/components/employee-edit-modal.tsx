@@ -1,4 +1,6 @@
 "use client";
+
+import { useEffect, useId } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -7,11 +9,10 @@ import { Input } from "@/components/ui/input";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog";
-import { toast } from "sonner";
 import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
@@ -28,7 +29,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { useId } from "react";
 
 const employeeSchema = z.object({
   id: z.string(),
@@ -62,22 +62,24 @@ const employeeSchema = z.object({
   projectOrCostCenter: z.string().optional(),
 });
 
-type EmployeeFormValues = z.infer<typeof employeeSchema>;
+export type Employee = z.infer<typeof employeeSchema>;
 
-type EmployeeFormModalProps = {
+type EmployeeEditModalProps = {
   isOpen: boolean;
   onClose: () => void;
-  onAddEmployee: (employee: EmployeeFormValues) => void;
+  onUpdateEmployee: (employee: Employee) => void;
+  employee: Employee | null;
 };
 
-export function EmployeeFormModal({
+export function EmployeeEditModal({
   isOpen,
   onClose,
-  onAddEmployee,
-}: EmployeeFormModalProps) {
+  onUpdateEmployee,
+  employee,
+}: EmployeeEditModalProps) {
   const formId = useId();
 
-  const form = useForm<EmployeeFormValues>({
+  const form = useForm<Employee>({
     resolver: zodResolver(employeeSchema),
     defaultValues: {
       id: "",
@@ -93,20 +95,28 @@ export function EmployeeFormModal({
     },
   });
 
-  const onSubmit = (data: EmployeeFormValues) => {
-    onAddEmployee(data);
-    toast.success("Funcionário adicionado com sucesso");
+  useEffect(() => {
+    if (employee) {
+      form.reset(employee);
+    }
+
+    return () => {
+      // Cleanup function
+    };
+  }, [employee, form]);
+
+  const onSubmit = (data: Employee) => {
+    onUpdateEmployee(data);
     onClose();
-    form.reset();
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Adicionar Novo Funcionário</DialogTitle>
+          <DialogTitle>Editar Funcionário</DialogTitle>
           <DialogDescription>
-            Preencha os campos abaixo para cadastrar um novo funcionário.
+            Atualize as informações do funcionário nos campos abaixo.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -244,7 +254,6 @@ export function EmployeeFormModal({
                       onBlur={field.onBlur}
                       name={field.name}
                       ref={field.ref}
-                      placeholder="Ex.: endereço, contatos, informações de saúde"
                     />
                   </FormControl>
                   <FormMessage />
@@ -264,12 +273,10 @@ export function EmployeeFormModal({
                 </FormItem>
               )}
             />
-            <Button type="submit">Salvar</Button>
+            <Button type="submit">Atualizar</Button>
           </form>
         </Form>
       </DialogContent>
     </Dialog>
   );
 }
-
-export type Employee = z.infer<typeof employeeSchema>;

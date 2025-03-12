@@ -8,6 +8,7 @@ const config = {
     "./components/**/*.{ts,tsx}",
     "./app/**/*.{ts,tsx}",
     "./src/**/*.{ts,tsx}",
+    "*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
     container: {
@@ -25,12 +26,12 @@ const config = {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         primary: {
-          DEFAULT: "#000000",
-          foreground: "#FFFFFF",
+          DEFAULT: "hsl(var(--primary))",
+          foreground: "hsl(var(--primary-foreground))",
         },
         secondary: {
-          DEFAULT: "#FFFFFF",
-          foreground: "#000000",
+          DEFAULT: "hsl(var(--secondary))",
+          foreground: "hsl(var(--secondary-foreground))",
         },
         destructive: {
           DEFAULT: "hsl(var(--destructive))",
@@ -41,8 +42,8 @@ const config = {
           foreground: "hsl(var(--muted-foreground))",
         },
         accent: {
-          DEFAULT: "#808080",
-          foreground: "#FFFFFF",
+          DEFAULT: "hsl(var(--accent))",
+          foreground: "hsl(var(--accent-foreground))",
         },
         popover: {
           DEFAULT: "hsl(var(--popover))",
@@ -72,9 +73,42 @@ const config = {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
       },
+      typography: (theme) => ({
+        DEFAULT: {
+          css: {
+            maxWidth: "65ch",
+            color: theme("colors.gray.600", "rgb(55 65 81)"),
+            h1: {
+              color: "#2A0F55",
+              fontWeight: "600",
+            },
+            h2: {
+              color: "#2A0F55",
+              fontWeight: "600",
+              fontSize: theme("fontSize.2xl"),
+              marginTop: theme("spacing.8"),
+              marginBottom: theme("spacing.4"),
+            },
+            h3: {
+              color: "#2A0F55",
+              fontWeight: "600",
+            },
+            h4: {
+              color: "#2A0F55",
+              fontWeight: "600",
+            },
+            a: {
+              color: "#7C3AED",
+              "&:hover": {
+                color: "#6D28D9",
+              },
+            },
+          },
+        },
+      }),
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [require("tailwindcss-animate"), require("@tailwindcss/typography")],
 };
 
 export default withUt(config);
