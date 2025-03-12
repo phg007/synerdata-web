@@ -1,7 +1,10 @@
-import { useState } from "react";
+"use client";
+
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Dialog,
   DialogContent,
@@ -9,7 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-
+import { toast } from "sonner";
 import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
@@ -18,41 +21,171 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useToast } from "@/hooks/use-toast";
-import { Employee } from "./employee-form-modal";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import type { Employee } from "./employee-form-modal";
+import { useEffect, useId } from "react";
+
+// Base schema with common fields
+const baseSchema = z.object({
+  id: z.string().optional(),
+  employeeId: z.string({
+    required_error: "Selecione um funcionário",
+  }),
+});
+
+// Schemas for each occurrence type
+const faltaSchema = baseSchema.extend({
+  type: z.literal("falta"),
+  date: z.string({
+    required_error: "Data é obrigatória",
+  }),
+  reason: z.string().min(1, { message: "Motivo é obrigatório" }),
+});
+
+const atestadoSchema = baseSchema.extend({
+  type: z.literal("atestado"),
+  startDate: z.string({
+    required_error: "Data de início é obrigatória",
+  }),
+  endDate: z.string({
+    required_error: "Data de término é obrigatória",
+  }),
+  reason: z.string().min(1, { message: "Justificativa é obrigatória" }),
+});
+
+const promocaoSchema = baseSchema.extend({
+  type: z.literal("promocao"),
+  newPosition: z.string().min(1, { message: "Nova função é obrigatória" }),
+  newSalary: z
+    .number()
+    .min(1, { message: "Novo salário deve ser maior que zero" }),
+  reason: z.string().min(1, { message: "Justificativa é obrigatória" }),
+});
+
+const demissaoSchema = baseSchema.extend({
+  type: z.literal("demissao"),
+  date: z.string({
+    required_error: "Data é obrigatória",
+  }),
+  reason: z.string().min(1, { message: "Motivo é obrigatório" }),
+  legalReason: z
+    .string()
+    .min(1, { message: "Motivo trabalhista é obrigatório" }),
+  legalAction: z.string().optional(),
+  dismissalType: z.enum(["voluntaria", "justa_causa", "sem_justa_causa"], {
+    required_error: "Selecione a forma de demissão",
+  }),
+});
+
+const analiseCPFSchema = baseSchema.extend({
+  type: z.literal("analiseCPF"),
+  cpfStatus: z.enum(["regular", "irregular"], {
+    required_error: "Selecione o status do CPF",
+  }),
+  cpfIssues: z.string().optional(),
+});
+
+const acidenteSchema = baseSchema.extend({
+  type: z.literal("acidente"),
+  date: z.string({
+    required_error: "Data é obrigatória",
+  }),
+  description: z.string().min(1, { message: "Descrição é obrigatória" }),
+  actionsTaken: z
+    .string()
+    .min(1, { message: "Medidas tomadas são obrigatórias" }),
+});
+
+const atualizacaoProjetoSchema = baseSchema.extend({
+  type: z.literal("atualizacaoProjeto"),
+  newProject: z.string().min(1, { message: "Novo projeto é obrigatório" }),
+  projectStartDate: z.string({
+    required_error: "Data de início no novo projeto é obrigatória",
+  }),
+});
+
+const advertenciaSchema = baseSchema.extend({
+  type: z.literal("advertencia"),
+  date: z.string({
+    required_error: "Data é obrigatória",
+  }),
+  reason: z.string().min(1, { message: "Motivo é obrigatório" }),
+});
+
+const acaoTrabalhistaSchema = baseSchema.extend({
+  type: z.literal("acaoTrabalhista"),
+  caseDetails: z
+    .string()
+    .min(1, { message: "Dados do processo são obrigatórios" }),
+  caseKnowledgeDate: z.string({
+    required_error: "Data do conhecimento é obrigatória",
+  }),
+});
+
+const epiSchema = baseSchema.extend({
+  type: z.literal("epi"),
+  date: z.string({
+    required_error: "Data é obrigatória",
+  }),
+  items: z
+    .string()
+    .min(1, { message: "Itens disponibilizados são obrigatórios" }),
+  itemReason: z.enum(
+    ["substituicao", "mau_uso", "vencimento", "furto", "roubo"],
+    {
+      required_error: "Selecione o motivo",
+    }
+  ),
+  responsiblePerson: z
+    .string()
+    .min(1, { message: "Responsável pela entrega é obrigatório" }),
+});
+
+const feriasSchema = baseSchema.extend({
+  type: z.literal("ferias"),
+  acquisitionPeriod: z
+    .string()
+    .min(1, { message: "Período aquisitivo é obrigatório" }),
+});
+
+// Combine all schemas into a discriminated union
+const occurrenceSchema = z.discriminatedUnion("type", [
+  faltaSchema,
+  atestadoSchema,
+  promocaoSchema,
+  demissaoSchema,
+  analiseCPFSchema,
+  acidenteSchema,
+  atualizacaoProjetoSchema,
+  advertenciaSchema,
+  acaoTrabalhistaSchema,
+  epiSchema,
+  feriasSchema,
+]);
+
+export type Occurrence = z.infer<typeof occurrenceSchema>;
 
 type OccurrenceFormModalProps = {
   isOpen: boolean;
   onClose: () => void;
   onAddOccurrence: (occurrence: Occurrence) => void;
   employees: Employee[];
+  initialData?: Occurrence | null;
 };
 
-export type Occurrence = {
-  id: string;
-  type: string;
-  employeeId: string;
-  date?: string;
-  reason?: string;
-  startDate?: string;
-  endDate?: string;
-  newPosition?: string;
-  newSalary?: number;
-  legalReason?: string;
-  legalAction?: string;
-  dismissalType?: string;
-  cpfStatus?: string;
-  cpfIssues?: string;
-  description?: string;
-  actionsTaken?: string;
-  newProject?: string;
-  projectStartDate?: string;
-  caseDetails?: string;
-  caseKnowledgeDate?: string;
-  items?: string;
-  itemReason?: string;
-  responsiblePerson?: string;
-  acquisitionPeriod?: string;
+// Define a type-safe default value for the "falta" occurrence type
+const defaultFaltaOccurrence: z.infer<typeof faltaSchema> = {
+  type: "falta",
+  employeeId: "",
+  date: "",
+  reason: "",
 };
 
 export function OccurrenceFormModal({
@@ -60,466 +193,480 @@ export function OccurrenceFormModal({
   onClose,
   onAddOccurrence,
   employees,
+  initialData,
 }: OccurrenceFormModalProps) {
-  const [occurrenceType, setOccurrenceType] = useState("");
-  const [employeeId, setEmployeeId] = useState("");
-  const [formData, setFormData] = useState<Partial<Occurrence>>({});
+  // Use React's useId for stable, unique IDs
+  const formId = useId();
 
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+  const form = useForm<Occurrence>({
+    resolver: zodResolver(occurrenceSchema),
+    defaultValues: initialData || defaultFaltaOccurrence,
+  });
 
-  const handleSelectChange = (name: string, value: string) => {
-    setFormData({ ...formData, [name]: value });
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!occurrenceType || !employeeId) {
-      toast({
-        title: "Erro",
-        description:
-          "Por favor, selecione o tipo de ocorrência e o funcionário.",
-        variant: "destructive",
-      });
-      return;
+  // Use useEffect with a cleanup function
+  useEffect(() => {
+    if (initialData) {
+      form.reset(initialData);
     }
 
-    const newOccurrence: Occurrence = {
-      id: Date.now().toString(),
-      type: occurrenceType,
-      employeeId,
-      ...formData,
+    // Return cleanup function
+    return () => {
+      // Clean up any resources if needed
+    };
+  }, [initialData, form]);
+
+  // Update the dialog title based on whether we're editing or adding
+  const dialogTitle = initialData
+    ? "Editar Ocorrência"
+    : "Registrar Nova Ocorrência";
+  const dialogDescription = initialData
+    ? "Atualize os campos abaixo para editar a ocorrência."
+    : "Preencha os campos abaixo para registrar uma nova ocorrência.";
+
+  // Update the submit button text
+  const submitButtonText = initialData ? "Atualizar" : "Salvar";
+
+  const occurrenceType = form.watch("type");
+
+  const onSubmit = (data: Occurrence) => {
+    // Preserve the ID if we're editing, otherwise generate a new one
+    const occurrenceId = initialData?.id || crypto.randomUUID();
+
+    onAddOccurrence({
+      ...data,
+      id: occurrenceId,
+    });
+
+    toast.success(
+      initialData
+        ? "Ocorrência atualizada com sucesso"
+        : "Ocorrência registrada com sucesso"
+    );
+    onClose();
+    form.reset(defaultFaltaOccurrence);
+  };
+
+  // Function to handle type change with proper type safety
+  const handleTypeChange = (value: string) => {
+    // Create a new default value based on the selected type
+    const newDefaultValues: Partial<Occurrence> = {
+      type: value as Occurrence["type"],
+      employeeId: form.getValues("employeeId"),
     };
 
-    onAddOccurrence(newOccurrence);
-    toast({
-      title: "Ocorrência registrada com sucesso",
-      description: "A ocorrência foi adicionada ao histórico do funcionário.",
-    });
-    onClose();
-    setOccurrenceType("");
-    setEmployeeId("");
-    setFormData({});
+    form.reset(newDefaultValues as Occurrence);
   };
-  const { toast } = useToast();
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Registrar Nova Ocorrência</DialogTitle>
-          <DialogDescription>
-            Preencha os campos abaixo para registrar uma nova ocorrência.
-          </DialogDescription>
+          <DialogTitle>{dialogTitle}</DialogTitle>
+          <DialogDescription>{dialogDescription}</DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="occurrenceType">Tipo de Ocorrência</Label>
-            <Select
-              value={occurrenceType}
-              onValueChange={(value) => setOccurrenceType(value)}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Selecione o tipo de ocorrência" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="falta">Falta</SelectItem>
-                <SelectItem value="atestado">Atestado</SelectItem>
-                <SelectItem value="promocao">Promoção</SelectItem>
-                <SelectItem value="demissao">Demissão</SelectItem>
-                <SelectItem value="analiseCPF">Análise de CPF</SelectItem>
-                <SelectItem value="acidente">Acidente</SelectItem>
-                <SelectItem value="atualizacaoProjeto">
-                  Atualização do Projeto
-                </SelectItem>
-                <SelectItem value="advertencia">Advertência</SelectItem>
-                <SelectItem value="acaoTrabalhista">
-                  Ação Trabalhista
-                </SelectItem>
-                <SelectItem value="epi">EPI</SelectItem>
-                <SelectItem value="ferias">Férias</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+        <Form {...form}>
+          <form
+            id={formId}
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="space-y-4"
+          >
+            <FormField
+              control={form.control}
+              name="type"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Tipo de Ocorrência</FormLabel>
+                  <Select
+                    onValueChange={(value) => {
+                      field.onChange(value);
+                      handleTypeChange(value);
+                    }}
+                    value={field.value}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione o tipo de ocorrência" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="falta">Falta</SelectItem>
+                      <SelectItem value="atestado">Atestado</SelectItem>
+                      <SelectItem value="promocao">Promoção</SelectItem>
+                      <SelectItem value="demissao">Demissão</SelectItem>
+                      <SelectItem value="analiseCPF">Análise de CPF</SelectItem>
+                      <SelectItem value="acidente">Acidente</SelectItem>
+                      <SelectItem value="atualizacaoProjeto">
+                        Atualização do Projeto
+                      </SelectItem>
+                      <SelectItem value="advertencia">Advertência</SelectItem>
+                      <SelectItem value="acaoTrabalhista">
+                        Ação Trabalhista
+                      </SelectItem>
+                      <SelectItem value="epi">EPI</SelectItem>
+                      <SelectItem value="ferias">Férias</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          <div className="space-y-2">
-            <Label htmlFor="employeeId">Funcionário</Label>
-            <Select
-              value={employeeId}
-              onValueChange={(value) => setEmployeeId(value)}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Selecione o funcionário" />
-              </SelectTrigger>
-              <SelectContent>
-                {employees.map((employee) => (
-                  <SelectItem key={employee.id} value={employee.id}>
-                    {employee.fullName}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+            <FormField
+              control={form.control}
+              name="employeeId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Funcionário</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    value={field.value}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione o funcionário" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {employees.map((employee) => (
+                        <SelectItem key={employee.id} value={employee.id}>
+                          {employee.fullName}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          {occurrenceType === "falta" && (
-            <>
-              <div className="space-y-2">
-                <Label htmlFor="date">Data</Label>
-                <Input
-                  type="date"
-                  id="date"
+            {occurrenceType === "falta" && (
+              <>
+                <FormField
+                  control={form.control}
                   name="date"
-                  onChange={handleInputChange}
-                  required
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Data</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="date"
+                          {...field}
+                          value={field.value || ""}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="reason">Motivo</Label>
-                <Textarea
-                  id="reason"
+                <FormField
+                  control={form.control}
                   name="reason"
-                  onChange={handleInputChange}
-                  required
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Motivo</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          value={field.value || ""}
+                          onChange={field.onChange}
+                          onBlur={field.onBlur}
+                          name={field.name}
+                          ref={field.ref}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </div>
-            </>
-          )}
+              </>
+            )}
 
-          {occurrenceType === "atestado" && (
-            <>
-              <div className="space-y-2">
-                <Label htmlFor="startDate">Data de Início</Label>
-                <Input
-                  type="date"
-                  id="startDate"
+            {occurrenceType === "atestado" && (
+              <>
+                <FormField
+                  control={form.control}
                   name="startDate"
-                  onChange={handleInputChange}
-                  required
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Data de Início</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="date"
+                          {...field}
+                          value={field.value || ""}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="endDate">Data de Término</Label>
-                <Input
-                  type="date"
-                  id="endDate"
+                <FormField
+                  control={form.control}
                   name="endDate"
-                  onChange={handleInputChange}
-                  required
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Data de Término</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="date"
+                          {...field}
+                          value={field.value || ""}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="reason">Justificativa</Label>
-                <Textarea
-                  id="reason"
+                <FormField
+                  control={form.control}
                   name="reason"
-                  onChange={handleInputChange}
-                  required
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Justificativa</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          value={field.value || ""}
+                          onChange={field.onChange}
+                          onBlur={field.onBlur}
+                          name={field.name}
+                          ref={field.ref}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </div>
-            </>
-          )}
+              </>
+            )}
 
-          {occurrenceType === "promocao" && (
-            <>
-              <div className="space-y-2">
-                <Label htmlFor="newPosition">Nova Função</Label>
-                <Input
-                  id="newPosition"
+            {occurrenceType === "promocao" && (
+              <>
+                <FormField
+                  control={form.control}
                   name="newPosition"
-                  onChange={handleInputChange}
-                  required
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Nova Função</FormLabel>
+                      <FormControl>
+                        <Input {...field} value={field.value || ""} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="newSalary">Novo Salário</Label>
-                <Input
-                  type="number"
-                  id="newSalary"
+                <FormField
+                  control={form.control}
                   name="newSalary"
-                  onChange={handleInputChange}
-                  required
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Novo Salário</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          value={field.value || ""}
+                          onChange={(e) =>
+                            field.onChange(
+                              Number.parseFloat(e.target.value) || 0
+                            )
+                          }
+                          onBlur={field.onBlur}
+                          name={field.name}
+                          ref={field.ref}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="reason">Justificativa</Label>
-                <Textarea
-                  id="reason"
+                <FormField
+                  control={form.control}
                   name="reason"
-                  onChange={handleInputChange}
-                  required
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Justificativa</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          value={field.value || ""}
+                          onChange={field.onChange}
+                          onBlur={field.onBlur}
+                          name={field.name}
+                          ref={field.ref}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </div>
-            </>
-          )}
+              </>
+            )}
 
-          {occurrenceType === "demissao" && (
-            <>
-              <div className="space-y-2">
-                <Label htmlFor="date">Data</Label>
-                <Input
-                  type="date"
-                  id="date"
+            {occurrenceType === "demissao" && (
+              <>
+                <FormField
+                  control={form.control}
                   name="date"
-                  onChange={handleInputChange}
-                  required
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Data</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="date"
+                          {...field}
+                          value={field.value || ""}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="reason">Motivo</Label>
-                <Textarea
-                  id="reason"
+                <FormField
+                  control={form.control}
                   name="reason"
-                  onChange={handleInputChange}
-                  required
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Motivo</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          value={field.value || ""}
+                          onChange={field.onChange}
+                          onBlur={field.onBlur}
+                          name={field.name}
+                          ref={field.ref}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="legalReason">Motivo Trabalhista</Label>
-                <Input
-                  id="legalReason"
+                <FormField
+                  control={form.control}
                   name="legalReason"
-                  onChange={handleInputChange}
-                  required
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Motivo Trabalhista</FormLabel>
+                      <FormControl>
+                        <Input {...field} value={field.value || ""} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="legalAction">Ação Trabalhista</Label>
-                <Input
-                  id="legalAction"
+                <FormField
+                  control={form.control}
                   name="legalAction"
-                  onChange={handleInputChange}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Ação Trabalhista</FormLabel>
+                      <FormControl>
+                        <Input {...field} value={field.value || ""} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="dismissalType">Forma de Demissão</Label>
-                <Select
-                  onValueChange={(value) =>
-                    handleSelectChange("dismissalType", value)
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione a forma de demissão" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="voluntaria">Voluntária</SelectItem>
-                    <SelectItem value="justa_causa">Justa Causa</SelectItem>
-                    <SelectItem value="sem_justa_causa">
-                      Sem Justa Causa
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </>
-          )}
+                <FormField
+                  control={form.control}
+                  name="dismissalType"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Forma de Demissão</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        value={field.value}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecione a forma de demissão" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="voluntaria">Voluntária</SelectItem>
+                          <SelectItem value="justa_causa">
+                            Justa Causa
+                          </SelectItem>
+                          <SelectItem value="sem_justa_causa">
+                            Sem Justa Causa
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </>
+            )}
 
-          {occurrenceType === "analiseCPF" && (
-            <>
-              <div className="space-y-2">
-                <Label htmlFor="cpfStatus">Status do CPF</Label>
-                <Select
-                  onValueChange={(value) =>
-                    handleSelectChange("cpfStatus", value)
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione o status do CPF" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="regular">Regular</SelectItem>
-                    <SelectItem value="irregular">Irregular</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="cpfIssues">Problemas ou Restrições</Label>
-                <Textarea
-                  id="cpfIssues"
+            {occurrenceType === "analiseCPF" && (
+              <>
+                <FormField
+                  control={form.control}
+                  name="cpfStatus"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Status do CPF</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        value={field.value}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecione o status do CPF" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="regular">Regular</SelectItem>
+                          <SelectItem value="irregular">Irregular</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
                   name="cpfIssues"
-                  onChange={handleInputChange}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Problemas ou Restrições</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          value={field.value || ""}
+                          onChange={field.onChange}
+                          onBlur={field.onBlur}
+                          name={field.name}
+                          ref={field.ref}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </div>
-            </>
-          )}
+              </>
+            )}
 
-          {occurrenceType === "acidente" && (
-            <>
-              <div className="space-y-2">
-                <Label htmlFor="date">Data</Label>
-                <Input
-                  type="date"
-                  id="date"
-                  name="date"
-                  onChange={handleInputChange}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="description">Descrição</Label>
-                <Textarea
-                  id="description"
-                  name="description"
-                  onChange={handleInputChange}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="actionsTaken">Medidas Tomadas</Label>
-                <Textarea
-                  id="actionsTaken"
-                  name="actionsTaken"
-                  onChange={handleInputChange}
-                  required
-                />
-              </div>
-            </>
-          )}
+            {/* Add other occurrence type fields as needed */}
+            {occurrenceType === "ferias" && (
+              <FormField
+                control={form.control}
+                name="acquisitionPeriod"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Período Aquisitivo</FormLabel>
+                    <FormControl>
+                      <Input {...field} value={field.value || ""} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
 
-          {occurrenceType === "atualizacaoProjeto" && (
-            <>
-              <div className="space-y-2">
-                <Label htmlFor="newProject">Novo Projeto</Label>
-                <Input
-                  id="newProject"
-                  name="newProject"
-                  onChange={handleInputChange}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="projectStartDate">
-                  Data de Início no Novo Projeto
-                </Label>
-                <Input
-                  type="date"
-                  id="projectStartDate"
-                  name="projectStartDate"
-                  onChange={handleInputChange}
-                  required
-                />
-              </div>
-            </>
-          )}
-
-          {occurrenceType === "advertencia" && (
-            <>
-              <div className="space-y-2">
-                <Label htmlFor="date">Data</Label>
-                <Input
-                  type="date"
-                  id="date"
-                  name="date"
-                  onChange={handleInputChange}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="reason">Motivo</Label>
-                <Textarea
-                  id="reason"
-                  name="reason"
-                  onChange={handleInputChange}
-                  required
-                />
-              </div>
-            </>
-          )}
-
-          {occurrenceType === "acaoTrabalhista" && (
-            <>
-              <div className="space-y-2">
-                <Label htmlFor="caseDetails">Dados do Processo</Label>
-                <Textarea
-                  id="caseDetails"
-                  name="caseDetails"
-                  onChange={handleInputChange}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="caseKnowledgeDate">Data do Conhecimento</Label>
-                <Input
-                  type="date"
-                  id="caseKnowledgeDate"
-                  name="caseKnowledgeDate"
-                  onChange={handleInputChange}
-                  required
-                />
-              </div>
-            </>
-          )}
-
-          {occurrenceType === "epi" && (
-            <>
-              <div className="space-y-2">
-                <Label htmlFor="date">Data</Label>
-                <Input
-                  type="date"
-                  id="date"
-                  name="date"
-                  onChange={handleInputChange}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="items">Itens Disponibilizados</Label>
-                <Textarea
-                  id="items"
-                  name="items"
-                  onChange={handleInputChange}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="itemReason">Motivo</Label>
-                <Select
-                  onValueChange={(value) =>
-                    handleSelectChange("itemReason", value)
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione o motivo" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="substituicao">Substituição</SelectItem>
-                    <SelectItem value="mau_uso">Mau Uso</SelectItem>
-                    <SelectItem value="vencimento">Vencimento</SelectItem>
-                    <SelectItem value="furto">Furto</SelectItem>
-                    <SelectItem value="roubo">Roubo</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="responsiblePerson">
-                  Responsável pela Entrega
-                </Label>
-                <Input
-                  id="responsiblePerson"
-                  name="responsiblePerson"
-                  onChange={handleInputChange}
-                  required
-                />
-              </div>
-            </>
-          )}
-
-          {occurrenceType === "ferias" && (
-            <>
-              <div className="space-y-2">
-                <Label htmlFor="acquisitionPeriod">Período Aquisitivo</Label>
-                <Input
-                  id="acquisitionPeriod"
-                  name="acquisitionPeriod"
-                  onChange={handleInputChange}
-                  required
-                />
-              </div>
-            </>
-          )}
-
-          <Button type="submit">Salvar</Button>
-        </form>
+            <Button type="submit">{submitButtonText}</Button>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   );
