@@ -36,12 +36,16 @@ export function UsersDataTable({
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Nome" />
       ),
+      enableSorting: true,
+      enableHiding: true,
     },
     {
       accessorKey: "email",
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="E-mail" />
       ),
+      enableSorting: true,
+      enableHiding: true,
     },
     {
       accessorKey: "role",
@@ -67,6 +71,14 @@ export function UsersDataTable({
             </SelectContent>
           </Select>
         );
+      },
+      enableSorting: true,
+      enableHiding: true,
+      filterFn: (row, id, filterValue) => {
+        const value = row.getValue(id) as string;
+        return Array.isArray(filterValue)
+          ? filterValue.includes(value)
+          : value === filterValue;
       },
     },
     {
@@ -95,6 +107,14 @@ export function UsersDataTable({
           </Select>
         );
       },
+      enableSorting: true,
+      enableHiding: true,
+      filterFn: (row, id, filterValue) => {
+        const value = row.getValue(id) as string;
+        return Array.isArray(filterValue)
+          ? filterValue.includes(value)
+          : value === filterValue;
+      },
     },
     {
       id: "actions",
@@ -107,6 +127,7 @@ export function UsersDataTable({
           />
         );
       },
+      enableHiding: false,
     },
   ];
 
@@ -125,8 +146,8 @@ export function UsersDataTable({
     <DataTable
       columns={columns}
       data={data}
-      searchColumn="name"
-      searchPlaceholder="Filtrar por nome..."
+      searchPlaceholder="Buscar usuário..."
+      globalSearch={true}
       facetedFilterColumn="role"
       facetedFilterTitle="Função"
       facetedFilterOptions={roleFacetedFilterOptions}
@@ -137,6 +158,7 @@ export function UsersDataTable({
           options: statusFacetedFilterOptions,
         },
       ]}
+      exportFilename="usuarios-synerdata"
     />
   );
 }

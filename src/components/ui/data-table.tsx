@@ -9,11 +9,12 @@ import {
   type SortingState,
   flexRender,
   getCoreRowModel,
+  getFacetedRowModel,
+  getFacetedUniqueValues,
+  getFacetedMinMaxValues,
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
-  getFacetedRowModel,
-  getFacetedUniqueValues,
   useReactTable,
 } from "@tanstack/react-table";
 import {
@@ -21,6 +22,7 @@ import {
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
+  Download,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -42,6 +44,8 @@ import {
 } from "@/components/ui/select";
 import { DataTableViewOptions } from "@/components/ui/data-table-view-options";
 import { DataTableFacetedFilter } from "@/components/ui/data-table-faceted-filter";
+import { exportToExcel } from "@/lib/export-to-excel";
+import { toast } from "sonner";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -65,6 +69,8 @@ interface DataTableProps<TData, TValue> {
       icon?: React.ComponentType<{ className?: string }>;
     }[];
   }[];
+  exportFilename?: string;
+  globalSearch?: boolean;
 }
 
 export function DataTable<TData, TValue>({
@@ -77,10 +83,13 @@ export function DataTable<TData, TValue>({
   facetedFilterTitle,
   facetedFilterOptions,
   additionalFacetedFilters,
+  exportFilename = "dados-exportados",
+  globalSearch,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState({});
+  const [globalFilter, setGlobalFilter] = useState("");
 
   const table = useReactTable({
     data,
@@ -93,12 +102,15 @@ export function DataTable<TData, TValue>({
     getFilteredRowModel: getFilteredRowModel(),
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
+    getFacetedMinMaxValues: getFacetedMinMaxValues(),
     onColumnVisibilityChange: setColumnVisibility,
     state: {
       sorting,
       columnFilters,
       columnVisibility,
+      globalFilter,
     },
+    onGlobalFilterChange: setGlobalFilter,
     initialState: {
       pagination: {
         pageSize: 10,
@@ -106,11 +118,86 @@ export function DataTable<TData, TValue>({
     },
   });
 
+  const handleExportToExcel = () => {
+    try {
+      // Preparar colunas para exportação (apenas colunas visíveis)
+      const exportColumns = table
+        .getAllColumns()
+        .filter((column) => column.getIsVisible())
+        .map((column) => {
+          // Obter o título da coluna
+          let header = "";
+
+          // Tentar obter o título da definição da coluna
+          if (typeof column.columnDef.header === "string") {
+            header = column.columnDef.header;
+          } else if (column.columnDef.header) {
+            // Se não for uma string, usar o ID da coluna com primeira letra maiúscula
+            header = column.id.charAt(0).toUpperCase() + column.id.slice(1);
+          } else {
+            header = column.id.charAt(0).toUpperCase() + column.id.slice(1);
+          }
+
+          return {
+            id: column.id,
+            header: header,
+          };
+        });
+
+      // Preparar dados para exportação (apenas dados filtrados)
+      const exportData = table.getFilteredRowModel().rows.map((row) => {
+        const rowData: Record<string, unknown> = {};
+
+        // Para cada coluna visível, obter o valor da célula
+        exportColumns.forEach((column) => {
+          const cell = row
+            .getAllCells()
+            .find((cell) => cell.column.id === column.id);
+          if (cell) {
+            // Obter o valor bruto da célula
+            rowData[column.id] = row.getValue(column.id);
+
+            // Para colunas com formatação especial (como moeda), tentar obter o valor formatado
+            if (
+              cell.column.columnDef.cell &&
+              typeof cell.column.columnDef.cell !== "string"
+            ) {
+              try {
+                const renderedValue = cell.renderValue();
+                if (
+                  renderedValue !== null &&
+                  renderedValue !== undefined &&
+                  typeof renderedValue !== "object"
+                ) {
+                  rowData[column.id] = renderedValue;
+                }
+              } catch (e) {
+                console.log(e);
+                // Se não conseguir obter o valor renderizado, manter o valor bruto
+              }
+            }
+          } else {
+            rowData[column.id] = "";
+          }
+        });
+
+        return rowData;
+      });
+
+      // Exportar para Excel
+      exportToExcel(exportColumns, exportData, exportFilename);
+      toast.success("Dados exportados com sucesso!");
+    } catch (error) {
+      console.error("Erro ao exportar dados:", error);
+      toast.error("Erro ao exportar dados. Tente novamente.");
+    }
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <div className="flex flex-1 items-center space-x-2">
-          {searchColumn && (
+        <div className="flex flex-1 items-center space-x-2 flex-wrap gap-2">
+          {searchColumn && !globalSearch && (
             <Input
               placeholder={searchPlaceholder}
               value={
@@ -122,6 +209,17 @@ export function DataTable<TData, TValue>({
                   .getColumn(searchColumn)
                   ?.setFilterValue(event.target.value)
               }
+              className="h-8 w-[150px] lg:w-[250px]"
+            />
+          )}
+
+          {globalSearch && (
+            <Input
+              placeholder={searchPlaceholder || "Buscar em todas as colunas..."}
+              value={(table.getState().globalFilter as string) ?? ""}
+              onChange={(event) => {
+                table.setGlobalFilter(event.target.value);
+              }}
               className="h-8 w-[150px] lg:w-[250px]"
             />
           )}
@@ -143,7 +241,18 @@ export function DataTable<TData, TValue>({
             />
           ))}
         </div>
-        <DataTableViewOptions table={table} />
+        <div className="flex items-center space-x-2">
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-8 gap-1"
+            onClick={handleExportToExcel}
+          >
+            <Download className="h-4 w-4" />
+            Exportar Excel
+          </Button>
+          <DataTableViewOptions table={table} />
+        </div>
       </div>
       <div className="rounded-md border overflow-x-auto">
         <Table style={minWidth ? { minWidth } : undefined}>

@@ -66,7 +66,7 @@ export default function LoginPage() {
         <CardHeader className="space-y-1">
           <div className="flex justify-center mb-4">
             <Image
-              src="/logo.jpeg?height=60&width=240"
+              src="/logosynerdata.png?height=60&width=240"
               alt="Synerdata Logo"
               width={240}
               height={60}
@@ -115,6 +115,12 @@ export default function LoginPage() {
           </form>
         </CardContent>
         <CardFooter className="flex flex-col items-center">
+          <Link
+            href="/recuperar-senha"
+            className="text-sm text-purple-600 hover:underline mt-2"
+          >
+            Esqueceu sua senha?
+          </Link>
           <p className="text-sm text-muted-foreground mt-2">
             Não tem uma conta?{"CredentialsSignin"}
             <Link
