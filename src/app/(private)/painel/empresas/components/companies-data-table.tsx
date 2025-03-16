@@ -1,5 +1,4 @@
 "use client";
-
 import type { ColumnDef } from "@tanstack/react-table";
 import { DataTable } from "@/components/ui/data-table";
 import { DataTableColumnHeader } from "./data-table-column-header";
@@ -23,24 +22,38 @@ export function CompaniesDataTable({
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Nome Fantasia" />
       ),
+      enableSorting: true,
+      enableHiding: true,
     },
     {
       accessorKey: "legalName",
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Razão Social" />
       ),
+      enableSorting: true,
+      enableHiding: true,
     },
     {
       accessorKey: "cnpj",
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="CNPJ" />
       ),
+      enableSorting: true,
+      enableHiding: true,
     },
     {
       accessorKey: "segment",
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Segmento" />
       ),
+      enableSorting: true,
+      enableHiding: true,
+      filterFn: (row, id, filterValue) => {
+        const value = row.getValue(id) as string;
+        return Array.isArray(filterValue)
+          ? filterValue.includes(value)
+          : value === filterValue;
+      },
     },
     {
       accessorKey: "taxRegime",
@@ -56,6 +69,14 @@ export function CompaniesDataTable({
         };
         return taxRegimeMap[taxRegime] || taxRegime;
       },
+      enableSorting: true,
+      enableHiding: true,
+      filterFn: (row, id, filterValue) => {
+        const value = row.getValue(id) as string;
+        return Array.isArray(filterValue)
+          ? filterValue.includes(value)
+          : value === filterValue;
+      },
     },
     {
       id: "actions",
@@ -68,6 +89,7 @@ export function CompaniesDataTable({
           />
         );
       },
+      enableHiding: false,
     },
   ];
 
@@ -90,8 +112,8 @@ export function CompaniesDataTable({
     <DataTable
       columns={columns}
       data={data}
-      searchColumn="fantasyName"
-      searchPlaceholder="Filtrar por nome fantasia..."
+      searchPlaceholder="Buscar empresa..."
+      globalSearch={true}
       facetedFilterColumn="segment"
       facetedFilterTitle="Segmento"
       facetedFilterOptions={segmentFacetedFilterOptions}
@@ -102,6 +124,7 @@ export function CompaniesDataTable({
           options: taxRegimeFacetedFilterOptions,
         },
       ]}
+      exportFilename="empresas-synerdata"
     />
   );
 }

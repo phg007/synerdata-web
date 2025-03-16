@@ -1,4 +1,4 @@
-import { Metadata } from "next";
+import type { Metadata } from "next";
 import {
   ArrowRight,
   BarChart3,
@@ -53,78 +53,91 @@ const features = [
 
 export default function HomePage() {
   return (
-    <div className="flex min-h-screen flex-col bg-white">
-      <header className="sticky top-0 z-50 w-full border-b bg-[#340D64] text-white">
-        <div className="container flex h-14 items-center">
-          <div className="mr-4 hidden md:flex">
-            <Link className="mr-6 flex items-center space-x-2" href="/">
-              <span className="hidden font-bold sm:inline-block">
-                Synerdata
-              </span>
-            </Link>
-            <nav className="flex items-center space-x-6 text-sm font-medium">
-              <a
-                className="transition-colors hover:text-foreground/80"
-                href="#recursos"
-              >
-                Recursos
-              </a>
-              <a
-                className="transition-colors hover:text-foreground/80"
-                href="#precos"
-              >
-                Preços
-              </a>
-              <a
-                className="transition-colors hover:text-foreground/80"
-                href="#sobre"
-              >
-                Sobre
-              </a>
-              <a
-                className="transition-colors hover:text-foreground/80"
-                href="#faq"
-              >
-                FAQ
-              </a>
-            </nav>
-          </div>
-          <Button
-            className="ml-auto bg-white hover:bg-white/90 text-[#340D64]"
-            size="sm"
-            asChild
-          >
-            <Link href="/sign-in">Acesse sua conta</Link>
-          </Button>
-        </div>
-      </header>
-      <main className="flex-1">
-        <section className="space-y-6 pb-8 pt-6 md:pb-12 md:pt-10 lg:py-32">
-          <div className="container flex max-w-[64rem] flex-col items-center gap-4 text-center">
-            <Badge className="rounded-lg px-3 py-1 bg-gray-500 text-white">
-              ✨ Simplifique sua gestão de dados
-            </Badge>
-            <h1 className="font-heading text-3xl sm:text-5xl md:text-6xl lg:text-7xl">
-              Transforme seus dados em{" "}
-              <span className="text-black">insights estratégicos</span>
-            </h1>
-            <p className="max-w-[42rem] leading-normal text-muted-foreground sm:text-xl sm:leading-8">
-              Centralize, analise e tome decisões baseadas em dados com nossa
-              plataforma integrada de gestão empresarial e Power BI.
-            </p>
-            <div className="space-x-4">
-              <Button
-                size="lg"
-                className="bg-black hover:bg-black/90 text-white"
-                asChild
-              >
-                <Link href="/demonstration">
-                  Agende sua demonstração
-                  <ArrowRight className="ml-2 h-4 w-4" />
+    <div className="flex min-h-screen flex-col">
+      <header className="fixed w-full z-50">
+        <div className="nav-blur border-b border-white/10">
+          <div className="container flex h-16 items-center justify-between">
+            <div className="flex items-center gap-6">
+              <Link className="flex items-center space-x-2" href="/">
+                <span className="font-bold text-white text-xl">Synerdata</span>
+              </Link>
+              <nav className="hidden md:flex items-center space-x-6 text-sm">
+                <a
+                  className="text-white/70 hover:text-white transition-colors font-bold"
+                  href="#recursos"
+                >
+                  Recursos
+                </a>
+                <a
+                  className="text-white/70 hover:text-white transition-colors font-bold"
+                  href="#precos"
+                >
+                  Preços
+                </a>
+                <a
+                  className="text-white/70 hover:text-white transition-colors font-bold"
+                  href="#sobre"
+                >
+                  Sobre
+                </a>
+                <a
+                  className="text-white/70 hover:text-white transition-colors font-bold"
+                  href="#faq"
+                >
+                  FAQ
+                </a>
+                <Link
+                  href="/politica-reembolso"
+                  className="text-white/70 hover:text-white transition-colors font-bold"
+                >
+                  Política de Reembolso
+                </Link>
+              </nav>
+            </div>
+            <div className="flex items-center">
+              <Button className="bg-primary hover:bg-primary/90" asChild>
+                <Link href="/sign-in" className="font-bold">
+                  Acessar Plataforma
                 </Link>
               </Button>
             </div>
           </div>
+        </div>
+      </header>
+
+      <main className="flex-1">
+        <section className="relative min-h-screen flex items-center hero-gradient">
+          <div className="absolute inset-0 hero-overlay"></div>
+          <div className="container relative z-10 py-32">
+            <div className="max-w-[64rem] space-y-6">
+              <Badge className="bg-white/10 text-white hover:bg-white/20 transition-colors">
+                ✨ Simplifique sua gestão de dados
+              </Badge>
+              <h1 className="font-bold text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-white">
+                Transforme seus dados em{" "}
+                <span className="gradient-text gradient-border">
+                  insights estratégicos
+                </span>
+              </h1>
+              <p className="text-xl text-white/70 max-w-[42rem]">
+                Centralize, analise e tome decisões baseadas em dados com nossa
+                plataforma integrada de gestão empresarial e Power BI.
+              </p>
+              <div className="flex flex-wrap gap-4">
+                <Button
+                  size="lg"
+                  className="bg-primary hover:bg-primary/90"
+                  asChild
+                >
+                  <Link href="/solicitar-demonstracao">
+                    Agende sua demonstração
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Link>
+                </Button>
+              </div>
+            </div>
+          </div>
+          <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background to-transparent"></div>
         </section>
         <section id="recursos" className="py-16 md:py-24">
           <div className="container mx-auto px-4">
@@ -334,17 +347,17 @@ export default function HomePage() {
                     </CardContent>
                     <CardFooter className="pt-4 flex flex-col gap-2">
                       <Button
-                        className="w-full bg-white text-black hover:bg-white/90 border-2 border-black"
+                        className="w-full bg-white text-[#340D64] hover:bg-white/90 border-2 border-[#340D64]"
                         asChild
                       >
                         <Link
-                          href={`/demonstration?plano=${encodeURIComponent(plan)}`}
+                          href={`/solicitar-demonstracao?plano=${encodeURIComponent(plan)}`}
                         >
                           Solicitar demonstração
                         </Link>
                       </Button>
                       <Button
-                        className="w-full bg-black text-white hover:bg-black/90"
+                        className="w-full bg-[#340D64] text-white hover:bg-[#4A1491]"
                         asChild
                       >
                         <Link
@@ -393,7 +406,7 @@ export default function HomePage() {
             </div>
             <Button
               size="lg"
-              className="mt-4 bg-black hover:bg-black/90 text-white"
+              className="mt-4 bg-[#340D64] hover:bg-[#4A1491] text-white"
               asChild
             >
               <Link href="/contact">
@@ -520,16 +533,27 @@ export default function HomePage() {
           </div>
         </section>
       </main>
-      <footer className="border-t py-6 md:py-0 bg-black text-white">
-        <div className="container flex flex-col items-center justify-between gap-4 md:h-24 md:flex-row">
-          <div className="flex flex-col items-center gap-4 px-8 md:flex-row md:gap-2 md:px-0">
-            <p className="text-center text-sm leading-loose md:text-left">
-              Built by{" "}
-              <a href="#" className="font-medium underline underline-offset-4">
-                Synerdata
-              </a>
-              . © 2024 Synerdata. Todos os direitos reservados.
+      <footer className="border-t border-white/10 py-8 bg-[#2A0F55] text-white">
+        <div className="container flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="flex flex-col md:flex-row items-center gap-4">
+            <span className="font-bold text-xl">Synerdata</span>
+            <p className="text-sm text-white/70">
+              © 2024 Synerdata. Todos os direitos reservados.
             </p>
+          </div>
+          <div className="flex items-center gap-4">
+            <Link
+              href="#"
+              className="text-white/70 hover:text-white transition-colors"
+            >
+              Termos
+            </Link>
+            <Link
+              href="/politica-privacidade"
+              className="text-white/70 hover:text-white transition-colors"
+            >
+              Privacidade
+            </Link>
           </div>
         </div>
       </footer>
