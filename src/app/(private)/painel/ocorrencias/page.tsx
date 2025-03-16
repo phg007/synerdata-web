@@ -58,6 +58,9 @@ export default function OccurrencesPage() {
       projectOrCostCenter: "Projeto B",
     },
   ]);
+  // Let's ensure all occurrences have a consistent date field for filtering
+
+  // Update the occurrences data to ensure each occurrence has a date field
   const [occurrences, setOccurrences] = useState<Occurrence[]>([
     {
       id: "1",
@@ -70,6 +73,7 @@ export default function OccurrencesPage() {
       id: "2",
       type: "promocao",
       employeeId: "2",
+      date: "2023-07-15",
       newPosition: "Designer Sênior",
       newSalary: 5500,
       reason: "Excelente desempenho",
@@ -78,14 +82,64 @@ export default function OccurrencesPage() {
       id: "3",
       type: "ferias",
       employeeId: "3",
+      date: "2023-08-10",
       acquisitionPeriod: "2022-2023",
     } as Occurrence,
     {
       id: "4",
       type: "atestado",
       employeeId: "1",
+      date: "2023-07-10",
       startDate: "2023-07-10",
       endDate: "2023-07-12",
+      reason: "Consulta médica",
+    } as Occurrence,
+    {
+      id: "5",
+      type: "demissao",
+      employeeId: "2",
+      date: "2023-09-05",
+      reason: "Pedido do funcionário",
+      dismissalType: "voluntaria",
+    } as Occurrence,
+    {
+      id: "6",
+      type: "acidente",
+      employeeId: "3",
+      date: "2023-05-20",
+      description: "Queda na escada",
+      actionsTaken: "Primeiros socorros e encaminhamento ao hospital",
+    } as Occurrence,
+    {
+      id: "7",
+      type: "advertencia",
+      employeeId: "1",
+      date: "2023-06-15",
+      reason: "Atraso recorrente",
+    } as Occurrence,
+    {
+      id: "8",
+      type: "analiseCPF",
+      employeeId: "2",
+      date: "2023-04-10",
+      cpfStatus: "regular",
+    } as Occurrence,
+    {
+      id: "9",
+      type: "epi",
+      employeeId: "3",
+      date: "2023-07-05",
+      items: "Capacete, luvas",
+      itemReason: "substituicao",
+      responsiblePerson: "João Silva",
+    } as Occurrence,
+    {
+      id: "10",
+      type: "atualizacaoProjeto",
+      employeeId: "1",
+      date: "2023-08-20",
+      newProject: "Projeto Alpha",
+      projectStartDate: "2023-09-01",
     } as Occurrence,
   ]);
 
