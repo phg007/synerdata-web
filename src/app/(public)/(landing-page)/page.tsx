@@ -38,7 +38,7 @@ export const metadata: Metadata = {
     "Centralize, analise e tome decisões baseadas em dados com nossa plataforma integrada de gestão empresarial e Power BI.",
 };
 
-const features = [
+const baseFeatures = [
   { name: "Demitidos", available: true },
   { name: "Faltas", available: true },
   { name: "Atestados", available: true },
@@ -50,6 +50,28 @@ const features = [
   { name: "Ficha Cadastral", available: false },
   { name: "Folha", available: false },
 ];
+
+const getFeaturesForPlan = (planIndex: number) => {
+  if (planIndex === 0) {
+    // Ouro Insights
+    return baseFeatures;
+  } else if (planIndex === 1) {
+    // Diamante Analytics
+    return baseFeatures.map((feature) => {
+      if (
+        feature.name === "Aniversariantes" ||
+        feature.name === "EPI" ||
+        feature.name === "Ficha Cadastral"
+      ) {
+        return { ...feature, available: true };
+      }
+      return feature;
+    });
+  } else {
+    // Platina Vision
+    return baseFeatures.map((feature) => ({ ...feature, available: true }));
+  }
+};
 
 export default function HomePage() {
   return (
@@ -262,16 +284,21 @@ export default function HomePage() {
                     </CardHeader>
                     <CardContent>
                       <ul className="space-y-2 text-sm">
-                        {features.map((feature, featureIndex) => (
-                          <li key={featureIndex} className="flex items-center">
-                            {feature.available ? (
-                              <Check className="mr-2 h-4 w-4 flex-shrink-0 text-green-500" />
-                            ) : (
-                              <X className="mr-2 h-4 w-4 flex-shrink-0 text-red-500" />
-                            )}
-                            <span className="flex-grow">{feature.name}</span>
-                          </li>
-                        ))}
+                        {getFeaturesForPlan(index).map(
+                          (feature, featureIndex) => (
+                            <li
+                              key={featureIndex}
+                              className="flex items-center"
+                            >
+                              {feature.available ? (
+                                <Check className="mr-2 h-4 w-4 flex-shrink-0 text-green-500" />
+                              ) : (
+                                <X className="mr-2 h-4 w-4 flex-shrink-0 text-red-500" />
+                              )}
+                              <span className="flex-grow">{feature.name}</span>
+                            </li>
+                          )
+                        )}
                       </ul>
                       {index === 2 && (
                         <div className="mt-4 space-y-2 text-sm text-muted-foreground">
