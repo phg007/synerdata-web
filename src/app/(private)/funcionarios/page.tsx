@@ -13,6 +13,7 @@ import { EmployeeEditModal } from "@/components/employee-edit-modal";
 import { ConfirmationModal } from "@/components/confirmation-modal";
 // Importe o novo componente
 import { EmployeesDataTable } from "./components/employees-data-table";
+import DashboardLayout from "@/components/dashboard-layout";
 
 export default function EmployeesPage() {
   const [isEmployeeFormOpen, setIsEmployeeFormOpen] = useState(false);
@@ -338,44 +339,46 @@ export default function EmployeesPage() {
   };
 
   return (
-    <Card className="bg-white h-full">
-      <CardContent className="p-4 h-full">
-        <div className="space-y-4">
-          <div className="flex justify-between items-center">
-            <h2 className="text-2xl font-bold">Funcionários Cadastrados</h2>
-            <Button onClick={() => setIsEmployeeFormOpen(true)}>
-              <UserPlus className="mr-2 h-4 w-4" />
-              Adicionar Funcionário
-            </Button>
+    <DashboardLayout>
+      <Card className="bg-white h-full">
+        <CardContent className="p-4 h-full">
+          <div className="space-y-4">
+            <div className="flex justify-between items-center">
+              <h2 className="text-2xl font-bold">Funcionários Cadastrados</h2>
+              <Button onClick={() => setIsEmployeeFormOpen(true)}>
+                <UserPlus className="mr-2 h-4 w-4" />
+                Adicionar Funcionário
+              </Button>
+            </div>
+            <EmployeesDataTable
+              data={employees}
+              onEdit={handleEditEmployee}
+              onDelete={handleDeleteEmployee}
+            />
           </div>
-          <EmployeesDataTable
-            data={employees}
-            onEdit={handleEditEmployee}
-            onDelete={handleDeleteEmployee}
+          <EmployeeFormModal
+            isOpen={isEmployeeFormOpen}
+            onClose={() => setIsEmployeeFormOpen(false)}
+            onAddEmployee={handleAddEmployee}
           />
-        </div>
-        <EmployeeFormModal
-          isOpen={isEmployeeFormOpen}
-          onClose={() => setIsEmployeeFormOpen(false)}
-          onAddEmployee={handleAddEmployee}
-        />
-        <EmployeeEditModal
-          isOpen={isEmployeeEditModalOpen}
-          onClose={() => {
-            setIsEmployeeEditModalOpen(false);
-            setSelectedEmployee(null);
-          }}
-          onUpdateEmployee={handleUpdateEmployee}
-          employee={selectedEmployee}
-        />
-        <ConfirmationModal
-          isOpen={isConfirmationModalOpen}
-          onClose={() => setIsConfirmationModalOpen(false)}
-          onConfirm={confirmDeleteEmployee}
-          title="Confirmar Exclusão"
-          message={`Tem certeza que deseja excluir o funcionário ${employeeToDelete?.fullName}?`}
-        />
-      </CardContent>
-    </Card>
+          <EmployeeEditModal
+            isOpen={isEmployeeEditModalOpen}
+            onClose={() => {
+              setIsEmployeeEditModalOpen(false);
+              setSelectedEmployee(null);
+            }}
+            onUpdateEmployee={handleUpdateEmployee}
+            employee={selectedEmployee}
+          />
+          <ConfirmationModal
+            isOpen={isConfirmationModalOpen}
+            onClose={() => setIsConfirmationModalOpen(false)}
+            onConfirm={confirmDeleteEmployee}
+            title="Confirmar Exclusão"
+            message={`Tem certeza que deseja excluir o funcionário ${employeeToDelete?.fullName}?`}
+          />
+        </CardContent>
+      </Card>
+    </DashboardLayout>
   );
 }

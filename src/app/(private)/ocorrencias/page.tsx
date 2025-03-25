@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import type { Employee } from "@/components/employee-form-modal";
 // Import the new component
 import { OccurrencesDataTable } from "./components/occurrences-data-table";
+import DashboardLayout from "@/components/dashboard-layout";
 
 export default function OccurrencesPage() {
   const [isOccurrenceFormOpen, setIsOccurrenceFormOpen] = useState(false);
@@ -182,44 +183,46 @@ export default function OccurrencesPage() {
   };
 
   return (
-    <Card className="bg-white h-full">
-      <CardContent className="p-4 h-full">
-        <div className="space-y-4">
-          <div className="flex justify-between items-center">
-            <h2 className="text-2xl font-bold">Ocorrências</h2>
-            <Button onClick={() => setIsOccurrenceFormOpen(true)}>
-              <PlusCircle className="mr-2 h-4 w-4" />
-              Criar Ocorrência
-            </Button>
+    <DashboardLayout>
+      <Card className="bg-white h-full">
+        <CardContent className="p-4 h-full">
+          <div className="space-y-4">
+            <div className="flex justify-between items-center">
+              <h2 className="text-2xl font-bold">Ocorrências</h2>
+              <Button onClick={() => setIsOccurrenceFormOpen(true)}>
+                <PlusCircle className="mr-2 h-4 w-4" />
+                Criar Ocorrência
+              </Button>
+            </div>
+            <OccurrencesDataTable
+              data={occurrences}
+              employees={employees}
+              onEdit={handleEditOccurrence}
+              onDelete={handleDeleteOccurrence}
+            />
           </div>
-          <OccurrencesDataTable
-            data={occurrences}
+          <OccurrenceFormModal
+            isOpen={isOccurrenceFormOpen}
+            onClose={() => setIsOccurrenceFormOpen(false)}
+            onAddOccurrence={handleAddOccurrence}
             employees={employees}
-            onEdit={handleEditOccurrence}
-            onDelete={handleDeleteOccurrence}
           />
-        </div>
-        <OccurrenceFormModal
-          isOpen={isOccurrenceFormOpen}
-          onClose={() => setIsOccurrenceFormOpen(false)}
-          onAddOccurrence={handleAddOccurrence}
-          employees={employees}
-        />
-        <OccurrenceFormModal
-          isOpen={isEditModalOpen}
-          onClose={() => setIsEditModalOpen(false)}
-          onAddOccurrence={handleUpdateOccurrence}
-          employees={employees}
-          initialData={selectedOccurrence}
-        />
-        <ConfirmationModal
-          isOpen={isDeleteModalOpen}
-          onClose={() => setIsDeleteModalOpen(false)}
-          onConfirm={confirmDeleteOccurrence}
-          title="Confirmar Exclusão"
-          message={"Tem certeza que deseja excluir esta ocorrência?"}
-        />
-      </CardContent>
-    </Card>
+          <OccurrenceFormModal
+            isOpen={isEditModalOpen}
+            onClose={() => setIsEditModalOpen(false)}
+            onAddOccurrence={handleUpdateOccurrence}
+            employees={employees}
+            initialData={selectedOccurrence}
+          />
+          <ConfirmationModal
+            isOpen={isDeleteModalOpen}
+            onClose={() => setIsDeleteModalOpen(false)}
+            onConfirm={confirmDeleteOccurrence}
+            title="Confirmar Exclusão"
+            message={"Tem certeza que deseja excluir esta ocorrência?"}
+          />
+        </CardContent>
+      </Card>
+    </DashboardLayout>
   );
 }

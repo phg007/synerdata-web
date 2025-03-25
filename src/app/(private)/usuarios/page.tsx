@@ -7,8 +7,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { UserFormModal, type User } from "@/components/user-form-modal";
 import { ConfirmationModal } from "@/components/confirmation-modal";
 import { toast } from "sonner";
-// Importe o novo componente
 import { UsersDataTable } from "./components/users-data-table";
+import DashboardLayout from "@/components/dashboard-layout";
 
 export default function UsersPage() {
   const [isUserFormOpen, setIsUserFormOpen] = useState(false);
@@ -109,43 +109,45 @@ export default function UsersPage() {
   };
 
   return (
-    <Card className="bg-white h-full">
-      <CardContent className="p-4 h-full">
-        <div className="space-y-4">
-          <div className="flex justify-between items-center">
-            <h2 className="text-2xl font-bold">Usuários Cadastrados</h2>
-            <Button onClick={() => setIsUserFormOpen(true)}>
-              <UserPlus className="mr-2 h-4 w-4" />
-              Adicionar Usuário
-            </Button>
+    <DashboardLayout>
+      <Card className="bg-white h-full">
+        <CardContent className="p-4 h-full">
+          <div className="space-y-4">
+            <div className="flex justify-between items-center">
+              <h2 className="text-2xl font-bold">Usuários Cadastrados</h2>
+              <Button onClick={() => setIsUserFormOpen(true)}>
+                <UserPlus className="mr-2 h-4 w-4" />
+                Adicionar Usuário
+              </Button>
+            </div>
+            <UsersDataTable
+              data={users}
+              onEdit={handleEditUser}
+              onDelete={handleDeleteUser}
+              onRoleChange={handleRoleChange}
+              onStatusChange={handleStatusChange}
+            />
           </div>
-          <UsersDataTable
-            data={users}
-            onEdit={handleEditUser}
-            onDelete={handleDeleteUser}
-            onRoleChange={handleRoleChange}
-            onStatusChange={handleStatusChange}
+          <UserFormModal
+            isOpen={isUserFormOpen}
+            onClose={() => setIsUserFormOpen(false)}
+            onAddUser={handleAddUser}
           />
-        </div>
-        <UserFormModal
-          isOpen={isUserFormOpen}
-          onClose={() => setIsUserFormOpen(false)}
-          onAddUser={handleAddUser}
-        />
-        <UserFormModal
-          isOpen={isEditModalOpen}
-          onClose={() => setIsEditModalOpen(false)}
-          onAddUser={handleUpdateUser}
-          initialData={selectedUser}
-        />
-        <ConfirmationModal
-          isOpen={isDeleteModalOpen}
-          onClose={() => setIsDeleteModalOpen(false)}
-          onConfirm={confirmDeleteUser}
-          title="Confirmar Exclusão"
-          message={`Tem certeza que deseja excluir o usuário ${selectedUser?.name}?`}
-        />
-      </CardContent>
-    </Card>
+          <UserFormModal
+            isOpen={isEditModalOpen}
+            onClose={() => setIsEditModalOpen(false)}
+            onAddUser={handleUpdateUser}
+            initialData={selectedUser}
+          />
+          <ConfirmationModal
+            isOpen={isDeleteModalOpen}
+            onClose={() => setIsDeleteModalOpen(false)}
+            onConfirm={confirmDeleteUser}
+            title="Confirmar Exclusão"
+            message={`Tem certeza que deseja excluir o usuário ${selectedUser?.name}?`}
+          />
+        </CardContent>
+      </Card>
+    </DashboardLayout>
   );
 }
