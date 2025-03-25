@@ -51,7 +51,7 @@ const baseFeatures = [
   { name: "Folha", available: false },
 ];
 
-const getFeaturesForPlan = (planIndex) => {
+const getFeaturesForPlan = (planIndex: number) => {
   if (planIndex === 0) {
     // Ouro Insights
     return baseFeatures;

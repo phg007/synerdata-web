@@ -46,7 +46,7 @@ export default function LoginPage() {
 
     await signIn("credentials", {
       ...data,
-      callbackUrl: "/painel",
+      callbackUrl: "/relatorio",
     });
   }
 

@@ -12,7 +12,7 @@ import { ConfirmationModal } from "@/components/confirmation-modal";
 import { toast } from "sonner";
 // Importe o novo componente
 import { CompaniesDataTable } from "./components/companies-data-table";
-
+import DashboardLayout from "@/components/dashboard-layout";
 export default function CompanyPage() {
   const [isCompanyFormOpen, setIsCompanyFormOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -109,41 +109,43 @@ export default function CompanyPage() {
   };
 
   return (
-    <Card className="bg-white h-full">
-      <CardContent className="p-4 h-full">
-        <div className="space-y-4">
-          <div className="flex justify-between items-center">
-            <h2 className="text-2xl font-bold">Empresas Cadastradas</h2>
-            <Button onClick={() => setIsCompanyFormOpen(true)}>
-              <UserPlus className="mr-2 h-4 w-4" />
-              Adicionar Empresa
-            </Button>
+    <DashboardLayout>
+      <Card className="bg-white h-full">
+        <CardContent className="p-4 h-full">
+          <div className="space-y-4">
+            <div className="flex justify-between items-center">
+              <h2 className="text-2xl font-bold">Empresas Cadastradas</h2>
+              <Button onClick={() => setIsCompanyFormOpen(true)}>
+                <UserPlus className="mr-2 h-4 w-4" />
+                Adicionar Empresa
+              </Button>
+            </div>
+            <CompaniesDataTable
+              data={companies}
+              onEdit={handleEditCompany}
+              onDelete={handleDeleteCompany}
+            />
           </div>
-          <CompaniesDataTable
-            data={companies}
-            onEdit={handleEditCompany}
-            onDelete={handleDeleteCompany}
+          <CompanyFormModal
+            isOpen={isCompanyFormOpen}
+            onClose={() => setIsCompanyFormOpen(false)}
+            onAddCompany={handleAddCompany}
           />
-        </div>
-        <CompanyFormModal
-          isOpen={isCompanyFormOpen}
-          onClose={() => setIsCompanyFormOpen(false)}
-          onAddCompany={handleAddCompany}
-        />
-        <CompanyFormModal
-          isOpen={isEditModalOpen}
-          onClose={() => setIsEditModalOpen(false)}
-          onAddCompany={handleUpdateCompany}
-          initialData={selectedCompany}
-        />
-        <ConfirmationModal
-          isOpen={isDeleteModalOpen}
-          onClose={() => setIsDeleteModalOpen(false)}
-          onConfirm={confirmDeleteCompany}
-          title="Confirmar Exclusão"
-          message={`Tem certeza que deseja excluir a empresa ${selectedCompany?.fantasyName}?`}
-        />
-      </CardContent>
-    </Card>
+          <CompanyFormModal
+            isOpen={isEditModalOpen}
+            onClose={() => setIsEditModalOpen(false)}
+            onAddCompany={handleUpdateCompany}
+            initialData={selectedCompany}
+          />
+          <ConfirmationModal
+            isOpen={isDeleteModalOpen}
+            onClose={() => setIsDeleteModalOpen(false)}
+            onConfirm={confirmDeleteCompany}
+            title="Confirmar Exclusão"
+            message={`Tem certeza que deseja excluir a empresa ${selectedCompany?.fantasyName}?`}
+          />
+        </CardContent>
+      </Card>
+    </DashboardLayout>
   );
 }
