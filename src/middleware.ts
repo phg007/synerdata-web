@@ -35,7 +35,7 @@ export function middleware(request: NextRequest) {
     publicRoute.whenAutthenticated === "redirect"
   ) {
     const redirectUrl = request.nextUrl.clone();
-    redirectUrl.pathname = "/painel";
+    redirectUrl.pathname = "/relatorio";
     return NextResponse.redirect(redirectUrl);
   }
 

@@ -21,6 +21,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useRouter, usePathname } from "next/navigation";
 import { Toaster } from "sonner";
+import { signOut } from "next-auth/react";
 
 // Define menu items
 const menuItems = [
@@ -91,8 +92,10 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     router.push(path);
   };
 
-  const handleLogout = () => {
-    router.push("/login");
+  const handleLogout = async () => {
+    await fetch("/api/auth/logout", { method: "POST" });
+    await signOut({ redirect: false });
+    router.push("/sign-in");
   };
 
   return (
