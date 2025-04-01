@@ -1,82 +1,178 @@
+import * as XLSX from "xlsx";
+import type { ColumnDef } from "@tanstack/react-table";
+
 /**
- * Função para exportar dados para Excel (CSV)
- * @param columns Colunas da tabela
+ * Interface para representar uma coluna para exportação
+ */
+export interface ExportColumn {
+  id: string;
+  header: string;
+}
+
+/**
+ * Interface para representar os dados preparados para exportação
+ */
+export interface ExportData {
+  columns: ExportColumn[];
+  data: Record<string, unknown>[];
+}
+
+/**
+ * Função para exportar dados para CSV
+ * @param columns Configuração das colunas da tabela
  * @param data Dados a serem exportados
- * @param filename Nome do arquivo a ser baixado
+ * @param filename Nome do arquivo a ser baixado (sem extensão)
  */
 export function exportToExcel<T>(
-  columns: { id: string; header: string }[],
+  columns: ExportColumn[],
   data: T[],
   filename = "export"
 ): void {
-  // Cabeçalhos das colunas
-  const headers = columns.map((column) => column.header);
+  try {
+    // Create a worksheet
+    const worksheet = XLSX.utils.json_to_sheet(
+      data.map((row) => {
+        const formattedRow: Record<string, unknown> = {};
 
-  // Mapear os dados para o formato CSV
-  const csvData = data.map((row) => {
-    return columns
-      .map((column) => {
-        // Obter o valor da coluna para esta linha
-        const value = (row as never)[column.id];
+        // Format each column according to its type
+        columns.forEach((column) => {
+          const value = (row as Record<string, unknown>)[column.id];
 
-        // Tratar valores especiais
-        if (value === null || value === undefined) return "";
-
-        // Converter objetos para string JSON
-        if (typeof value === "object" && value !== null) {
-          try {
-            return JSON.stringify(value).replace(/"/g, '""'); // eslint-disable-line
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          } catch (e) {
-            return "";
+          // Skip undefined or null values
+          if (value === undefined || value === null) {
+            formattedRow[column.header] = "";
+            return;
           }
-        }
 
-        // Converter números para string
-        if (typeof value === "number") {
-          return String(value);
-        }
+          // Format based on value type
+          if (typeof value === "number") {
+            formattedRow[column.header] = value;
+          } else if (typeof value === "boolean") {
+            formattedRow[column.header] = value ? "Sim" : "Não";
+          } else if (value instanceof Date) {
+            formattedRow[column.header] = value.toLocaleDateString("pt-BR");
+          } else if (typeof value === "object") {
+            try {
+              formattedRow[column.header] = JSON.stringify(value);
+            } catch {
+              formattedRow[column.header] = "";
+            }
+          } else {
+            formattedRow[column.header] = value;
+          }
+        });
 
-        // Converter booleanos para string
-        if (typeof value === "boolean") {
-          return value ? "Sim" : "Não";
-        }
+        return formattedRow;
+      }),
+      { header: columns.map((col) => col.header) }
+    );
 
-        // Escapar aspas duplas e envolver em aspas se contiver vírgulas, quebras de linha ou aspas
-        const stringValue = String(value);
-        const escapedValue = stringValue.replace(/"/g, '""'); // eslint-disable-line
-        if (
-          escapedValue.includes(",") ||
-          escapedValue.includes("\n") ||
-          escapedValue.includes('"') // eslint-disable-line
-        ) {
-          return `"${escapedValue}"`;
-        }
-        return escapedValue;
-      })
-      .join(",");
+    // Convert to CSV string with UTF-8 BOM for Excel compatibility
+    const csvContent = `\ufeff${XLSX.utils.sheet_to_csv(worksheet)}`;
+
+    // Create a Blob from the CSV string
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8" });
+
+    // Create a download link
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `${filename}.csv`;
+    link.click();
+
+    // Clean up
+    setTimeout(() => {
+      URL.revokeObjectURL(url);
+    }, 100);
+  } catch (error) {
+    console.error("Error exporting to CSV:", error);
+    throw error;
+  }
+}
+
+/**
+ * Função auxiliar para extrair dados exportáveis da tabela TanStack
+ * @param columns Colunas da tabela
+ * @param rows Linhas da tabela
+ * @returns Objeto com colunas e dados prontos para exportação
+ */
+export function prepareTableExport<T>(
+  columns: ColumnDef<T, unknown>[],
+  rows: T[]
+): ExportData {
+  // Prepare columns for export (only visible columns)
+  const exportColumns: ExportColumn[] = columns
+    .filter((column) => column.id !== "actions") // Exclude action columns
+    .map((column) => {
+      // Get the column title
+      let header = "";
+
+      // Try to get the title from the column definition
+      if (typeof column.header === "string") {
+        header = column.header;
+      } else if (column.id) {
+        // If not a string, use the column ID with first letter capitalized
+        header = column.id.charAt(0).toUpperCase() + column.id.slice(1);
+      } else {
+        header = "Column";
+      }
+
+      return {
+        id: column.id || "",
+        header: header,
+      };
+    });
+
+  // Prepare data for export
+  const exportData: Record<string, unknown>[] = rows.map((row) => {
+    const rowData: Record<string, unknown> = {};
+
+    // For each column, get the cell value
+    exportColumns.forEach((column) => {
+      if (column.id) {
+        // Get the raw value from the row
+        const value = (row as Record<string, unknown>)[column.id];
+
+        // Store the value in the export data
+        rowData[column.id] = value;
+      }
+    });
+
+    return rowData;
   });
 
-  // Juntar cabeçalhos e dados
-  const csvContent = [headers.join(","), ...csvData].join("\n");
+  return { columns: exportColumns, data: exportData };
+}
 
-  // Criar um Blob com o conteúdo CSV
-  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+/**
+ * Função para formatar valores para exibição no arquivo CSV
+ * @param value Valor a ser formatado
+ * @returns Valor formatado para exibição
+ */
+export function formatExcelValue(value: unknown): string | number | boolean {
+  if (value === null || value === undefined) {
+    return "";
+  }
 
-  // Criar um link para download
-  const link = document.createElement("a");
-  const url = URL.createObjectURL(blob);
+  if (typeof value === "number") {
+    return value;
+  }
 
-  link.setAttribute("href", url);
-  link.setAttribute("download", `${filename}.csv`);
-  link.style.visibility = "hidden";
+  if (typeof value === "boolean") {
+    return value ? "Sim" : "Não";
+  }
 
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
+  if (value instanceof Date) {
+    return value.toLocaleDateString("pt-BR");
+  }
 
-  // Liberar o URL criado
-  setTimeout(() => {
-    URL.revokeObjectURL(url);
-  }, 100);
+  if (typeof value === "object") {
+    try {
+      return JSON.stringify(value);
+    } catch {
+      return "";
+    }
+  }
+
+  return String(value);
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -8,50 +8,43 @@ import { UserFormModal, type User } from "@/components/user-form-modal";
 import { ConfirmationModal } from "@/components/confirmation-modal";
 import { toast } from "sonner";
 import { UsersDataTable } from "./components/users-data-table";
+import { userService } from "@/lib/user-services";
 import DashboardLayout from "@/components/dashboard-layout";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function UsersPage() {
   const [isUserFormOpen, setIsUserFormOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
-  const [users, setUsers] = useState<User[]>([
-    {
-      id: "1",
-      name: "João Silva",
-      email: "joao@example.com",
-      role: "admin",
-      status: "ativo",
-    },
-    {
-      id: "2",
-      name: "Maria Santos",
-      email: "maria@example.com",
-      role: "manager",
-      status: "ativo",
-    },
-    {
-      id: "3",
-      name: "Pedro Oliveira",
-      email: "pedro@example.com",
-      role: "viewer",
-      status: "inativo",
-    },
-    {
-      id: "4",
-      name: "Ana Rodrigues",
-      email: "ana@example.com",
-      role: "admin",
-      status: "ativo",
-    },
-    {
-      id: "5",
-      name: "Carlos Ferreira",
-      email: "carlos@example.com",
-      role: "manager",
-      status: "inativo",
-    },
-  ]);
+  const [users, setUsers] = useState<User[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchUsers = async (): Promise<void> => {
+      try {
+        setIsLoading(true);
+        console.log("Fetching users...");
+
+        try {
+          // Try to get data from the API
+          const data = await userService.getUsers();
+          console.log("Users fetched successfully:", data);
+          setUsers(data);
+        } catch (apiError) {
+          console.warn("Falha na chamada da API:", apiError);
+        }
+      } catch (err) {
+        console.error("Failed to fetch users:", err);
+        setError("Falha ao carregar usuários. Usando dados locais.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchUsers();
+  }, []);
 
   const handleAddUser = (newUser: User) => {
     setUsers([...users, newUser]);
@@ -85,48 +78,42 @@ export default function UsersPage() {
     }
   };
 
-  const handleRoleChange = (userId: string, newRole: string) => {
-    setUsers(
-      users.map((user) =>
-        user.id === userId
-          ? { ...user, role: newRole as "admin" | "manager" | "viewer" }
-          : user
-      )
-    );
-  };
-
-  const handleStatusChange = (
-    userId: string,
-    newStatus: "ativo" | "inativo"
-  ) => {
-    if (userId) {
-      setUsers(
-        users.map((user) =>
-          user.id === userId ? { ...user, status: newStatus } : user
-        )
-      );
-    }
-  };
-
   return (
     <DashboardLayout>
       <Card className="bg-white h-full">
         <CardContent className="p-4 h-full">
           <div className="space-y-4">
             <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-bold">Usuários Cadastrados</h2>
+              <h2 className="text-2xl font-bold">Usuário Cadastrados</h2>
               <Button onClick={() => setIsUserFormOpen(true)}>
                 <UserPlus className="mr-2 h-4 w-4" />
                 Adicionar Usuário
               </Button>
             </div>
-            <UsersDataTable
-              data={users}
-              onEdit={handleEditUser}
-              onDelete={handleDeleteUser}
-              onRoleChange={handleRoleChange}
-              onStatusChange={handleStatusChange}
-            />
+            {isLoading && users.length === 0 ? (
+              <div className="space-y-3">
+                <Skeleton className="h-10 w-full" />
+                <Skeleton className="h-10 w-full" />
+                <Skeleton className="h-10 w-full" />
+                <Skeleton className="h-10 w-full" />
+                <Skeleton className="h-10 w-full" />
+              </div>
+            ) : error ? (
+              <div className="p-4 text-center">
+                <p className="text-amber-500">{error}</p>
+                <UsersDataTable
+                  data={users}
+                  onEdit={handleEditUser}
+                  onDelete={handleDeleteUser}
+                />
+              </div>
+            ) : (
+              <UsersDataTable
+                data={users}
+                onEdit={handleEditUser}
+                onDelete={handleDeleteUser}
+              />
+            )}
           </div>
           <UserFormModal
             isOpen={isUserFormOpen}
