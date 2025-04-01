@@ -7,7 +7,7 @@ export const fetchClient = async (
   input: string | URL | Request,
   init?: RequestInit | undefined
 ): Promise<Response> => {
-  const jwt = getCookie("access_token");
+  const jwt = getCookie("jwt");
 
   const response = await fetch(input, {
     ...init,
