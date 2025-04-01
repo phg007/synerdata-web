@@ -2,11 +2,13 @@
 
 import type React from "react";
 
-import { useState } from "react";
+import { useState, useCallback, useEffect } from "react";
 import {
   type ColumnDef,
   type ColumnFiltersState,
   type SortingState,
+  type VisibilityState,
+  type Table as TanStackTable,
   flexRender,
   getCoreRowModel,
   getFacetedRowModel,
@@ -22,7 +24,7 @@ import {
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
-  Download,
+  FileSpreadsheet,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -42,12 +44,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { DataTableViewOptions } from "@/components/ui/data-table-view-options";
-import { DataTableFacetedFilter } from "@/components/ui/data-table-faceted-filter";
-import { exportToExcel } from "@/lib/export-to-excel";
+import { exportToExcel, prepareTableExport } from "@/lib/export-to-excel";
 import { toast } from "sonner";
 
-interface DataTableProps<TData, TValue> {
+export interface DataTableFilterOption {
+  column: string;
+  title: string;
+}
+
+export interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   searchColumn?: string;
@@ -55,22 +60,14 @@ interface DataTableProps<TData, TValue> {
   minWidth?: string;
   facetedFilterColumn?: string;
   facetedFilterTitle?: string;
-  facetedFilterOptions?: {
-    label: string;
-    value: string;
-    icon?: React.ComponentType<{ className?: string }>;
-  }[];
-  additionalFacetedFilters?: {
-    column: string;
-    title: string;
-    options: {
-      label: string;
-      value: string;
-      icon?: React.ComponentType<{ className?: string }>;
-    }[];
-  }[];
+  additionalFacetedFilters?: DataTableFilterOption[];
   exportFilename?: string;
   globalSearch?: boolean;
+  DataTableViewOptions: React.ComponentType<{ table: TanStackTable<TData> }>;
+  DataTableFacetedFilter: React.ComponentType<{
+    column: ReturnType<TanStackTable<TData>["getColumn"]> | undefined;
+    title: string;
+  }>;
 }
 
 export function DataTable<TData, TValue>({
@@ -81,17 +78,19 @@ export function DataTable<TData, TValue>({
   minWidth,
   facetedFilterColumn,
   facetedFilterTitle,
-  facetedFilterOptions,
   additionalFacetedFilters,
   exportFilename = "dados-exportados",
   globalSearch,
+  DataTableViewOptions,
+  DataTableFacetedFilter,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [columnVisibility, setColumnVisibility] = useState({});
-  const [globalFilter, setGlobalFilter] = useState("");
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [globalFilter, setGlobalFilter] = useState<string>("");
+  const [isExporting, setIsExporting] = useState<boolean>(false);
 
-  const table = useReactTable({
+  const table = useReactTable<TData>({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
@@ -118,80 +117,53 @@ export function DataTable<TData, TValue>({
     },
   });
 
-  const handleExportToExcel = () => {
+  const handleExportToExcel = useCallback(async (): Promise<void> => {
     try {
-      // Preparar colunas para exportação (apenas colunas visíveis)
-      const exportColumns = table
+      setIsExporting(true);
+
+      // Get visible columns and filtered rows
+      const visibleColumns = table
         .getAllColumns()
-        .filter((column) => column.getIsVisible())
-        .map((column) => {
-          // Obter o título da coluna
-          let header = "";
+        .filter((column) => column.getIsVisible() && column.id !== "actions");
 
-          // Tentar obter o título da definição da coluna
-          if (typeof column.columnDef.header === "string") {
-            header = column.columnDef.header;
-          } else if (column.columnDef.header) {
-            // Se não for uma string, usar o ID da coluna com primeira letra maiúscula
-            header = column.id.charAt(0).toUpperCase() + column.id.slice(1);
-          } else {
-            header = column.id.charAt(0).toUpperCase() + column.id.slice(1);
-          }
+      const filteredRows = table.getFilteredRowModel().rows;
 
-          return {
-            id: column.id,
-            header: header,
-          };
-        });
+      // Prepare data for export
+      const { columns: exportColumns, data: exportData } = prepareTableExport(
+        visibleColumns.map((col) => col.columnDef),
+        filteredRows.map((row) => row.original)
+      );
 
-      // Preparar dados para exportação (apenas dados filtrados)
-      const exportData = table.getFilteredRowModel().rows.map((row) => {
-        const rowData: Record<string, unknown> = {};
-
-        // Para cada coluna visível, obter o valor da célula
-        exportColumns.forEach((column) => {
-          const cell = row
-            .getAllCells()
-            .find((cell) => cell.column.id === column.id);
-          if (cell) {
-            // Obter o valor bruto da célula
-            rowData[column.id] = row.getValue(column.id);
-
-            // Para colunas com formatação especial (como moeda), tentar obter o valor formatado
-            if (
-              cell.column.columnDef.cell &&
-              typeof cell.column.columnDef.cell !== "string"
-            ) {
-              try {
-                const renderedValue = cell.renderValue();
-                if (
-                  renderedValue !== null &&
-                  renderedValue !== undefined &&
-                  typeof renderedValue !== "object"
-                ) {
-                  rowData[column.id] = renderedValue;
-                }
-              } catch (e) {
-                console.log(e);
-                // Se não conseguir obter o valor renderizado, manter o valor bruto
-              }
-            }
-          } else {
-            rowData[column.id] = "";
-          }
-        });
-
-        return rowData;
-      });
-
-      // Exportar para Excel
+      // Export to Excel
       exportToExcel(exportColumns, exportData, exportFilename);
       toast.success("Dados exportados com sucesso!");
     } catch (error) {
       console.error("Erro ao exportar dados:", error);
       toast.error("Erro ao exportar dados. Tente novamente.");
+    } finally {
+      setIsExporting(false);
     }
-  };
+  }, [table, exportFilename]);
+
+  useEffect(() => {
+    const style = document.createElement("style");
+    style.textContent = `
+    .overflow-x-auto::-webkit-scrollbar {
+      height: 10px;
+    }
+    .overflow-x-auto::-webkit-scrollbar-thumb {
+      background-color: rgba(0, 0, 0, 0.2);
+      border-radius: 5px;
+    }
+    .overflow-x-auto::-webkit-scrollbar-track {
+      background-color: rgba(0, 0, 0, 0.1);
+    }
+  `;
+    document.head.appendChild(style);
+    return () => {
+      document.head.removeChild(style);
+    };
+  }, []);
 
   return (
     <div className="space-y-4">
@@ -216,28 +188,24 @@ export function DataTable<TData, TValue>({
           {globalSearch && (
             <Input
               placeholder={searchPlaceholder || "Buscar em todas as colunas..."}
-              value={(table.getState().globalFilter as string) ?? ""}
+              value={globalFilter ?? ""}
               onChange={(event) => {
                 table.setGlobalFilter(event.target.value);
               }}
               className="h-8 w-[150px] lg:w-[250px]"
             />
           )}
-          {facetedFilterColumn &&
-            facetedFilterTitle &&
-            facetedFilterOptions && (
-              <DataTableFacetedFilter
-                column={table.getColumn(facetedFilterColumn)}
-                title={facetedFilterTitle}
-                options={facetedFilterOptions}
-              />
-            )}
+          {facetedFilterColumn && facetedFilterTitle && (
+            <DataTableFacetedFilter
+              column={table.getColumn(facetedFilterColumn)}
+              title={facetedFilterTitle}
+            />
+          )}
           {additionalFacetedFilters?.map((filter) => (
             <DataTableFacetedFilter
               key={filter.column}
               column={table.getColumn(filter.column)}
               title={filter.title}
-              options={filter.options}
             />
           ))}
         </div>
@@ -247,9 +215,10 @@ export function DataTable<TData, TValue>({
             size="sm"
             className="h-8 gap-1"
             onClick={handleExportToExcel}
+            disabled={isExporting}
           >
-            <Download className="h-4 w-4" />
-            Exportar Excel
+            <FileSpreadsheet className="h-4 w-4" />
+            {isExporting ? "Exportando..." : "Exportar Excel"}
           </Button>
           <DataTableViewOptions table={table} />
         </div>
@@ -261,14 +230,7 @@ export function DataTable<TData, TValue>({
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead
-                      key={header.id}
-                      className={
-                        header.column.columnDef.meta?.isSticky
-                          ? "sticky left-0 z-10 bg-background"
-                          : ""
-                      }
-                    >
+                    <TableHead key={header.id}>
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -289,14 +251,7 @@ export function DataTable<TData, TValue>({
                   data-state={row.getIsSelected() && "selected"}
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell
-                      key={cell.id}
-                      className={
-                        cell.column.columnDef.meta?.isSticky
-                          ? "sticky left-0 z-10 bg-white"
-                          : ""
-                      }
-                    >
+                    <TableCell key={cell.id}>
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()
@@ -331,7 +286,9 @@ export function DataTable<TData, TValue>({
             }}
           >
             <SelectTrigger className="h-8 w-[70px]">
-              <SelectValue placeholder={table.getState().pagination.pageSize} />
+              <SelectValue
+                placeholder={table.getState().pagination.pageSize.toString()}
+              />
             </SelectTrigger>
             <SelectContent side="top">
               {[10, 20, 30, 40, 50].map((pageSize) => (
