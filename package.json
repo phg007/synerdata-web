@@ -6,7 +6,9 @@
     "react-is": "^19.0.0-rc-69d4b800-20241021"
   },
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "docker compose --profile dev up",
+    "dev:build": "docker compose --profile dev up --build",
+    "start:dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -47,6 +49,7 @@
     "tailwind-merge": "^3.0.1",
     "tailwindcss-animate": "^1.0.7",
     "uploadthing": "^7.5.2",
+    "xlsx": "^0.18.5",
     "zod": "^3.24.2"
   },
   "devDependencies": {
