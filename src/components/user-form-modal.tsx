@@ -3,7 +3,6 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -30,16 +29,15 @@ import {
 } from "@/components/ui/form";
 import { useEffect, useId } from "react";
 
+// Atualizar o schema para remover a validação de senha
 const userSchema = z.object({
   id: z.string().optional(),
-  name: z.string().min(3, { message: "Nome deve ter pelo menos 3 caracteres" }),
+  nome: z.string().min(3, { message: "Nome deve ter pelo menos 3 caracteres" }),
   email: z.string().email({ message: "Email inválido" }),
-  role: z.enum(["admin", "manager", "viewer"], {
+  funcao: z.enum(["admin", "manager", "viewer"], {
     required_error: "Selecione uma função",
   }),
-  status: z.enum(["ativo", "inativo"], {
-    required_error: "Selecione um status",
-  }),
+  status: z.enum(["ativo", "inativo"]).optional(),
 });
 
 export type User = z.infer<typeof userSchema>;
@@ -59,13 +57,13 @@ export function UserFormModal({
 }: UserFormModalProps) {
   const formId = useId();
 
+  // Remover o campo senha do defaultValues
   const form = useForm<User>({
     resolver: zodResolver(userSchema),
     defaultValues: initialData || {
-      id: "",
-      name: "",
+      nome: "",
       email: "",
-      role: "viewer",
+      funcao: "viewer",
       status: "ativo",
     },
   });
@@ -85,11 +83,7 @@ export function UserFormModal({
       ...data,
       id: initialData?.id || crypto.randomUUID(),
     });
-    toast.success(
-      initialData
-        ? "Usuário atualizado com sucesso"
-        : "Usuário criado com sucesso"
-    );
+ 
     onClose();
     form.reset();
   };
@@ -116,7 +110,7 @@ export function UserFormModal({
           >
             <FormField
               control={form.control}
-              name="name"
+              name="nome"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Nome do usuário</FormLabel>
@@ -142,7 +136,7 @@ export function UserFormModal({
             />
             <FormField
               control={form.control}
-              name="role"
+              name="funcao"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Função</FormLabel>

@@ -7,7 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { UserFormModal, type User } from "@/components/user-form-modal";
 import { ConfirmationModal } from "@/components/confirmation-modal";
 import { toast } from "sonner";
-import { UsersDataTable } from "./components/users-data-table";
+import { UsersDataTable } from "./_components/users-data-table";
 import { userService } from "@/lib/user-services";
 import DashboardLayout from "@/components/dashboard-layout";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -46,8 +46,32 @@ export default function UsersPage() {
     fetchUsers();
   }, []);
 
-  const handleAddUser = (newUser: User) => {
-    setUsers([...users, newUser]);
+  const handleAddUser = async (newUser: User): Promise<void> => {
+    try {
+      setIsLoading(true);
+
+      const userData = {
+        nome: newUser.nome,
+        email: newUser.email,
+        funcao: newUser.funcao,
+
+        senha: "Administrador",
+      };
+
+      const responseUser = await userService.createUser(userData);
+      console.log(responseUser);
+
+      if (!responseUser.success) {
+        toast.error(responseUser.message);
+        return;
+      }
+      toast.success(responseUser.message);
+    } catch (error) {
+      toast.error("Erro ao criar usuário, falha ao conectar na Api");
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleEditUser = (user: User) => {
@@ -131,7 +155,7 @@ export default function UsersPage() {
             onClose={() => setIsDeleteModalOpen(false)}
             onConfirm={confirmDeleteUser}
             title="Confirmar Exclusão"
-            message={`Tem certeza que deseja excluir o usuário ${selectedUser?.name}?`}
+            message={`Tem certeza que deseja excluir o usuário ${selectedUser?.nome}?`}
           />
         </CardContent>
       </Card>

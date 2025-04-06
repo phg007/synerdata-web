@@ -25,7 +25,7 @@ const handler = NextAuth({
           });
 
           const response = await fetch(
-            "http://host.docker.internal:3001/api/auth/sign-in",
+            "http://host.docker.internal:3001/api/v1/auth/sign-in",
             {
               method: "POST",
               body: bodyData,
@@ -35,7 +35,8 @@ const handler = NextAuth({
           );
 
           if (response.status !== 200) return null;
-          const authData = await response.json();
+          
+            const authData = await response.json();
 
           if (!authData.data.access_token) return null;
 
