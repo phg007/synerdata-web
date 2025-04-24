@@ -1,4 +1,5 @@
 import { getCookie } from "cookies-next";
+// import { getUserIdFromToken } from "@/lib/auth";
 
 const API_BASE_URL = "http://localhost:3001/api/v1";
 
@@ -21,8 +22,20 @@ interface ApiResponse {
 interface UserService {
   getUsers(): Promise<User[]>;
   createUser(userData: Omit<User, "id" | "status">): Promise<ApiResponse>;
+  updateUser(userData: Partial<User> & { id: string }): Promise<User>;
 }
+async function getUserId(): Promise<string | null> {
+  try {
+    const res = await fetch("/api/me");
+    if (!res.ok) return null;
 
+    const data = await res.json();
+
+    return data.sub || null;
+  } catch {
+    return null;
+  }
+}
 // API service
 export const userService: UserService = {
   getUsers: async (): Promise<User[]> => {
@@ -31,14 +44,15 @@ export const userService: UserService = {
       // Get auth token
 
       const token = getCookie("jwt");
-      console.log(`Token chamdo ${token}`);
+
       if (!token) {
         console.error("API Service: No auth token found");
         throw new Error("Authentication required");
       }
 
       console.log("API Service: Auth token present, making API request");
-
+      const userId = await getUserId();
+      console.log(`userId ${userId}`);
       try {
         const response = await fetch(`${API_BASE_URL}/usuarios`, {
           method: "GET",
@@ -88,5 +102,53 @@ export const userService: UserService = {
     const data = await response.json();
 
     return data;
+  },
+
+  updateUser: async (
+    userData: Partial<User> & { id: string }
+  ): Promise<User> => {
+    console.log("API Service: Updating user:", userData);
+    try {
+      const token = getCookie("jwt");
+      if (!token) {
+        console.error("API Service: No auth token found");
+        throw new Error("Authentication required");
+      }
+
+      const apiData = {
+        nome: userData.nome,
+        email: userData.email,
+        funcao: userData.funcao,
+      };
+
+      try {
+        const response = await fetch(`${API_BASE_URL}/users/${userData.id}`, {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(apiData),
+          credentials: "include",
+        });
+
+        if (!response.ok) {
+          throw new Error(
+            `API error: ${response.status} ${response.statusText}`
+          );
+        }
+
+        const data = (await response.json()) as User;
+        console.log("API Service: User updated successfully via API");
+        return data;
+      } catch (fetchError) {
+        console.warn("API Service: Fetch failed, using mock data:", fetchError);
+
+        throw new Error("Failed to update user");
+      }
+    } catch (error) {
+      console.error("API Service: Error updating user:", error);
+      throw new Error("Failed to update user");
+    }
   },
 };
