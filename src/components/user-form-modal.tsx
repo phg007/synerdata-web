@@ -27,9 +27,9 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { useEffect, useId } from "react";
+import { useEffect } from "react";
 
-// Atualizar o schema para remover a validação de senha
+// Schema com status obrigatório
 const userSchema = z.object({
   id: z.string().optional(),
   nome: z.string().min(3, { message: "Nome deve ter pelo menos 3 caracteres" }),
@@ -55,9 +55,6 @@ export function UserFormModal({
   onAddUser,
   initialData,
 }: UserFormModalProps) {
-  const formId = useId();
-
-  // Remover o campo senha do defaultValues
   const form = useForm<User>({
     resolver: zodResolver(userSchema),
     defaultValues: initialData || {
@@ -70,20 +67,21 @@ export function UserFormModal({
 
   useEffect(() => {
     if (initialData) {
-      form.reset(initialData);
+      console.log("🟡 Dados de edição recebidos:", initialData);
+      form.reset({
+        ...initialData,
+        id: String(initialData.id),
+        status: initialData.status || "ativo",
+      });
     }
-
-    return () => {
-      // Cleanup function
-    };
   }, [initialData, form]);
 
   const onSubmit = (data: User) => {
+    console.log("🚨 SUBMIT acionado:", data);
     onAddUser({
       ...data,
       id: initialData?.id || crypto.randomUUID(),
     });
-
     onClose();
     form.reset();
   };
@@ -104,8 +102,10 @@ export function UserFormModal({
         </DialogHeader>
         <Form {...form}>
           <form
-            id={formId}
-            onSubmit={form.handleSubmit(onSubmit)}
+            id="user-form"
+            onSubmit={form.handleSubmit(onSubmit, (errors) =>
+              console.warn("❌ Erros de validação:", errors)
+            )}
             className="space-y-4"
           >
             <FormField
@@ -115,7 +115,7 @@ export function UserFormModal({
                 <FormItem>
                   <FormLabel>Nome do usuário</FormLabel>
                   <FormControl>
-                    <Input {...field} value={field.value || ""} />
+                    <Input {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -128,7 +128,7 @@ export function UserFormModal({
                 <FormItem>
                   <FormLabel>E-mail</FormLabel>
                   <FormControl>
-                    <Input type="email" {...field} value={field.value || ""} />
+                    <Input type="email" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -189,7 +189,12 @@ export function UserFormModal({
                 </FormItem>
               )}
             />
-            <Button type="submit">{submitButtonText}</Button>
+            <Button
+              type="submit"
+              onClick={() => console.log("🟢 Botão clicado")}
+            >
+              {submitButtonText}
+            </Button>
           </form>
         </Form>
       </DialogContent>

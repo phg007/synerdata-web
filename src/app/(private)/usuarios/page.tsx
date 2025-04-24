@@ -5,7 +5,6 @@ import { UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { UserFormModal, type User } from "@/components/user-form-modal";
-import { ConfirmationModal } from "@/components/confirmation-modal";
 import { toast } from "sonner";
 import { UsersDataTable } from "./_components/users-data-table";
 import { userService } from "@/lib/user-services";
@@ -15,7 +14,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 export default function UsersPage() {
   const [isUserFormOpen, setIsUserFormOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [users, setUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -25,19 +23,11 @@ export default function UsersPage() {
     const fetchUsers = async (): Promise<void> => {
       try {
         setIsLoading(true);
-        console.log("Fetching users...");
-
-        try {
-          // Try to get data from the API
-          const data = await userService.getUsers();
-          console.log("Users fetched successfully:", data);
-          setUsers(data);
-        } catch (apiError) {
-          console.warn("Falha na chamada da API:", apiError);
-        }
+        const data = await userService.getUsers();
+        setUsers(data);
       } catch (err) {
         console.error("Failed to fetch users:", err);
-        setError("Falha ao carregar usuários. Usando dados locais.");
+        setError("Falha ao carregar usuários.");
       } finally {
         setIsLoading(false);
       }
@@ -54,51 +44,43 @@ export default function UsersPage() {
         nome: newUser.nome,
         email: newUser.email,
         funcao: newUser.funcao,
-
         senha: "Administrador",
       };
 
       const responseUser = await userService.createUser(userData);
-      console.log(responseUser);
-
       if (!responseUser.success) {
         toast.error(responseUser.message);
         return;
       }
+
       toast.success(responseUser.message);
     } catch (error) {
-      toast.error("Erro ao criar usuário, falha ao conectar na Api");
       console.log(error);
+      toast.error("Erro ao criar usuário.");
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleEditUser = (user: User) => {
-    setSelectedUser(user);
-    setIsEditModalOpen(true);
-  };
+  const handleUpdateUser = async (updatedUser: User): Promise<void> => {
+    try {
+      setIsLoading(true);
+      await userService.updateUser({
+        ...updatedUser,
+        id: String(updatedUser.id),
+      });
 
-  const handleUpdateUser = (updatedUser: User) => {
-    setUsers(
-      users.map((user) => (user.id === updatedUser.id ? updatedUser : user))
-    );
-    setIsEditModalOpen(false);
-    setSelectedUser(null);
-    toast.success("Usuário atualizado com sucesso");
-  };
-
-  const handleDeleteUser = (user: User) => {
-    setSelectedUser(user);
-    setIsDeleteModalOpen(true);
-  };
-
-  const confirmDeleteUser = () => {
-    if (selectedUser) {
-      setUsers(users.filter((user) => user.id !== selectedUser.id));
-      setIsDeleteModalOpen(false);
+      setUsers(
+        users.map((user) => (user.id === updatedUser.id ? updatedUser : user))
+      );
+      setIsEditModalOpen(false);
       setSelectedUser(null);
-      toast.success("Usuário excluído com sucesso");
+      toast.success("Usuário atualizado com sucesso");
+    } catch (err) {
+      console.error("Erro ao atualizar usuário:", err);
+      toast.error("Erro ao atualizar usuário.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -108,7 +90,7 @@ export default function UsersPage() {
         <CardContent className="p-4 h-full">
           <div className="space-y-4">
             <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-bold">Usuário Cadastrados</h2>
+              <h2 className="text-2xl font-bold">Usuários Cadastrados</h2>
               <Button onClick={() => setIsUserFormOpen(true)}>
                 <UserPlus className="mr-2 h-4 w-4" />
                 Adicionar Usuário
@@ -127,15 +109,19 @@ export default function UsersPage() {
                 <p className="text-amber-500">{error}</p>
                 <UsersDataTable
                   data={users}
-                  onEdit={handleEditUser}
-                  onDelete={handleDeleteUser}
+                  onEdit={(user) => {
+                    setSelectedUser(user);
+                    setIsEditModalOpen(true);
+                  }}
                 />
               </div>
             ) : (
               <UsersDataTable
                 data={users}
-                onEdit={handleEditUser}
-                onDelete={handleDeleteUser}
+                onEdit={(user) => {
+                  setSelectedUser(user);
+                  setIsEditModalOpen(true);
+                }}
               />
             )}
           </div>
@@ -149,13 +135,6 @@ export default function UsersPage() {
             onClose={() => setIsEditModalOpen(false)}
             onAddUser={handleUpdateUser}
             initialData={selectedUser}
-          />
-          <ConfirmationModal
-            isOpen={isDeleteModalOpen}
-            onClose={() => setIsDeleteModalOpen(false)}
-            onConfirm={confirmDeleteUser}
-            title="Confirmar Exclusão"
-            message={`Tem certeza que deseja excluir o usuário ${selectedUser?.nome}?`}
           />
         </CardContent>
       </Card>

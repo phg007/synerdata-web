@@ -12,13 +12,11 @@ import type { User } from "@/components/user-form-modal";
 interface UsersDataTableProps {
   data: User[];
   onEdit: (user: User) => void;
-  onDelete: (user: User) => void;
 }
 
 export function UsersDataTable({
   data,
   onEdit,
-  onDelete,
 }: UsersDataTableProps): React.ReactElement {
   const columns: ColumnDef<User>[] = [
     {
@@ -42,7 +40,6 @@ export function UsersDataTable({
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Função" />
       ),
-
       enableSorting: true,
       enableHiding: true,
       filterFn: (row, id, filterValue) => {
@@ -57,7 +54,6 @@ export function UsersDataTable({
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Status" />
       ),
-
       enableSorting: true,
       enableHiding: true,
       filterFn: (row, id, filterValue) => {
@@ -71,12 +67,7 @@ export function UsersDataTable({
       id: "actions",
       cell: ({ row }) => {
         const user = row.original;
-        return (
-          <RowActions
-            onEdit={() => onEdit(user)}
-            onDelete={() => onDelete(user)}
-          />
-        );
+        return <RowActions onEdit={() => onEdit(user)} />;
       },
       enableHiding: false,
     },
