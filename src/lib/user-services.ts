@@ -23,13 +23,13 @@ interface UserService {
   createUser(userData: Omit<User, "id" | "status">): Promise<ApiResponse>;
   updateUser(userData: Partial<User> & { id: string }): Promise<User>;
 }
+
 async function getUserId(): Promise<string | null> {
   try {
     const res = await fetch("/api/me");
     if (!res.ok) return null;
 
     const data = await res.json();
-
     return data.sub || null;
   } catch {
     return null;
@@ -40,7 +40,7 @@ export const userService: UserService = {
   getUsers: async (): Promise<User[]> => {
     try {
       const token = getCookie("jwt");
-      console.log(`Token chamdo ${token}`);
+
       if (!token) {
         console.error("API Service: No auth token found");
         throw new Error("Authentication required");
@@ -76,7 +76,6 @@ export const userService: UserService = {
 
   createUser: async (userData: Omit<User, "id">): Promise<ApiResponse> => {
     console.log("API Service: Creating user:", userData);
-    // try {
     const token = getCookie("jwt");
     if (!token) {
       console.error("API Service: No auth token found");
@@ -104,6 +103,7 @@ export const userService: UserService = {
     try {
       const token = getCookie("jwt");
       const atualizadoPor = await getUserId();
+
       if (!token) {
         console.error("API Service: No auth token found");
         throw new Error("Authentication required");
@@ -144,7 +144,6 @@ export const userService: UserService = {
         return data;
       } catch (fetchError) {
         console.warn("API Service: Fetch failed, using mock data:", fetchError);
-
         throw new Error("Failed to update user");
       }
     } catch (error) {
