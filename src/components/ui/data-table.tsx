@@ -2,7 +2,7 @@
 
 import type React from "react";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import {
   type ColumnDef,
   type ColumnFiltersState,
@@ -24,19 +24,11 @@ import {
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
-  FileSpreadsheet,
+  FileText,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import {
   Select,
   SelectContent,
@@ -90,6 +82,16 @@ export function DataTable<TData, TValue>({
   const [globalFilter, setGlobalFilter] = useState<string>("");
   const [isExporting, setIsExporting] = useState<boolean>(false);
 
+  // Use a ref to track component mount state
+  const isMounted = useRef(true);
+
+  // Set isMounted to false when component unmounts
+  useEffect(() => {
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
+
   const table = useReactTable<TData>({
     data,
     columns,
@@ -117,7 +119,7 @@ export function DataTable<TData, TValue>({
     },
   });
 
-  const handleExportToExcel = useCallback(async (): Promise<void> => {
+  const handleExportToCsv = useCallback(async (): Promise<void> => {
     try {
       setIsExporting(true);
 
@@ -134,14 +136,25 @@ export function DataTable<TData, TValue>({
         filteredRows.map((row) => row.original)
       );
 
-      // Export to Excel
+      // Export to CSV
       exportToExcel(exportColumns, exportData, exportFilename);
-      toast.success("Dados exportados com sucesso!");
+
+      // Only show toast if component is still mounted
+      if (isMounted.current) {
+        toast.success("Dados exportados com sucesso!");
+      }
     } catch (error) {
       console.error("Erro ao exportar dados:", error);
-      toast.error("Erro ao exportar dados. Tente novamente.");
+
+      // Only show toast if component is still mounted
+      if (isMounted.current) {
+        toast.error("Erro ao exportar dados. Tente novamente.");
+      }
     } finally {
-      setIsExporting(false);
+      // Only update state if component is still mounted
+      if (isMounted.current) {
+        setIsExporting(false);
+      }
     }
   }, [table, exportFilename]);
 
@@ -214,64 +227,70 @@ export function DataTable<TData, TValue>({
             variant="outline"
             size="sm"
             className="h-8 gap-1"
-            onClick={handleExportToExcel}
+            onClick={handleExportToCsv}
             disabled={isExporting}
           >
-            <FileSpreadsheet className="h-4 w-4" />
-            {isExporting ? "Exportando..." : "Exportar Excel"}
+            <FileText className="h-4 w-4" />
+            {isExporting ? "Exportando..." : "Exportar CSV"}
           </Button>
           <DataTableViewOptions table={table} />
         </div>
       </div>
-      <div className="rounded-md border overflow-x-auto">
-        <Table style={minWidth ? { minWidth } : undefined}>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
+      <div className="rounded-md border">
+        <div className="relative">
+          <div className="max-h-[calc(100vh-400px)] overflow-auto">
+            <table
+              className="w-full table-auto"
+              style={minWidth ? { minWidth } : undefined}
+            >
+              <thead className="bg-white sticky top-0 z-10">
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <tr key={headerGroup.id}>
+                    {headerGroup.headers.map((header) => (
+                      <th
+                        key={header.id}
+                        className="px-4 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider border-b"
+                      >
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
+                      </th>
+                    ))}
+                  </tr>
+                ))}
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {table.getRowModel().rows?.length ? (
+                  table.getRowModel().rows.map((row) => (
+                    <tr
+                      key={row.id}
+                      data-state={row.getIsSelected() && "selected"}
+                      className="hover:bg-gray-50"
+                    >
+                      {row.getVisibleCells().map((cell) => (
+                        <td key={cell.id} className="px-4 py-3 text-sm">
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
                           )}
-                    </TableHead>
-                  );
-                })}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  Nenhum resultado encontrado.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+                        </td>
+                      ))}
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={columns.length} className="h-24 text-center">
+                      Nenhum resultado encontrado.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
       <div className="flex items-center justify-between space-x-2 py-4">
         <div className="flex items-center space-x-2">

@@ -1,13 +1,14 @@
 "use client";
 
-import { useMemo } from "react";
+import type React from "react";
+
 import type { ColumnDef } from "@tanstack/react-table";
 import { DataTable } from "@/components/ui/data-table";
 import { DataTableColumnHeader } from "./data-table-column-header";
+import { DataTableViewOptions } from "./data-table-view-options";
+import { DataTableFacetedFilter } from "./data-table-faceted-filter";
 import { RowActions } from "./row-actions";
 import type { Employee } from "@/components/employee-form-modal";
-import { format } from "date-fns";
-import { toZonedTime } from "date-fns-tz";
 
 interface EmployeesDataTableProps {
   data: Employee[];
@@ -19,29 +20,7 @@ export function EmployeesDataTable({
   data,
   onEdit,
   onDelete,
-}: EmployeesDataTableProps) {
-  // Extract unique departments and contract types for faceted filters
-  const departments = useMemo(() => {
-    const uniqueDepartments = new Set<string>();
-    data.forEach((employee) => {
-      if (employee.department) {
-        uniqueDepartments.add(employee.department);
-      }
-    });
-    return Array.from(uniqueDepartments).map((dept) => ({
-      label: dept,
-      value: dept,
-    }));
-  }, [data]);
-
-  const contractTypes = useMemo(
-    () => [
-      { label: "CLT", value: "CLT" },
-      { label: "PJ", value: "PJ" },
-    ],
-    []
-  );
-
+}: EmployeesDataTableProps): React.ReactElement {
   const columns: ColumnDef<Employee>[] = [
     {
       accessorKey: "fullName",
@@ -70,10 +49,10 @@ export function EmployeesDataTable({
 
         // Format date as DD/MM/YYYY
         try {
-          const date = toZonedTime(new Date(birthDate), "America/Sao_Paulo");
-          return format(date, "dd/MM/yyyy");
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          const date = new Date(birthDate);
+          return date.toLocaleDateString("pt-BR");
         } catch (e) {
+          console.log(e);
           return birthDate;
         }
       },
@@ -175,15 +154,15 @@ export function EmployeesDataTable({
       minWidth="1200px"
       facetedFilterColumn="department"
       facetedFilterTitle="Setor"
-      facetedFilterOptions={departments}
       additionalFacetedFilters={[
         {
           column: "contractType",
           title: "Tipo de Contrato",
-          options: contractTypes,
         },
       ]}
       exportFilename="funcionarios-synerdata"
+      DataTableViewOptions={DataTableViewOptions}
+      DataTableFacetedFilter={DataTableFacetedFilter}
     />
   );
 }

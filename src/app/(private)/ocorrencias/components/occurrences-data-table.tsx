@@ -1,7 +1,11 @@
 "use client";
 import type { ColumnDef } from "@tanstack/react-table";
+import type React from "react";
+
 import { DataTable } from "@/components/ui/data-table";
 import { DataTableColumnHeader } from "./data-table-column-header";
+import { DataTableViewOptions } from "./data-table-view-options";
+import { DataTableFacetedFilter } from "./data-table-faceted-filter";
 import { RowActions } from "./row-actions";
 import type { Occurrence } from "@/components/occurrence-form-modal";
 import type { Employee } from "@/components/employee-form-modal";
@@ -18,7 +22,7 @@ export function OccurrencesDataTable({
   employees,
   onEdit,
   onDelete,
-}: OccurrencesDataTableProps) {
+}: OccurrencesDataTableProps): React.ReactElement {
   const columns: ColumnDef<Occurrence>[] = [
     {
       accessorKey: "type",
@@ -86,7 +90,21 @@ export function OccurrencesDataTable({
       enableHiding: true,
       filterFn: (row, id, filterValue) => {
         const occurrence = row.original;
-        const date = occurrence.date || occurrence.startDate;
+
+        // Usar type guard para verificar se a propriedade existe no objeto
+        const getDateValue = (obj: Occurrence): string | undefined => {
+          if ("date" in obj && obj.date) {
+            return obj.date;
+          } else if ("startDate" in obj && obj.startDate) {
+            return obj.startDate;
+          }
+          return undefined;
+        };
+
+        const date = getDateValue(occurrence);
+
+        if (!date) return false;
+
         return Array.isArray(filterValue)
           ? filterValue.includes(date)
           : date === filterValue;
@@ -233,54 +251,6 @@ export function OccurrencesDataTable({
     },
   ];
 
-  // Expanded faceted filter options for all columns
-  const typeFacetedFilterOptions = [
-    { label: "Falta", value: "falta" },
-    { label: "Atestado", value: "atestado" },
-    { label: "Promoção", value: "promocao" },
-    { label: "Demissão", value: "demissao" },
-    { label: "Férias", value: "ferias" },
-    { label: "Análise de CPF", value: "analiseCPF" },
-    { label: "Acidente", value: "acidente" },
-    { label: "Atualização de Projeto", value: "atualizacaoProjeto" },
-    { label: "Advertência", value: "advertencia" },
-    { label: "Ação Trabalhista", value: "acaoTrabalhista" },
-    { label: "EPI", value: "epi" },
-  ];
-
-  // Create employee filter options from the employees data
-  const employeeFacetedFilterOptions = employees.map((employee) => ({
-    label: employee.fullName,
-    value: employee.id,
-  }));
-
-  // Extract unique dates from occurrences for date filtering
-  const getUniqueDates = () => {
-    const dates = new Set<string>();
-
-    data.forEach((occurrence) => {
-      if ("date" in occurrence && occurrence.date) {
-        dates.add(occurrence.date);
-      }
-      if ("startDate" in occurrence && occurrence.startDate) {
-        dates.add(occurrence.startDate);
-      }
-    });
-
-    return Array.from(dates).map((date) => ({
-      label: date,
-      value: date,
-    }));
-  };
-
-  const dateFacetedFilterOptions = getUniqueDates();
-
-  // Add a default option if no dates are found
-  const dateOptions =
-    dateFacetedFilterOptions.length > 0
-      ? dateFacetedFilterOptions
-      : [{ label: "Sem datas disponíveis", value: "" }];
-
   return (
     <DataTable
       columns={columns}
@@ -289,21 +259,20 @@ export function OccurrencesDataTable({
       globalSearch={true}
       facetedFilterColumn="type"
       facetedFilterTitle="Tipo de Ocorrência"
-      facetedFilterOptions={typeFacetedFilterOptions}
       additionalFacetedFilters={[
         {
           column: "employeeId",
           title: "Funcionário",
-          options: employeeFacetedFilterOptions,
         },
         {
           column: "date",
           title: "Data",
-          options: dateOptions,
         },
       ]}
       minWidth="1800px"
       exportFilename="ocorrencias-synerdata"
+      DataTableViewOptions={DataTableViewOptions}
+      DataTableFacetedFilter={DataTableFacetedFilter}
     />
   );
 }
