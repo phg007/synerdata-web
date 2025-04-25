@@ -1,7 +1,11 @@
 "use client";
 import type { ColumnDef } from "@tanstack/react-table";
+import type React from "react";
+
 import { DataTable } from "@/components/ui/data-table";
 import { DataTableColumnHeader } from "./data-table-column-header";
+import { DataTableViewOptions } from "./data-table-view-options";
+import { DataTableFacetedFilter } from "./data-table-faceted-filter";
 import { RowActions } from "./row-actions";
 import type { Company } from "@/components/company-form-modal";
 
@@ -15,7 +19,7 @@ export function CompaniesDataTable({
   data,
   onEdit,
   onDelete,
-}: CompaniesDataTableProps) {
+}: CompaniesDataTableProps): React.ReactElement {
   const columns: ColumnDef<Company>[] = [
     {
       accessorKey: "fantasyName",
@@ -93,21 +97,6 @@ export function CompaniesDataTable({
     },
   ];
 
-  const segmentFacetedFilterOptions = [
-    {
-      label: "Desenvolvimento de Software",
-      value: "Desenvolvimento de Software",
-    },
-    { label: "Energia Solar", value: "Energia Solar" },
-    { label: "Alimentos Orgânicos", value: "Alimentos Orgânicos" },
-  ];
-
-  const taxRegimeFacetedFilterOptions = [
-    { label: "Simples Nacional", value: "simples" },
-    { label: "Lucro Presumido", value: "lucro_presumido" },
-    { label: "Lucro Real", value: "lucro_real" },
-  ];
-
   return (
     <DataTable
       columns={columns}
@@ -116,15 +105,15 @@ export function CompaniesDataTable({
       globalSearch={true}
       facetedFilterColumn="segment"
       facetedFilterTitle="Segmento"
-      facetedFilterOptions={segmentFacetedFilterOptions}
       additionalFacetedFilters={[
         {
           column: "taxRegime",
           title: "Regime Tributário",
-          options: taxRegimeFacetedFilterOptions,
         },
       ]}
       exportFilename="empresas-synerdata"
+      DataTableViewOptions={DataTableViewOptions}
+      DataTableFacetedFilter={DataTableFacetedFilter}
     />
   );
 }
