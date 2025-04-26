@@ -20,7 +20,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Form,
   FormControl,
@@ -31,34 +30,47 @@ import {
 } from "@/components/ui/form";
 import { useEffect, useId } from "react";
 
+// Atualizar o schema para incluir os novos campos
 const companySchema = z.object({
   id: z.string().optional(),
-  fantasyName: z
+  nomeFantasia: z
     .string()
     .min(3, { message: "Nome fantasia deve ter pelo menos 3 caracteres" }),
-  legalName: z
+  razaoSocial: z
     .string()
     .min(3, { message: "Razão social deve ter pelo menos 3 caracteres" }),
-  cnpj: z.string().regex(/^\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}$/, {
-    message: "CNPJ inválido. Use o formato 00.000.000/0000-00",
-  }),
-  address: z
+  cnpj: z.string(),
+  // .regex(/^\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}$/, {
+  //   message: "CNPJ inválido. Use o formato 00.000.000/0000-00",
+  // }),
+  cep: z
     .string()
     .min(5, { message: "Endereço deve ter pelo menos 5 caracteres" }),
-  phone: z
+  rua: z.string().min(3, { message: "Rua deve ter pelo menos 3 caracteres" }),
+  numero: z.string().min(1, { message: "Número é obrigatório" }),
+  complemento: z.string().optional(),
+  bairro: z
+    .string()
+    .min(2, { message: "Bairro deve ter pelo menos 2 caracteres" }),
+  cidade: z
+    .string()
+    .min(2, { message: "Cidade deve ter pelo menos 2 caracteres" }),
+  estado: z
+    .string()
+    .length(2, { message: "Estado deve ter 2 caracteres (sigla)" }),
+  dataFundacao: z.string().optional(),
+  faturamento: z.string().optional(),
+  inscricaoEstadual: z.string().optional(),
+  telefone: z
     .string()
     .min(10, { message: "Telefone deve ter pelo menos 10 caracteres" }),
-  additionalData: z.string().optional(),
-  taxRegime: z.enum(["simples", "lucro_presumido", "lucro_real"], {
+  ramoAtuacao: z.string().optional(),
+  regimeTributario: z.enum(["simples", "lucro_presumido", "lucro_real"], {
     required_error: "Selecione um regime tributário",
   }),
-  cnae: z.string().min(1, { message: "CNAE é obrigatório" }),
-  segment: z.string().min(1, { message: "Segmento é obrigatório" }),
+  cnaeprincipal: z.string().min(1, { message: "CNAEPRINCIPAL é obrigatório" }),
+  segmento: z.string().min(1, { message: "Segmento é obrigatório" }),
   logo: z.any().optional(),
-  sectors: z.string().optional(),
-  branches: z.string().optional(),
-  costCenters: z.string().optional(),
-  ppEs: z.string().optional(),
 });
 
 export type Company = z.infer<typeof companySchema>;
@@ -78,23 +90,29 @@ export function CompanyFormModal({
 }: CompanyFormModalProps) {
   const formId = useId();
 
+  // Atualizar os valores padrão no useForm
   const form = useForm<Company>({
     resolver: zodResolver(companySchema),
     defaultValues: initialData || {
-      fantasyName: "",
-      legalName: "",
+      nomeFantasia: "",
+      razaoSocial: "",
       cnpj: "",
-      address: "",
-      phone: "",
-      additionalData: "",
-      taxRegime: "simples",
-      cnae: "",
-      segment: "",
+      cep: "",
+      rua: "",
+      numero: "",
+      complemento: "",
+      bairro: "",
+      cidade: "",
+      estado: "",
+      dataFundacao: "",
+      faturamento: "",
+      inscricaoEstadual: "",
+      telefone: "",
+      ramoAtuacao: "",
+      regimeTributario: "simples",
+      cnaeprincipal: "",
+      segmento: "",
       logo: null,
-      sectors: "",
-      branches: "",
-      costCenters: "",
-      ppEs: "",
     },
   });
 
@@ -145,7 +163,7 @@ export function CompanyFormModal({
             <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={form.control}
-                name="fantasyName"
+                name="nomeFantasia"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Nome fantasia</FormLabel>
@@ -158,7 +176,7 @@ export function CompanyFormModal({
               />
               <FormField
                 control={form.control}
-                name="legalName"
+                name="razaoSocial"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Razão social</FormLabel>
@@ -189,10 +207,10 @@ export function CompanyFormModal({
             />
             <FormField
               control={form.control}
-              name="address"
+              name="cep"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Endereço</FormLabel>
+                  <FormLabel>Cep</FormLabel>
                   <FormControl>
                     <Input {...field} value={field.value || ""} />
                   </FormControl>
@@ -200,9 +218,144 @@ export function CompanyFormModal({
                 </FormItem>
               )}
             />
+            {/* Novos campos de endereço detalhado */}
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="rua"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Rua</FormLabel>
+                    <FormControl>
+                      <Input {...field} value={field.value || ""} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="numero"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Número</FormLabel>
+                    <FormControl>
+                      <Input {...field} value={field.value || ""} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="complemento"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Complemento</FormLabel>
+                    <FormControl>
+                      <Input {...field} value={field.value || ""} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="bairro"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Bairro</FormLabel>
+                    <FormControl>
+                      <Input {...field} value={field.value || ""} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="cidade"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Cidade</FormLabel>
+                    <FormControl>
+                      <Input {...field} value={field.value || ""} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="estado"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Estado (UF)</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        value={field.value || ""}
+                        maxLength={2}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="dataFundacao"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Data de Fundação</FormLabel>
+                    <FormControl>
+                      <Input type="date" {...field} value={field.value || ""} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="faturamento"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Faturamento Anual (R$)</FormLabel>
+                    <FormControl>
+                      <Input {...field} value={field.value || ""} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
             <FormField
               control={form.control}
-              name="phone"
+              name="inscricaoEstadual"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Inscrição Estadual</FormLabel>
+                  <FormControl>
+                    <Input {...field} value={field.value || ""} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="telefone"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Telefone</FormLabel>
@@ -215,18 +368,12 @@ export function CompanyFormModal({
             />
             <FormField
               control={form.control}
-              name="additionalData"
+              name="ramoAtuacao"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Dados complementares</FormLabel>
+                  <FormLabel>Ramo de Atuação</FormLabel>
                   <FormControl>
-                    <Textarea
-                      value={field.value || ""}
-                      onChange={field.onChange}
-                      onBlur={field.onBlur}
-                      name={field.name}
-                      ref={field.ref}
-                    />
+                    <Input {...field} value={field.value || ""} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -235,7 +382,7 @@ export function CompanyFormModal({
             <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={form.control}
-                name="taxRegime"
+                name="regimeTributario"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Regime tributário</FormLabel>
@@ -265,7 +412,7 @@ export function CompanyFormModal({
               />
               <FormField
                 control={form.control}
-                name="cnae"
+                name="cnaeprincipal"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>CNAE</FormLabel>
@@ -279,7 +426,7 @@ export function CompanyFormModal({
             </div>
             <FormField
               control={form.control}
-              name="segment"
+              name="segmento"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Segmento</FormLabel>
@@ -291,58 +438,6 @@ export function CompanyFormModal({
               )}
             />
 
-            <FormField
-              control={form.control}
-              name="sectors"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Setores</FormLabel>
-                  <FormControl>
-                    <Input {...field} value={field.value || ""} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="branches"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Filiais</FormLabel>
-                  <FormControl>
-                    <Input {...field} value={field.value || ""} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="costCenters"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Centros de custo</FormLabel>
-                  <FormControl>
-                    <Input {...field} value={field.value || ""} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="ppEs"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>EPIs</FormLabel>
-                  <FormControl>
-                    <Input {...field} value={field.value || ""} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
             <Button type="submit">{submitButtonText}</Button>
           </form>
         </Form>
