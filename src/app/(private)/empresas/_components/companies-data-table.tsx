@@ -22,7 +22,7 @@ export function CompaniesDataTable({
 }: CompaniesDataTableProps): React.ReactElement {
   const columns: ColumnDef<Company>[] = [
     {
-      accessorKey: "fantasyName",
+      accessorKey: "nomeFantasia",
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Nome Fantasia" />
       ),
@@ -30,7 +30,7 @@ export function CompaniesDataTable({
       enableHiding: true,
     },
     {
-      accessorKey: "legalName",
+      accessorKey: "razaoSocial",
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Razão Social" />
       ),
@@ -46,7 +46,31 @@ export function CompaniesDataTable({
       enableHiding: true,
     },
     {
-      accessorKey: "segment",
+      accessorKey: "cidade",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Cidade" />
+      ),
+      enableSorting: true,
+      enableHiding: true,
+    },
+    {
+      accessorKey: "estado",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="UF" />
+      ),
+      enableSorting: true,
+      enableHiding: true,
+    },
+    {
+      accessorKey: "inscricaoEstadual",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Inscrição Estadual" />
+      ),
+      enableSorting: true,
+      enableHiding: true,
+    },
+    {
+      accessorKey: "segmento",
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Segmento" />
       ),
@@ -60,18 +84,18 @@ export function CompaniesDataTable({
       },
     },
     {
-      accessorKey: "taxRegime",
+      accessorKey: "regimeTributario",
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Regime Tributário" />
       ),
       cell: ({ row }) => {
-        const taxRegime = row.getValue("taxRegime") as string;
-        const taxRegimeMap: Record<string, string> = {
+        const regimeTributario = row.getValue("regimeTributario") as string;
+        const regimeTributarioMap: Record<string, string> = {
           simples: "Simples Nacional",
           lucro_presumido: "Lucro Presumido",
           lucro_real: "Lucro Real",
         };
-        return taxRegimeMap[taxRegime] || taxRegime;
+        return regimeTributarioMap[regimeTributario] || regimeTributario;
       },
       enableSorting: true,
       enableHiding: true,
@@ -103,11 +127,11 @@ export function CompaniesDataTable({
       data={data}
       searchPlaceholder="Buscar empresa..."
       globalSearch={true}
-      facetedFilterColumn="segment"
+      facetedFilterColumn="segmento"
       facetedFilterTitle="Segmento"
       additionalFacetedFilters={[
         {
-          column: "taxRegime",
+          column: "regimeTributario",
           title: "Regime Tributário",
         },
       ]}

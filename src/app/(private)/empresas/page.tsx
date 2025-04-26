@@ -1,6 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import type React from "react";
+
+import { useState, useEffect } from "react";
 import { UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -10,101 +12,121 @@ import {
 } from "@/components/company-form-modal";
 import { ConfirmationModal } from "@/components/confirmation-modal";
 import { toast } from "sonner";
-// Importe o novo componente
-import { CompaniesDataTable } from "./components/companies-data-table";
+import { CompaniesDataTable } from "./_components/companies-data-table";
+import { companyService } from "@/lib/company-service";
 import DashboardLayout from "@/components/dashboard-layout";
-export default function CompanyPage() {
-  const [isCompanyFormOpen, setIsCompanyFormOpen] = useState(false);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
-  const [companies, setCompanies] = useState<Company[]>([
-    {
-      id: "1",
-      fantasyName: "Tech Solutions",
-      legalName: "Tech Solutions Ltda",
-      cnpj: "12.345.678/0001-01",
-      address: "Rua da Inovação, 123",
-      phone: "(11) 1234-5678",
-      additionalData: "Empresa de tecnologia",
-      taxRegime: "simples",
-      cnae: "6201-5/01",
-      segment: "Desenvolvimento de Software",
-      logo: null,
-      sectors: "TI, Suporte",
-      branches: "São Paulo, Rio de Janeiro",
-      costCenters: "Desenvolvimento, Administrativo",
-      ppEs: "Óculos de proteção",
-    },
-    {
-      id: "2",
-      fantasyName: "Green Energy",
-      legalName: "Green Energy S.A.",
-      cnpj: "98.765.432/0001-01",
-      address: "Avenida Sustentável, 456",
-      phone: "(21) 9876-5432",
-      additionalData: "Empresa de energia renovável",
-      taxRegime: "lucro_presumido",
-      cnae: "3511-5/01",
-      segment: "Energia Solar",
-      logo: null,
-      sectors: "Engenharia, Vendas",
-      branches: "Belo Horizonte, Salvador",
-      costCenters: "Projetos, Instalação",
-      ppEs: "Capacete, Luvas isolantes",
-    },
-    {
-      id: "3",
-      fantasyName: "Fresh Foods",
-      legalName: "Fresh Foods Eireli",
-      cnpj: "45.678.901/0001-01",
-      address: "Rua dos Sabores, 789",
-      phone: "(31) 4567-8901",
-      additionalData: "Empresa de alimentos orgânicos",
-      taxRegime: "lucro_real",
-      cnae: "1013-9/01",
-      segment: "Alimentos Orgânicos",
-      logo: null,
-      sectors: "Produção, Logística",
-      branches: "Curitiba, Porto Alegre",
-      costCenters: "Cultivo, Embalagem",
-      ppEs: "Touca, Avental",
-    },
-  ]);
+import { Skeleton } from "@/components/ui/skeleton";
 
-  const handleAddCompany = (newCompany: Company) => {
-    setCompanies([...companies, newCompany]);
+export default function CompanyPage(): React.ReactElement {
+  const [isCompanyFormOpen, setIsCompanyFormOpen] = useState<boolean>(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
+  const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
+  const [companies, setCompanies] = useState<Company[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Fetch companies on component mount
+  useEffect(() => {
+    fetchCompanies();
+  }, []);
+
+  const fetchCompanies = async (): Promise<void> => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const data = await companyService.getCompanies();
+      setCompanies(data);
+    } catch (error) {
+      console.error("Error fetching companies:", error);
+      setError("Failed to load companies. Please try again later.");
+      toast.error("Failed to load companies");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleEditCompany = (company: Company) => {
+  const handleAddCompany = async (
+    newCompany: Omit<Company, "id">
+  ): Promise<void> => {
+    try {
+      const companyData = {
+        nomeFantasia: newCompany.nomeFantasia,
+        razaoSocial: newCompany.razaoSocial,
+        cnpj: newCompany.cnpj,
+        rua: newCompany.rua,
+        numero: newCompany.numero,
+        complemento: newCompany.complemento,
+        bairro: newCompany.bairro,
+        cidade: newCompany.cidade,
+        estado: newCompany.estado,
+        cep: newCompany.cep,
+        dataFundacao: newCompany.dataFundacao,
+        telefone: newCompany.telefone,
+        faturamento: newCompany.faturamento,
+        regimeTributario: newCompany.regimeTributario,
+        inscricaoEstadual: newCompany.inscricaoEstadual,
+        cnaePrincipal: newCompany.cnaeprincipal,
+        segmento: newCompany.segmento,
+        ramoAtuacao: newCompany.ramoAtuacao,
+        logoUrl: "https://example.com/logo.png",
+        status: "A",
+        criadoPor: 1,
+      };
+
+      console.log(companyData);
+      const createdCompany = await companyService.createCompany(companyData);
+      setCompanies([...companies, createdCompany]);
+      toast.success("Empresa adicionada com sucesso");
+    } catch (error) {
+      console.error("Error adding company:", error);
+      toast.error("Falha ao adicionar empresa");
+    }
+  };
+
+  const handleEditCompany = (company: Company): void => {
     setSelectedCompany(company);
     setIsEditModalOpen(true);
   };
 
-  const handleUpdateCompany = (updatedCompany: Company) => {
-    setCompanies(
-      companies.map((company) =>
-        company.id === updatedCompany.id ? updatedCompany : company
-      )
-    );
-    setIsEditModalOpen(false);
-    setSelectedCompany(null);
-    toast.success("Empresa atualizada com sucesso");
+  const handleUpdateCompany = async (
+    updatedCompany: Company
+  ): Promise<void> => {
+    try {
+      await companyService.updateCompany(updatedCompany);
+      setCompanies(
+        companies.map((company) =>
+          company.id === updatedCompany.id ? updatedCompany : company
+        )
+      );
+      setIsEditModalOpen(false);
+      setSelectedCompany(null);
+      toast.success("Empresa atualizada com sucesso");
+    } catch (error) {
+      console.error("Error updating company:", error);
+      toast.error("Falha ao atualizar empresa");
+    }
   };
 
-  const handleDeleteCompany = (company: Company) => {
+  const handleDeleteCompany = (company: Company): void => {
     setSelectedCompany(company);
     setIsDeleteModalOpen(true);
   };
 
-  const confirmDeleteCompany = () => {
+  const confirmDeleteCompany = async (): Promise<void> => {
     if (selectedCompany) {
-      setCompanies(
-        companies.filter((company) => company.id !== selectedCompany.id)
-      );
-      setIsDeleteModalOpen(false);
-      setSelectedCompany(null);
-      toast.success("Empresa excluída com sucesso");
+      try {
+        await companyService.deleteCompany(selectedCompany.id);
+        setCompanies(
+          companies.filter((company) => company.id !== selectedCompany.id)
+        );
+        setIsDeleteModalOpen(false);
+        setSelectedCompany(null);
+        toast.success("Empresa excluída com sucesso");
+      } catch (error) {
+        console.error("Error deleting company:", error);
+        toast.error("Falha ao excluir empresa");
+      }
     }
   };
 
@@ -112,7 +134,7 @@ export default function CompanyPage() {
     <DashboardLayout>
       <Card className="bg-white h-full">
         <CardContent className="p-4 h-full">
-          <div className="space-y-4">
+          <div className="space-y-4 h-full">
             <div className="flex justify-between items-center">
               <h2 className="text-2xl font-bold">Empresas Cadastradas</h2>
               <Button onClick={() => setIsCompanyFormOpen(true)}>
@@ -120,11 +142,29 @@ export default function CompanyPage() {
                 Adicionar Empresa
               </Button>
             </div>
-            <CompaniesDataTable
-              data={companies}
-              onEdit={handleEditCompany}
-              onDelete={handleDeleteCompany}
-            />
+
+            {isLoading ? (
+              <div className="space-y-3">
+                <Skeleton className="h-10 w-full" />
+                <Skeleton className="h-10 w-full" />
+                <Skeleton className="h-10 w-full" />
+                <Skeleton className="h-10 w-full" />
+                <Skeleton className="h-10 w-full" />
+              </div>
+            ) : error ? (
+              <div
+                className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative"
+                role="alert"
+              >
+                <span className="block sm:inline">{error}</span>
+              </div>
+            ) : (
+              <CompaniesDataTable
+                data={companies}
+                onEdit={handleEditCompany}
+                onDelete={handleDeleteCompany}
+              />
+            )}
           </div>
           <CompanyFormModal
             isOpen={isCompanyFormOpen}
@@ -142,7 +182,7 @@ export default function CompanyPage() {
             onClose={() => setIsDeleteModalOpen(false)}
             onConfirm={confirmDeleteCompany}
             title="Confirmar Exclusão"
-            message={`Tem certeza que deseja excluir a empresa ${selectedCompany?.fantasyName}?`}
+            message={`Tem certeza que deseja excluir a empresa ${selectedCompany?.nomeFantasia}?`}
           />
         </CardContent>
       </Card>
