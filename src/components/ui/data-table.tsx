@@ -1,190 +1,125 @@
 "use client";
 
-import type React from "react";
-
-import { useState, useCallback, useEffect, useRef } from "react";
+import * as React from "react";
 import {
   type ColumnDef,
   type ColumnFiltersState,
   type SortingState,
   type VisibilityState,
-  type Table as TanStackTable,
+  type Table as ReactTable,
+  type Column,
   flexRender,
   getCoreRowModel,
   getFacetedRowModel,
   getFacetedUniqueValues,
-  getFacetedMinMaxValues,
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import {
-  ChevronLeft,
-  ChevronRight,
-  ChevronsLeft,
-  ChevronsRight,
-  FileText,
-} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { exportToExcel, prepareTableExport } from "@/lib/export-to-excel";
-import { toast } from "sonner";
+import { DownloadIcon } from "lucide-react";
+import { exportDataToExcel } from "@/lib/export-to-excel";
 
-export interface DataTableFilterOption {
-  column: string;
-  title: string;
+interface DataTableViewOptionsProps<TData> {
+  table: ReactTable<TData>;
 }
 
-export interface DataTableProps<TData, TValue> {
+interface DataTableFacetedFilterProps<TData> {
+  column: Column<TData, unknown>;
+  title: string;
+  options: {
+    label: string;
+    value: string;
+    icon?: React.ComponentType<{ className?: string }>;
+  }[];
+}
+
+interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   searchColumn?: string;
   searchPlaceholder?: string;
-  minWidth?: string;
   facetedFilterColumn?: string;
   facetedFilterTitle?: string;
-  additionalFacetedFilters?: DataTableFilterOption[];
+  facetedFilterOptions?: {
+    label: string;
+    value: string;
+    icon?: React.ComponentType<{ className?: string }>;
+  }[];
   exportFilename?: string;
+  minWidth?: string;
   globalSearch?: boolean;
-  DataTableViewOptions: React.ComponentType<{ table: TanStackTable<TData> }>;
-  DataTableFacetedFilter: React.ComponentType<{
-    column: ReturnType<TanStackTable<TData>["getColumn"]> | undefined;
-    title: string;
-  }>;
+  DataTableViewOptions?: React.ComponentType<DataTableViewOptionsProps<TData>>;
+  DataTableFacetedFilter?: React.ComponentType<
+    DataTableFacetedFilterProps<TData>
+  >;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
   searchColumn,
-  searchPlaceholder = "Filtrar...",
-  minWidth,
+  searchPlaceholder,
   facetedFilterColumn,
   facetedFilterTitle,
-  additionalFacetedFilters,
-  exportFilename = "dados-exportados",
+  facetedFilterOptions = [],
+  exportFilename,
+  minWidth,
   globalSearch,
   DataTableViewOptions,
   DataTableFacetedFilter,
 }: DataTableProps<TData, TValue>) {
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-  const [globalFilter, setGlobalFilter] = useState<string>("");
-  const [isExporting, setIsExporting] = useState<boolean>(false);
-
-  // Use a ref to track component mount state
-  const isMounted = useRef(true);
-
-  // Set isMounted to false when component unmounts
-  useEffect(() => {
-    return () => {
-      isMounted.current = false;
-    };
-  }, []);
+  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    []
+  );
+  const [columnVisibility, setColumnVisibility] =
+    React.useState<VisibilityState>({});
+  const [rowSelection, setRowSelection] = React.useState({});
+  const [globalFilter, setGlobalFilter] = React.useState<string>("");
 
   const table = useReactTable<TData>({
     data,
     columns,
+    onSortingChange: setSorting,
+    onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
-    onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
+    onColumnVisibilityChange: setColumnVisibility,
+    onRowSelectionChange: setRowSelection,
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
-    getFacetedMinMaxValues: getFacetedMinMaxValues(),
-    onColumnVisibilityChange: setColumnVisibility,
     state: {
       sorting,
       columnFilters,
       columnVisibility,
+      rowSelection,
       globalFilter,
     },
     onGlobalFilterChange: setGlobalFilter,
-    initialState: {
-      pagination: {
-        pageSize: 10,
-      },
-    },
   });
 
-  const handleExportToCsv = useCallback(async (): Promise<void> => {
-    try {
-      setIsExporting(true);
-
-      // Get visible columns and filtered rows
-      const visibleColumns = table
-        .getAllColumns()
-        .filter((column) => column.getIsVisible() && column.id !== "actions");
-
-      const filteredRows = table.getFilteredRowModel().rows;
-
-      // Prepare data for export
-      const { columns: exportColumns, data: exportData } = prepareTableExport(
-        visibleColumns.map((col) => col.columnDef),
-        filteredRows.map((row) => row.original)
-      );
-
-      // Export to CSV
-      exportToExcel(exportColumns, exportData, exportFilename);
-
-      // Only show toast if component is still mounted
-      if (isMounted.current) {
-        toast.success("Dados exportados com sucesso!");
-      }
-    } catch (error) {
-      console.error("Erro ao exportar dados:", error);
-
-      // Only show toast if component is still mounted
-      if (isMounted.current) {
-        toast.error("Erro ao exportar dados. Tente novamente.");
-      }
-    } finally {
-      // Only update state if component is still mounted
-      if (isMounted.current) {
-        setIsExporting(false);
-      }
-    }
-  }, [table, exportFilename]);
-
-  useEffect(() => {
-    const style = document.createElement("style");
-    style.textContent = `
-    .overflow-x-auto::-webkit-scrollbar {
-      height: 10px;
-    }
-    .overflow-x-auto::-webkit-scrollbar-thumb {
-      background-color: rgba(0, 0, 0, 0.2);
-      border-radius: 5px;
-    }
-    .overflow-x-auto::-webkit-scrollbar-track {
-      background-color: rgba(0, 0, 0, 0.1);
-    }
-  `;
-    document.head.appendChild(style);
-    return () => {
-      document.head.removeChild(style);
-    };
-  }, []);
+  // Função para exportar os dados filtrados da tabela
+  const handleExport = () => {
+    // Obter apenas os dados filtrados e visíveis
+    const filteredData = table
+      .getFilteredRowModel()
+      .rows.map((row) => row.original);
+    exportDataToExcel(filteredData, exportFilename || "export");
+  };
 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <div className="flex flex-1 items-center space-x-2 flex-wrap gap-2">
+        <div className="flex flex-1 items-center space-x-2">
           {searchColumn && !globalSearch && (
             <Input
-              placeholder={searchPlaceholder}
+              placeholder={searchPlaceholder || "Filtrar..."}
               value={
                 (table.getColumn(searchColumn)?.getFilterValue() as string) ??
                 ""
@@ -208,88 +143,86 @@ export function DataTable<TData, TValue>({
               className="h-8 w-[150px] lg:w-[250px]"
             />
           )}
-          {facetedFilterColumn && facetedFilterTitle && (
-            <DataTableFacetedFilter
-              column={table.getColumn(facetedFilterColumn)}
-              title={facetedFilterTitle}
-            />
-          )}
-          {additionalFacetedFilters?.map((filter) => (
-            <DataTableFacetedFilter
-              key={filter.column}
-              column={table.getColumn(filter.column)}
-              title={filter.title}
-            />
-          ))}
+
+          {facetedFilterColumn &&
+            facetedFilterTitle &&
+            DataTableFacetedFilter && (
+              <DataTableFacetedFilter
+                column={
+                  table.getColumn(facetedFilterColumn) as Column<TData, unknown>
+                }
+                title={facetedFilterTitle}
+                options={facetedFilterOptions}
+              />
+            )}
         </div>
         <div className="flex items-center space-x-2">
-          <Button
-            variant="outline"
-            size="sm"
-            className="h-8 gap-1"
-            onClick={handleExportToCsv}
-            disabled={isExporting}
-          >
-            <FileText className="h-4 w-4" />
-            {isExporting ? "Exportando..." : "Exportar CSV"}
-          </Button>
-          <DataTableViewOptions table={table} />
+          {exportFilename && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-8 gap-1"
+              onClick={handleExport}
+            >
+              <DownloadIcon className="h-4 w-4" />
+              Exportar
+            </Button>
+          )}
+          {DataTableViewOptions && <DataTableViewOptions table={table} />}
         </div>
       </div>
       <div className="rounded-md border">
-        <div className="relative">
-          <div className="max-h-[calc(100vh-400px)] overflow-auto">
-            <table
-              className="w-full table-auto"
-              style={minWidth ? { minWidth } : undefined}
-            >
-              <thead className="bg-white sticky top-0 z-10">
-                {table.getHeaderGroups().map((headerGroup) => (
-                  <tr key={headerGroup.id}>
-                    {headerGroup.headers.map((header) => (
-                      <th
-                        key={header.id}
-                        className="px-4 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider border-b"
-                      >
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext()
-                            )}
-                      </th>
+        <div className="relative max-h-[calc(100vh-400px)] overflow-auto">
+          <table
+            className="w-full table-auto"
+            style={minWidth ? { minWidth } : undefined}
+          >
+            <thead className="bg-white sticky top-0 z-10">
+              {table.getHeaderGroups().map((headerGroup) => (
+                <tr key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => (
+                    <th
+                      key={header.id}
+                      className="px-4 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider border-b"
+                    >
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                    </th>
+                  ))}
+                </tr>
+              ))}
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map((row) => (
+                  <tr
+                    key={row.id}
+                    data-state={row.getIsSelected() && "selected"}
+                    className="hover:bg-gray-50"
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <td key={cell.id} className="px-4 py-3 text-sm">
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </td>
                     ))}
                   </tr>
-                ))}
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {table.getRowModel().rows?.length ? (
-                  table.getRowModel().rows.map((row) => (
-                    <tr
-                      key={row.id}
-                      data-state={row.getIsSelected() && "selected"}
-                      className="hover:bg-gray-50"
-                    >
-                      {row.getVisibleCells().map((cell) => (
-                        <td key={cell.id} className="px-4 py-3 text-sm">
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext()
-                          )}
-                        </td>
-                      ))}
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan={columns.length} className="h-24 text-center">
-                      Nenhum resultado encontrado.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={columns.length} className="h-24 text-center">
+                    Nenhum resultado encontrado.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
         </div>
       </div>
       <div className="flex items-center justify-between space-x-2 py-4">
@@ -298,37 +231,22 @@ export function DataTable<TData, TValue>({
             Página {table.getState().pagination.pageIndex + 1} de{" "}
             {table.getPageCount()}
           </p>
-          <Select
-            value={table.getState().pagination.pageSize.toString()}
-            onValueChange={(value) => {
-              table.setPageSize(Number(value));
+          <select
+            value={table.getState().pagination.pageSize}
+            onChange={(e) => {
+              table.setPageSize(Number(e.target.value));
             }}
+            className="h-8 w-[70px] rounded-md border border-input bg-background px-2 py-1 text-sm"
           >
-            <SelectTrigger className="h-8 w-[70px]">
-              <SelectValue
-                placeholder={table.getState().pagination.pageSize.toString()}
-              />
-            </SelectTrigger>
-            <SelectContent side="top">
-              {[10, 20, 30, 40, 50].map((pageSize) => (
-                <SelectItem key={pageSize} value={pageSize.toString()}>
-                  {pageSize}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+            {[10, 20, 30, 40, 50].map((pageSize) => (
+              <option key={pageSize} value={pageSize}>
+                {pageSize}
+              </option>
+            ))}
+          </select>
           <p className="text-sm text-muted-foreground">itens por página</p>
         </div>
         <div className="flex items-center space-x-2">
-          <Button
-            variant="outline"
-            className="hidden h-8 w-8 p-0 lg:flex"
-            onClick={() => table.setPageIndex(0)}
-            disabled={!table.getCanPreviousPage()}
-          >
-            <span className="sr-only">Ir para primeira página</span>
-            <ChevronsLeft className="h-4 w-4" />
-          </Button>
           <Button
             variant="outline"
             className="h-8 w-8 p-0"
@@ -336,7 +254,20 @@ export function DataTable<TData, TValue>({
             disabled={!table.getCanPreviousPage()}
           >
             <span className="sr-only">Ir para página anterior</span>
-            <ChevronLeft className="h-4 w-4" />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="h-4 w-4"
+            >
+              <path d="m15 18-6-6 6-6" />
+            </svg>
           </Button>
           <Button
             variant="outline"
@@ -345,16 +276,20 @@ export function DataTable<TData, TValue>({
             disabled={!table.getCanNextPage()}
           >
             <span className="sr-only">Ir para próxima página</span>
-            <ChevronRight className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="outline"
-            className="hidden h-8 w-8 p-0 lg:flex"
-            onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-            disabled={!table.getCanNextPage()}
-          >
-            <span className="sr-only">Ir para última página</span>
-            <ChevronsRight className="h-4 w-4" />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="h-4 w-4"
+            >
+              <path d="m9 18 6-6-6-6" />
+            </svg>
           </Button>
         </div>
       </div>

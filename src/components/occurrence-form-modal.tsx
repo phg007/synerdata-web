@@ -29,7 +29,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import type { Employee } from "./employee-form-modal";
+import type { Employee } from "../app/(private)/funcionarios/_components/employee-form-modal";
 import { useEffect, useId } from "react";
 
 // Base schema with common fields

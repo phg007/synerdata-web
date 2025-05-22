@@ -57,7 +57,6 @@
   }
 }
 
-/* Tailwind Typography styles are now handled in tailwind.config.js */
 .prose {
   @apply text-gray-600;
 }
@@ -137,4 +136,58 @@
 .card-hover:hover {
   transform: translateY(-5px);
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+
+/* Estilo para células da tabela */
+th,
+td {
+  padding: 0.75rem 1rem;
+}
+
+/* Cabeçalho fixo */
+th,
+thead.sticky,
+.sticky-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background-color: white;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Linhas alternadas */
+tbody tr:nth-child(even) {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+/* Hover na linha */
+tbody tr:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Container da tabela com rolagem */
+.table-container {
+  max-height: calc(100vh - 400px);
+  overflow: auto;
+  border-radius: 0.375rem;
+}
+
+/* Scrollbar customizada */
+.table-container::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.table-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.table-container::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+.table-container::-webkit-scrollbar-thumb:hover {
+  background: #a1a1a1;
 }

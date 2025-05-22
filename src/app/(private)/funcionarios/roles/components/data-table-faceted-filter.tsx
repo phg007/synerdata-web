@@ -1,6 +1,6 @@
 "use client";
 
-import * as React from "react";
+import type * as React from "react";
 import { CheckIcon, PlusCircleIcon } from "lucide-react";
 import type { Column } from "@tanstack/react-table";
 
@@ -23,55 +23,26 @@ import {
 } from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
 
-export interface FilterOption {
-  label: string;
-  value: string;
-}
-
-export interface DataTableFacetedFilterProps<TData, TValue> {
+interface DataTableFacetedFilterProps<TData, TValue> {
   column?: Column<TData, TValue>;
   title?: string;
+  options: {
+    label: string;
+    value: string;
+    icon?: React.ComponentType<{ className?: string }>;
+  }[];
 }
 
 export function DataTableFacetedFilter<TData, TValue>({
   column,
   title,
+  options = [], // Fornecer um array vazio como valor padrão
 }: DataTableFacetedFilterProps<TData, TValue>) {
-  const facets = React.useMemo(() => {
-    return column?.getFacetedUniqueValues() ?? new Map();
-  }, [column]);
-
+  const facets = column?.getFacetedUniqueValues();
   const selectedValues = new Set(column?.getFilterValue() as string[]);
 
-  const options = React.useMemo(() => {
-    if (!column) return [];
-
-    return Array.from(facets.keys())
-      .filter(
-        (value): value is string | number | boolean =>
-          value !== undefined && value !== null && value !== ""
-      )
-      .map((value) => {
-        let label = String(value);
-
-        if (column.id === "regimeTributario") {
-          const taxRegimeMap: Record<string, string> = {
-            simples: "Simples Nacional",
-            lucro_presumido: "Lucro Presumido",
-            lucro_real: "Lucro Real",
-          };
-          label = taxRegimeMap[label] || label;
-        }
-
-        return {
-          label,
-          value: String(value),
-        };
-      })
-      .sort((a, b) => a.label.localeCompare(b.label));
-  }, [facets, column]);
-
-  if (!column) return null;
+  // Verificar se options existe e é um array
+  const safeOptions = Array.isArray(options) ? options : [];
 
   return (
     <Popover>
@@ -97,7 +68,7 @@ export function DataTableFacetedFilter<TData, TValue>({
                     {selectedValues.size} selecionados
                   </Badge>
                 ) : (
-                  options
+                  safeOptions
                     .filter((option) => selectedValues.has(option.value))
                     .map((option) => (
                       <Badge
@@ -120,7 +91,7 @@ export function DataTableFacetedFilter<TData, TValue>({
           <CommandList>
             <CommandEmpty>Nenhum resultado encontrado.</CommandEmpty>
             <CommandGroup>
-              {options.map((option) => {
+              {safeOptions.map((option) => {
                 const isSelected = selectedValues.has(option.value);
                 return (
                   <CommandItem
@@ -132,7 +103,7 @@ export function DataTableFacetedFilter<TData, TValue>({
                         selectedValues.add(option.value);
                       }
                       const filterValues = Array.from(selectedValues);
-                      column.setFilterValue(
+                      column?.setFilterValue(
                         filterValues.length ? filterValues : undefined
                       );
                     }}
@@ -145,10 +116,13 @@ export function DataTableFacetedFilter<TData, TValue>({
                           : "opacity-50 [&_svg]:invisible"
                       )}
                     >
-                      <CheckIcon className="h-4 w-4" />
+                      <CheckIcon className={cn("h-4 w-4")} />
                     </div>
+                    {option.icon && (
+                      <option.icon className="mr-2 h-4 w-4 text-muted-foreground" />
+                    )}
                     <span>{option.label}</span>
-                    {facets.get(option.value) && (
+                    {facets?.get(option.value) && (
                       <span className="ml-auto flex h-4 w-4 items-center justify-center font-mono text-xs">
                         {facets.get(option.value)}
                       </span>
@@ -162,7 +136,7 @@ export function DataTableFacetedFilter<TData, TValue>({
                 <CommandSeparator />
                 <CommandGroup>
                   <CommandItem
-                    onSelect={() => column.setFilterValue(undefined)}
+                    onSelect={() => column?.setFilterValue(undefined)}
                     className="justify-center text-center"
                   >
                     Limpar filtros

@@ -43,10 +43,11 @@ export default function LoginPage() {
       email: formData.get("email"),
       password: formData.get("password"),
     };
-
+    //signOut();
     await signIn("credentials", {
       ...data,
       callbackUrl: "/relatorio",
+      //redirect: false,
     });
   }
 

@@ -4,11 +4,11 @@ import type React from "react";
 
 import type { ColumnDef } from "@tanstack/react-table";
 import { DataTable } from "@/components/ui/data-table";
-import { DataTableColumnHeader } from "./data-table-column-header";
-import { DataTableViewOptions } from "./data-table-view-options";
-import { DataTableFacetedFilter } from "./data-table-faceted-filter";
+import { DataTableColumnHeader } from "../datatable/data-table-column-header";
+import { DataTableViewOptions } from "../datatable/data-table-view-options";
+import { DataTableFacetedFilter } from "../datatable/data-table-faceted-filter";
 import { RowActions } from "./row-actions";
-import type { Employee } from "@/components/employee-form-modal";
+import type { Employee } from "@/app/(private)/funcionarios/_components/employee-form-modal";
 
 interface EmployeesDataTableProps {
   data: Employee[];
@@ -34,6 +34,14 @@ export function EmployeesDataTable({
       accessorKey: "cpf",
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="CPF" />
+      ),
+      enableSorting: true,
+      enableHiding: true,
+    },
+    {
+      accessorKey: "carteiraIdentidade",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="RG" />
       ),
       enableSorting: true,
       enableHiding: true,
@@ -104,6 +112,27 @@ export function EmployeesDataTable({
       },
     },
     {
+      accessorKey: "dataAdmissao",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Data de Admissão" />
+      ),
+      cell: ({ row }) => {
+        const dataAdmissao = row.getValue("dataAdmissao") as string;
+        if (!dataAdmissao) return "-";
+
+        // Format date as DD/MM/YYYY
+        try {
+          const date = new Date(dataAdmissao);
+          return date.toLocaleDateString("pt-BR");
+        } catch (e) {
+          console.log(e);
+          return dataAdmissao;
+        }
+      },
+      enableSorting: true,
+      enableHiding: true,
+    },
+    {
       accessorKey: "salary",
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Salário" />
@@ -116,6 +145,14 @@ export function EmployeesDataTable({
           currency: "BRL",
         }).format(salary);
       },
+      enableSorting: true,
+      enableHiding: true,
+    },
+    {
+      accessorKey: "empresa",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Empresa" />
+      ),
       enableSorting: true,
       enableHiding: true,
     },

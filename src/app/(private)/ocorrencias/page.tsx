@@ -10,7 +10,7 @@ import {
 } from "@/components/occurrence-form-modal";
 import { ConfirmationModal } from "@/components/confirmation-modal";
 import { toast } from "sonner";
-import type { Employee } from "@/components/employee-form-modal";
+import type { Employee } from "@/app/(private)/funcionarios/_components/employee-form-modal";
 // Import the new component
 import { OccurrencesDataTable } from "./components/occurrences-data-table";
 import DashboardLayout from "@/components/dashboard-layout";
