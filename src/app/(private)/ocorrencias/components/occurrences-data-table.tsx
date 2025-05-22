@@ -8,7 +8,7 @@ import { DataTableViewOptions } from "./data-table-view-options";
 import { DataTableFacetedFilter } from "./data-table-faceted-filter";
 import { RowActions } from "./row-actions";
 import type { Occurrence } from "@/components/occurrence-form-modal";
-import type { Employee } from "@/components/employee-form-modal";
+import type { Employee } from "@/app/(private)/funcionarios/_components/employee-form-modal";
 
 interface OccurrencesDataTableProps {
   data: Occurrence[];

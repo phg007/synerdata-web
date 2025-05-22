@@ -1,7 +1,7 @@
 "use client";
 
-import type * as React from "react";
-import { CheckIcon, PlusCircledIcon } from "@radix-ui/react-icons";
+import * as React from "react";
+import { CheckIcon, PlusCircleIcon } from "lucide-react";
 import type { Column } from "@tanstack/react-table";
 
 import { cn } from "@/lib/utils";
@@ -26,26 +26,89 @@ import { Separator } from "@/components/ui/separator";
 interface DataTableFacetedFilterProps<TData, TValue> {
   column?: Column<TData, TValue>;
   title?: string;
-  options: {
-    label: string;
-    value: string;
-    icon?: React.ComponentType<{ className?: string }>;
-  }[];
 }
 
 export function DataTableFacetedFilter<TData, TValue>({
   column,
   title,
-  options,
 }: DataTableFacetedFilterProps<TData, TValue>) {
   const facets = column?.getFacetedUniqueValues();
   const selectedValues = new Set(column?.getFilterValue() as string[]);
+
+  // Generate options dynamically from column values
+  const options = React.useMemo(() => {
+    if (!facets) return [];
+
+    return Array.from(facets.keys())
+      .filter((value) => value !== undefined && value !== null && value !== "")
+      .map((value) => {
+        // For special cases where we need to map values to labels
+        let label = String(value);
+
+        // Handle specific columns with known mappings
+        if (column?.id === "role") {
+          const roleMap: Record<string, string> = {
+            admin: "Administrador da empresa",
+            manager: "Gestor de funcionários",
+            viewer: "Visualizador",
+          };
+          label = roleMap[label] || label;
+        } else if (column?.id === "status") {
+          const statusMap: Record<string, string> = {
+            ativo: "Ativo",
+            inativo: "Inativo",
+          };
+          label = statusMap[label] || label;
+        } else if (column?.id === "taxRegime") {
+          const taxRegimeMap: Record<string, string> = {
+            simples: "Simples Nacional",
+            lucro_presumido: "Lucro Presumido",
+            lucro_real: "Lucro Real",
+          };
+          label = taxRegimeMap[label] || label;
+        } else if (column?.id === "type") {
+          const typeMap: Record<string, string> = {
+            falta: "Falta",
+            atestado: "Atestado",
+            promocao: "Promoção",
+            demissao: "Demissão",
+            analiseCPF: "Análise de CPF",
+            acidente: "Acidente",
+            atualizacaoProjeto: "Atualização de Projeto",
+            advertencia: "Advertência",
+            acaoTrabalhista: "Ação Trabalhista",
+            epi: "EPI",
+            ferias: "Férias",
+          };
+          label = typeMap[label] || label;
+        } else if (column?.id === "dismissalType") {
+          const dismissalTypeMap: Record<string, string> = {
+            voluntaria: "Voluntária",
+            justa_causa: "Justa Causa",
+            sem_justa_causa: "Sem Justa Causa",
+          };
+          label = dismissalTypeMap[label] || label;
+        } else if (column?.id === "cpfStatus") {
+          const cpfStatusMap: Record<string, string> = {
+            regular: "Regular",
+            irregular: "Irregular",
+          };
+          label = cpfStatusMap[label] || label;
+        }
+
+        return {
+          label,
+          value: String(value),
+        };
+      })
+      .sort((a, b) => a.label.localeCompare(b.label));
+  }, [facets, column]);
 
   return (
     <Popover>
       <PopoverTrigger asChild>
         <Button variant="outline" size="sm" className="h-8 border-dashed">
-          <PlusCircledIcon className="mr-2 h-4 w-4" />
+          <PlusCircleIcon className="mr-2 h-4 w-4" />
           {title}
           {selectedValues?.size > 0 && (
             <>
@@ -115,9 +178,6 @@ export function DataTableFacetedFilter<TData, TValue>({
                     >
                       <CheckIcon className={cn("h-4 w-4")} />
                     </div>
-                    {option.icon && (
-                      <option.icon className="mr-2 h-4 w-4 text-muted-foreground" />
-                    )}
                     <span>{option.label}</span>
                     {facets?.get(option.value) && (
                       <span className="ml-auto flex h-4 w-4 items-center justify-center font-mono text-xs">

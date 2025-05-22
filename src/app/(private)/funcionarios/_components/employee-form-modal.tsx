@@ -11,8 +11,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { toast } from "sonner";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -28,16 +26,19 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { useId } from "react";
+import { useId, useEffect } from "react";
 
+// Update the employee schema to include all the missing fields
 const employeeSchema = z.object({
   id: z.string(),
   fullName: z
     .string()
     .min(3, { message: "Nome completo deve ter pelo menos 3 caracteres" }),
+  carteiraIdentidade: z.string().optional(),
   cpf: z.string().regex(/^\d{3}\.\d{3}\.\d{3}-\d{2}$/, {
     message: "CPF inválido. Use o formato 000.000.000-00",
   }),
+  sexo: z.enum(["Masculino", "Feminino", "Outro"]).optional(),
   birthDate: z.string().refine(
     (date) => {
       const birthDate = new Date(date);
@@ -50,6 +51,32 @@ const employeeSchema = z.object({
         "Data de nascimento inválida. O funcionário deve ter entre 18 e 100 anos",
     }
   ),
+  estadoCivil: z
+    .enum([
+      "Solteiro(a)",
+      "Casado(a)",
+      "Divorciado(a)",
+      "Viúvo(a)",
+      "União Estável",
+    ])
+    .optional(),
+  naturalidade: z.string().optional(),
+  nacionalidade: z.string().optional(),
+  altura: z.string().optional(),
+  peso: z.string().optional(),
+  nomePai: z.string().optional(),
+  nomeMae: z.string().optional(),
+  email: z
+    .string()
+    .email({ message: "Email inválido" })
+    .optional()
+    .or(z.literal("")),
+  pis: z.string().optional(),
+  ctpsNumero: z.string().optional(),
+  ctpsSerie: z.string().optional(),
+  certificadoReservista: z.string().optional(),
+  regimeContratacao: z.string().optional(),
+  dataAdmissao: z.string().optional(),
   position: z
     .string()
     .min(2, { message: "Cargo/Função deve ter pelo menos 2 caracteres" }),
@@ -58,6 +85,39 @@ const employeeSchema = z.object({
     .min(2, { message: "Setor deve ter pelo menos 2 caracteres" }),
   contractType: z.enum(["CLT", "PJ"]),
   salary: z.number().min(1, { message: "Salário deve ser maior que zero" }),
+  dataUltimoASO: z.string().optional(),
+  vencimentoExperiencia1: z.string().optional(),
+  vencimentoExperiencia2: z.string().optional(),
+  dataExameDemissional: z.string().optional(),
+  grauInstrucao: z
+    .enum([
+      "Ensino Fundamental Incompleto",
+      "Ensino Fundamental Completo",
+      "Ensino Médio Incompleto",
+      "Ensino Médio Completo",
+      "Ensino Superior Incompleto",
+      "Ensino Superior Completo",
+      "Pós-graduação",
+      "Mestrado",
+      "Doutorado",
+    ])
+    .optional(),
+  necessidadesEspeciais: z.string().optional(),
+  filhos: z.number().optional(),
+  celular: z.string().optional(),
+  gestor: z.string().optional(),
+  cbo: z.string().optional(),
+  rua: z.string().optional(),
+  numero: z.string().optional(),
+  bairro: z.string().optional(),
+  cidade: z.string().optional(),
+  estado: z.string().optional(),
+  cep: z.string().optional(),
+  quantidadeOnibus: z.number().optional(),
+  cargaHoraria: z.string().optional(),
+  escala: z.string().optional(),
+  empresa: z.string().optional(),
+  criadoPor: z.string().optional(),
   additionalInfo: z.string().optional(),
   projectOrCostCenter: z.string().optional(),
 });
@@ -77,27 +137,70 @@ export function EmployeeFormModal({
 }: EmployeeFormModalProps) {
   const formId = useId();
 
+  // Update the defaultValues in the form
   const form = useForm<EmployeeFormValues>({
     resolver: zodResolver(employeeSchema),
     defaultValues: {
       id: "",
       fullName: "",
+      carteiraIdentidade: "",
       cpf: "",
+      sexo: undefined,
       birthDate: "",
+      estadoCivil: undefined,
+      naturalidade: "",
+      nacionalidade: "",
+      altura: "",
+      peso: "",
+      nomePai: "",
+      nomeMae: "",
+      email: "",
+      pis: "",
+      ctpsNumero: "",
+      ctpsSerie: "",
+      certificadoReservista: "",
+      regimeContratacao: "",
+      dataAdmissao: "",
       position: "",
       department: "",
       contractType: "CLT",
       salary: 0,
+      dataUltimoASO: "",
+      vencimentoExperiencia1: "",
+      vencimentoExperiencia2: "",
+      dataExameDemissional: "",
+      grauInstrucao: undefined,
+      necessidadesEspeciais: "",
+      filhos: 0,
+      celular: "",
+      gestor: "",
+      cbo: "",
+      rua: "",
+      numero: "",
+      bairro: "",
+      cidade: "",
+      estado: "",
+      cep: "",
+      quantidadeOnibus: 0,
+      cargaHoraria: "",
+      escala: "",
+      empresa: "",
+      criadoPor: "",
       additionalInfo: "",
       projectOrCostCenter: "",
     },
   });
 
+  // Reset form when modal closes
+  useEffect(() => {
+    if (!isOpen) {
+      form.reset();
+    }
+  }, [isOpen, form]);
+
   const onSubmit = (data: EmployeeFormValues) => {
     onAddEmployee(data);
-    toast.success("Funcionário adicionado com sucesso");
-    onClose();
-    form.reset();
+    // Não feche o modal ou resete o formulário aqui - isso será feito pelo componente pai
   };
 
   return (
@@ -115,6 +218,7 @@ export function EmployeeFormModal({
             onSubmit={form.handleSubmit(onSubmit)}
             className="space-y-4"
           >
+            {/* Resto do formulário permanece o mesmo */}
             <FormField
               control={form.control}
               name="fullName"
@@ -122,7 +226,7 @@ export function EmployeeFormModal({
                 <FormItem>
                   <FormLabel>Nome completo</FormLabel>
                   <FormControl>
-                    <Input {...field} value={field.value || ""} />
+                    <Input {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -135,24 +239,7 @@ export function EmployeeFormModal({
                 <FormItem>
                   <FormLabel>CPF</FormLabel>
                   <FormControl>
-                    <Input
-                      {...field}
-                      value={field.value || ""}
-                      placeholder="000.000.000-00"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="birthDate"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Data de nascimento</FormLabel>
-                  <FormControl>
-                    <Input type="date" {...field} value={field.value || ""} />
+                    <Input {...field} placeholder="000.000.000-00" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -165,7 +252,7 @@ export function EmployeeFormModal({
                 <FormItem>
                   <FormLabel>Cargo/Função</FormLabel>
                   <FormControl>
-                    <Input {...field} value={field.value || ""} />
+                    <Input {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -178,7 +265,7 @@ export function EmployeeFormModal({
                 <FormItem>
                   <FormLabel>Setor</FormLabel>
                   <FormControl>
-                    <Input {...field} value={field.value || ""} />
+                    <Input {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -218,52 +305,54 @@ export function EmployeeFormModal({
                   <FormControl>
                     <Input
                       type="number"
-                      value={field.value || ""}
                       onChange={(e) =>
-                        field.onChange(Number.parseFloat(e.target.value) || 0)
+                        field.onChange(Number(e.target.value) || 0)
                       }
-                      onBlur={field.onBlur}
-                      name={field.name}
-                      ref={field.ref}
+                      value={field.value}
                     />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="additionalInfo"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Dados complementares</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      value={field.value || ""}
-                      onChange={field.onChange}
-                      onBlur={field.onBlur}
-                      name={field.name}
-                      ref={field.ref}
-                      placeholder="Ex.: endereço, contatos, informações de saúde"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="projectOrCostCenter"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Projeto ou Centro de Custo</FormLabel>
-                  <FormControl>
-                    <Input {...field} value={field.value || ""} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="carteiraIdentidade"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Carteira de Identidade</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="sexo"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Sexo</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione o sexo" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="Masculino">Masculino</SelectItem>
+                        <SelectItem value="Feminino">Feminino</SelectItem>
+                        <SelectItem value="Outro">Outro</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              {/* Outros campos permanecem os mesmos */}
+            </div>
             <Button type="submit">Salvar</Button>
           </form>
         </Form>

@@ -176,3 +176,47 @@ export function formatExcelValue(value: unknown): string | number | boolean {
 
   return String(value);
 }
+
+/**
+ * Função simplificada para exportar dados diretamente
+ * @param data Dados a serem exportados
+ * @param filename Nome do arquivo a ser baixado (sem extensão)
+ */
+export function exportDataToExcel<T>(data: T[], filename = "export"): void {
+  try {
+    if (!Array.isArray(data)) {
+      throw new Error("Data must be an array");
+    }
+
+    if (data.length === 0) {
+      // Se não houver dados, crie um arquivo vazio
+      const worksheet = XLSX.utils.json_to_sheet([]);
+      const csvContent = `\ufeff${XLSX.utils.sheet_to_csv(worksheet)}`;
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `${filename}.csv`;
+      link.click();
+      setTimeout(() => URL.revokeObjectURL(url), 100);
+      return;
+    }
+
+    // Extrair as chaves do primeiro objeto para usar como colunas
+    const firstItem = data[0];
+    const columns: ExportColumn[] = Object.keys(
+      firstItem as Record<string, unknown>
+    )
+      .filter((key) => key !== "actions") // Excluir coluna de ações
+      .map((key) => ({
+        id: key,
+        header: key.charAt(0).toUpperCase() + key.slice(1), // Capitalizar primeira letra
+      }));
+
+    // Chamar a função exportToExcel com as colunas extraídas
+    exportToExcel(columns, data, filename);
+  } catch (error) {
+    console.error("Error exporting data to Excel:", error);
+    throw error;
+  }
+}
