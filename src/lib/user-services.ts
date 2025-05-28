@@ -19,7 +19,7 @@ interface ApiResponse {
 
 // Interface para o serviço de usuários
 interface UserService {
-  getUsers(): Promise<User[]>;
+  getUsers(token: string): Promise<User[]>;
   createUser(userData: Omit<User, "id" | "status">): Promise<ApiResponse>;
   updateUser(userData: Partial<User> & { id: string }): Promise<User>;
 }
@@ -37,39 +37,30 @@ async function getUserId(): Promise<string | null> {
 }
 
 export const userService: UserService = {
-  getUsers: async (): Promise<User[]> => {
+  getUsers: async (token: string): Promise<User[]> => {
+    if (!token) {
+      console.error("API Service: No auth token found");
+      throw new Error("Authentication required");
+    }
+
     try {
-      const token = getCookie("jwt");
+      const response = await fetch(`${API_BASE_URL}/usuarios`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        credentials: "include", // pode ser omitido se não houver cookies cross-origin
+      });
 
-      if (!token) {
-        console.error("API Service: No auth token found");
-        throw new Error("Authentication required");
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status} ${response.statusText}`);
       }
 
-      try {
-        const response = await fetch(`${API_BASE_URL}/usuarios`, {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-        });
-
-        if (!response.ok) {
-          throw new Error(
-            `API error: ${response.status} ${response.statusText}`
-          );
-        }
-
-        const data = (await response.json()) as User[];
-        return data;
-      } catch (fetchError) {
-        console.warn("API Service:Falha na busca ", fetchError);
-        throw new Error("Falha ao buscar usuários");
-      }
-    } catch (error) {
-      console.error("API Service: Erro ao obter usuários:", error);
+      const data = (await response.json()) as User[];
+      return data;
+    } catch (fetchError) {
+      console.warn("API Service: Falha na busca", fetchError);
       throw new Error("Falha ao buscar usuários");
     }
   },

@@ -51,7 +51,6 @@ export default function EmployeesPage(): React.ReactElement {
     }
   }, []);
 
-  // Carregar funcionários ao inicializar a página
   useEffect(() => {
     fetchEmployees().then((success) => {
       if (!success) {
