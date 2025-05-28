@@ -59,12 +59,7 @@ const menuItems: MenuItem[] = [
         icon: Users,
         path: "/funcionarios",
       },
-      {
-        id: "employees-sector",
-        label: "Setores",
-        icon: Briefcase,
-        path: "/funcionarios/setores",
-      },
+
       {
         id: "employees-epis",
         label: "EPIs",
@@ -97,6 +92,12 @@ const menuItems: MenuItem[] = [
         icon: Building,
         path: "/branches",
       },
+      {
+        id: "employees-sector",
+        label: "Setores",
+        icon: Briefcase,
+        path: "/empresas/setores",
+      },
     ],
   },
   {
@@ -122,9 +123,7 @@ export default function DashboardLayout({
   const router = useRouter();
   const pathname = usePathname();
 
-  // Set active menu based on current path when component mounts
   useEffect(() => {
-    // Find the main menu item that matches the current path
     const currentMenuItem = menuItems.find(
       (item) =>
         pathname === item.path ||
@@ -135,7 +134,6 @@ export default function DashboardLayout({
     if (currentMenuItem) {
       setActiveMenu(currentMenuItem.id);
 
-      // If the current menu has a submenu, check if any submenu item matches the path
       if (currentMenuItem.submenu) {
         const currentSubmenuItem = currentMenuItem.submenu.find(
           (subItem) => pathname === subItem.path
@@ -147,7 +145,6 @@ export default function DashboardLayout({
     }
   }, [pathname]);
 
-  // Add scrollbar styling
   useEffect(() => {
     const style = document.createElement("style");
     style.textContent = `
@@ -172,19 +169,16 @@ export default function DashboardLayout({
     const menuItem = menuItems.find((item) => item.id === menuId);
 
     if (menuItem?.submenu) {
-      // Toggle submenu visibility
       setIsSubmenuOpen((prev) => ({
         ...prev,
         [menuId]: !prev[menuId],
       }));
 
-      // If this menu has a default path, navigate to it
       if (path) {
         setActiveMenu(menuId);
         router.push(path);
       }
     } else {
-      // Regular menu item without submenu
       setActiveMenu(menuId);
       router.push(path);
     }
@@ -201,7 +195,6 @@ export default function DashboardLayout({
   };
 
   const handleLogout = (): void => {
-    // Clear local storage auth data
     if (typeof window !== "undefined") {
       localStorage.removeItem("synerdata_auth_token");
       localStorage.removeItem("synerdata_user");

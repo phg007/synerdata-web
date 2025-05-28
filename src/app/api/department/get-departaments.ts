@@ -1,16 +1,19 @@
-import { getCookie } from "cookies-next";
 import { Department } from "./interface";
-const API_BASE_URL = "http://localhost:3001/api/v1";
 
-export async function getDepartments(): Promise<Department[]> {
-  const token = getCookie("jwt");
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
+export async function getDepartments(
+  empresa: string,
+  token: string
+): Promise<Department[]> {
   if (!token) {
     throw new Error("Autenticação necessária");
   }
 
-  const response = await fetch(`${API_BASE_URL}/empresas/1/setores`, {
-    method: "GET",
+  const url = `${API_BASE_URL}/v1/empresas/${empresa}/setores`;
+  console.log("🌐 Requisição:", url);
+
+  const response = await fetch(url, {
     headers: {
       Authorization: `Bearer ${token}`,
       "Content-Type": "application/json",
@@ -21,6 +24,5 @@ export async function getDepartments(): Promise<Department[]> {
     throw new Error(`Erro ${response.status}: ${response.statusText}`);
   }
 
-  const data: Department[] = await response.json();
-  return data;
+  return response.json();
 }
