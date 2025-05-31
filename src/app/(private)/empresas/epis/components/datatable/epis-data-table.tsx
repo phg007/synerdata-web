@@ -5,21 +5,18 @@ import type React from "react";
 import type { ColumnDef } from "@tanstack/react-table";
 import { DataTable } from "@/components/ui/data-table";
 import { DataTableColumnHeader } from "./data-table-column-header";
+
 import { DataTableViewOptions } from "./data-table-view-options";
 import { DataTableFacetedFilter } from "./data-table-faceted-filter";
 import { RowActions } from "./row-actions";
-import type { EPI } from "@/lib/epi-service";
+import type { EPI } from "@/app/(private)/empresas/epis/services/epi-interfaces";
 
 interface EPIsDataTableProps {
   data: EPI[];
-  onEdit: (epi: EPI) => void;
-  onDelete: (epi: EPI) => void;
 }
 
 export function EPIsDataTable({
   data,
-  onEdit,
-  onDelete,
 }: EPIsDataTableProps): React.ReactElement {
   const columns: ColumnDef<EPI>[] = [
     {
@@ -96,12 +93,7 @@ export function EPIsDataTable({
       id: "actions",
       cell: ({ row }) => {
         const epi = row.original;
-        return (
-          <RowActions
-            onEdit={() => onEdit(epi)}
-            onDelete={() => onDelete(epi)}
-          />
-        );
+        return <RowActions epi={epi} />;
       },
       enableHiding: false,
     },

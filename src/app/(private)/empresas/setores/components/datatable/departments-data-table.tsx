@@ -8,7 +8,7 @@ import { DataTableColumnHeader } from "./data-table-column-header";
 import { DataTableViewOptions } from "./data-table-view-options";
 import { DataTableFacetedFilter } from "./data-table-faceted-filter";
 import { RowActions } from "./row-actions";
-import type { Department } from "@/app/api/department/interface";
+import type { Department } from "@/app/api/company/department/interface";
 
 interface DepartmentsDataTableProps {
   data: Department[];
