@@ -17,10 +17,10 @@ import {
 } from "./components/features/department-form-modal";
 import { DepartmentsDataTable } from "./components/datatable/departments-data-table";
 
-import { getDepartments } from "@/app/api/department/get-departaments";
-import { createDepartment } from "@/app/api/department/create-department";
-import { updateDepartment } from "@/app/api/department/update-department";
-import { deleteDepartment } from "@/app/api/department/delete-department";
+import { getDepartments } from "@/app/api/company/department/get-departaments";
+import { createDepartment } from "@/app/api/company/department/create-department";
+import { updateDepartment } from "@/app/api/company/department/update-department";
+import { deleteDepartment } from "@/app/api/company/department/delete-department";
 
 export default function DepartmentsPage() {
   const [isDepartmentFormOpen, setIsDepartmentFormOpen] = useState(false);
@@ -96,10 +96,12 @@ export default function DepartmentsPage() {
 
   const handleAddDepartment = (data: DepartmentFormData) =>
     addDepartmentMutation.mutate(data);
+
   const handleEditDepartment = (dept: Department) => {
     setSelectedDepartment(dept);
     setIsDepartmentFormOpen(true);
   };
+
   const handleUpdateDepartment = (department: { id: string; nome: string }) => {
     updateDepartmentMutation.mutate({
       id: department.id,

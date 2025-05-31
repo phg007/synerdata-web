@@ -61,12 +61,6 @@ const menuItems: MenuItem[] = [
       },
 
       {
-        id: "employees-epis",
-        label: "EPIs",
-        icon: Shield,
-        path: "/funcionarios/epis",
-      },
-      {
         id: "employees-roles",
         label: "Cargos",
         icon: Layers,
@@ -93,10 +87,16 @@ const menuItems: MenuItem[] = [
         path: "/branches",
       },
       {
-        id: "employees-sector",
+        id: "company-sector",
         label: "Setores",
         icon: Briefcase,
         path: "/empresas/setores",
+      },
+      {
+        id: "company-epis",
+        label: "EPIs",
+        icon: Shield,
+        path: "/empresas/epis",
       },
     ],
   },
