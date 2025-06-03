@@ -1,120 +1,110 @@
 "use client";
 
-import type React from "react";
-
-import { useState } from "react";
-import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { AlertCircle, CheckCircle } from "lucide-react";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "sonner";
+import { recoveryPassword } from "./services/recovery-password";
 
-export default function RecuperarSenhaPage() {
-  const [email, setEmail] = useState("");
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  const [error, setError] = useState("");
+const recoverySchema = z.object({
+  email: z.string().email("Digite um e-mail válido"),
+});
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-    setIsSubmitted(false);
+type RecoveryFormData = z.infer<typeof recoverySchema>;
 
+export default function RecoverPasswordPage() {
+  const form = useForm<RecoveryFormData>({
+    resolver: zodResolver(recoverySchema),
+    defaultValues: {
+      email: "",
+    },
+    mode: "onChange",
+  });
+
+  const onSubmit = async (data: RecoveryFormData) => {
     try {
-      // Here you would implement the actual password recovery logic
-      // For now, we'll just simulate a successful submission
-      console.log("Password recovery requested for:", email);
-      await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate API call
-      setIsSubmitted(true);
-    } catch (err) {
-      setError(
-        `Ocorreu um erro ao processar sua solicitação. Por favor, tente novamente.${err}`
-      );
+      const { email } = data;
+
+      const response = await recoveryPassword({
+        email,
+      });
+
+      if (!response.succeeded) {
+        throw new Error(response.message || "Não foi possível recuperar sua senha.");
+      }
+
+      toast.success("Recuperação de senha", {
+        description: response.message,
+      });
+
+      form.reset();
+    } catch (error) {
+      toast.error("Erro ao processar a recuperação de senha.", {
+        description:
+          `${error}` ||
+          "Ocorreu um erro ao processar a recuperação de senha. Por favor, tente novamente.",
+      });
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col justify-center items-center p-4">
-      <Link
-        href="/sign-in"
-        className="absolute top-4 left-4 inline-flex items-center text-black hover:text-black/80"
-      >
-        <ArrowLeft className="mr-2 h-4 w-4" />
-        Voltar para Login
-      </Link>
+    <div className="flex flex-col justify-center items-center py-8">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl text-center">
-            Recuperar Senha
+          <CardTitle className="text-2xl text-center font-bold">
+            Recuperação de Senha
           </CardTitle>
           <CardDescription className="text-center">
             Digite seu e-mail para receber instruções de recuperação de senha
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {isSubmitted ? (
-            <div
-              className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative"
-              role="alert"
-            >
-              <span className="flex items-center">
-                <CheckCircle className="h-4 w-4 mr-2" />
-                Um e-mail com instruções para redefinir sua senha foi enviado
-                para {email}.
-              </span>
-            </div>
-          ) : (
-            <form onSubmit={handleSubmit}>
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="email">E-mail</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="seu@email.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                  />
-                </div>
-              </div>
-              {error && (
-                <div
-                  className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mt-4"
-                  role="alert"
-                >
-                  <span className="flex items-center">
-                    <AlertCircle className="h-4 w-4 mr-2" />
-                    {error}
-                  </span>
-                </div>
-              )}
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>E-mail</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="seu@email.com"
+                        type="email"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
               <Button
-                className="w-full mt-6 bg-black text-white hover:bg-black/90"
                 type="submit"
+                className="w-full"
+                disabled={form.formState.isSubmitting}
               >
-                Enviar Instruções
+                Recuperar
               </Button>
             </form>
-          )}
+          </Form>
         </CardContent>
-        <CardFooter className="flex justify-center">
-          <Link
-            href="/sign-in"
-            className="text-sm text-purple-600 hover:underline"
-          >
-            Voltar para o login
-          </Link>
-        </CardFooter>
       </Card>
     </div>
   );

@@ -9,23 +9,26 @@ import {
   Building2,
   LogOut,
   ChevronDown,
-  User,
   Building,
   Home,
   Briefcase,
   Shield,
   Layers,
+  Settings,
 } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { useRouter, usePathname } from "next/navigation";
-import { Toaster } from "sonner";
 import Link from "next/link";
+import { signOut, useSession } from "next-auth/react";
+import { Skeleton } from "./ui/skeleton";
 
 // Define menu item type
 interface MenuItem {
@@ -61,6 +64,12 @@ const menuItems: MenuItem[] = [
       },
 
       {
+        id: "employees-epis",
+        label: "EPIs",
+        icon: Shield,
+        path: "/funcionarios/epis",
+      },
+      {
         id: "employees-roles",
         label: "Cargos",
         icon: Layers,
@@ -87,16 +96,10 @@ const menuItems: MenuItem[] = [
         path: "/branches",
       },
       {
-        id: "company-sector",
+        id: "employees-sector",
         label: "Setores",
         icon: Briefcase,
         path: "/empresas/setores",
-      },
-      {
-        id: "company-epis",
-        label: "EPIs",
-        icon: Shield,
-        path: "/empresas/epis",
       },
     ],
   },
@@ -122,6 +125,8 @@ export default function DashboardLayout({
   );
   const router = useRouter();
   const pathname = usePathname();
+  const { data: session, status } = useSession();
+  const user = session?.user;
 
   useEffect(() => {
     const currentMenuItem = menuItems.find(
@@ -194,13 +199,13 @@ export default function DashboardLayout({
     router.push(path);
   };
 
-  const handleLogout = (): void => {
-    if (typeof window !== "undefined") {
-      localStorage.removeItem("synerdata_auth_token");
-      localStorage.removeItem("synerdata_user");
-    }
-    router.push("/login");
-  };
+  async function logout() {
+    await signOut({
+      redirect: false,
+    });
+
+    router.replace("/");
+  }
 
   return (
     <div className="flex flex-col h-screen bg-gray-100">
@@ -271,21 +276,78 @@ export default function DashboardLayout({
               ))}
             </nav>
           </div>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="text-white">
-                <User className="h-4 w-4 mr-1" />
-                Usuário
-                <ChevronDown className="ml-2 h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={handleLogout}>
-                <LogOut className="mr-2 h-4 w-4" />
-                Sair
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          {status === "loading" ? (
+            <div className="flex items-center space-x-3 px-3 py-2">
+              <div className="hidden md:flex flex-col space-y-1">
+                <Skeleton className="h-4 w-28" />
+                <Skeleton className="h-3 w-36" />
+              </div>
+            </div>
+          ) : (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  className="flex items-center space-x-3 px-3 py-2 h-auto text-white"
+                >
+                  <div className="hidden md:flex flex-col items-start">
+                    <span className="text-xs font-medium">{user?.name}</span>
+                    <span className="text-xs text-slate-300">
+                      {user?.email}
+                    </span>
+                  </div>
+                  <ChevronDown className="h-4 w-4 text-slate-400" />
+                </Button>
+              </DropdownMenuTrigger>
+
+              <DropdownMenuContent align="end" className="w-64">
+                <DropdownMenuLabel className="pb-2">
+                  <div className="flex flex-col space-y-1">
+                    <p className="text-sm font-medium text-slate-900">
+                      {user?.name}
+                    </p>
+                    <p className="text-xs text-slate-500">{user?.email}</p>
+                    {user?.empresa && (
+                      <p className="text-xs text-slate-500">
+                        <span className="font-medium">Empresa:</span>{" "}
+                        {user?.empresa}
+                      </p>
+                    )}
+                    {user?.empresa && (
+                      <div className="flex items-center space-x-2 mt-1">
+                        <span className="text-xs text-slate-500">Plano:</span>
+                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-indigo-100 text-indigo-800">
+                          {"Plano"}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </DropdownMenuLabel>
+
+                <DropdownMenuSeparator />
+
+                <DropdownMenuItem asChild>
+                  <Link
+                    href="/configuracoes/conta"
+                    className="flex items-center cursor-pointer"
+                  >
+                    <Settings className="mr-2 h-4 w-4" />
+                    <span>Configurações da Conta</span>
+                  </Link>
+                </DropdownMenuItem>
+
+                <DropdownMenuSeparator />
+
+                <DropdownMenuItem
+                  onClick={logout}
+                  className="flex items-center cursor-pointer text-red-600 focus:text-white"
+                >
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Sair</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
         </div>
       </header>
 
@@ -317,7 +379,6 @@ export default function DashboardLayout({
 
       {/* Main content */}
       <main className="flex-1 p-4 overflow-auto">{children}</main>
-      <Toaster />
     </div>
   );
 }

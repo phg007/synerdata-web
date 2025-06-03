@@ -17,7 +17,6 @@ export default function EPIsPage() {
   const { data: session } = useSession();
 
   const empresa = session?.user.empresa;
-  const token = session?.accessToken;
 
   const {
     data: epis = [],
@@ -26,8 +25,8 @@ export default function EPIsPage() {
     refetch,
   } = useQuery({
     queryKey: ["epis"],
-    queryFn: () => getEPIs(empresa!, token!),
-    enabled: !!empresa && !!token,
+    queryFn: () => getEPIs(empresa!),
+    enabled: !!empresa
   });
 
   const handleAddEPI = () => {

@@ -1,13 +1,14 @@
 import "@/app/globals.css";
-import { Inter } from "next/font/google";
+// import { Inter } from "next/font/google";
 import { Toaster } from "sonner";
 import ClientLayout from "./client-layout";
 
-const inter = Inter({ subsets: ["latin"] });
+// const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
-  title: "Synerdata",
-  description: "Transforme seus dados em insights estratégicos",
+  title: "Synerdata - Transforme seus dados em insights estratégicos",
+  description:
+    "Centralize, analise e tome decisões baseadas em dados com nossa plataforma integrada de gestão empresarial e Power BI.",
 };
 
 export default function RootLayout({
@@ -17,9 +18,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body
+      // className={inter.className}
+      >
         <ClientLayout>{children}</ClientLayout>
-        <Toaster />
+        <Toaster richColors />
       </body>
     </html>
   );

@@ -1,18 +1,19 @@
-// import { redirect } from "next/dist/server/api-utils";
 import { MiddlewareConfig, NextRequest, NextResponse } from "next/server";
 
 const publicRoutes = [
-  { path: "/", whenAutthenticated: "next" },
-  { path: "/checkout", whenAutthenticated: "next" },
-  { path: "/contact", whenAutthenticated: "next" },
-  { path: "/demonstration", whenAutthenticated: "next" },
-  { path: "/politica-privacidade", whenAutthenticated: "next" },
-  { path: "/politica-reembolso", whenAutthenticated: "next" },
-  { path: "/recuperar-senha", whenAutthenticated: "next" },
-  { path: "/sign-in", whenAutthenticated: "redirect" },
+  { path: "/", whenAuthenticated: "next" },
+  { path: "/contato", whenAuthenticated: "next" },
+  { path: "/politica-privacidade", whenAuthenticated: "next" },
+  { path: "/politica-reembolso", whenAuthenticated: "next" },
+  { path: "/demonstracao", whenAuthenticated: "next" },
+  { path: "/pagamento", whenAuthenticated: "next" },
+  { path: "/ativacao", whenAuthenticated: "next" },
+  { path: "/login", whenAuthenticated: "redirect" },
+  { path: "/recuperar-senha", whenAuthenticated: "next" },
+  { path: "/redefinir-senha", whenAuthenticated: "next" },
 ] as const;
 
-const REDIRECT_WHEN_NOT_AUTHENTICATED_ROUTE = "/sign-in";
+const REDIRECT_WHEN_NOT_AUTHENTICATED_ROUTE = "/login";
 
 export function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
@@ -32,7 +33,7 @@ export function middleware(request: NextRequest) {
   if (
     authToken &&
     publicRoute &&
-    publicRoute.whenAutthenticated === "redirect"
+    publicRoute.whenAuthenticated === "redirect"
   ) {
     const redirectUrl = request.nextUrl.clone();
     redirectUrl.pathname = "/relatorio";
@@ -48,13 +49,6 @@ export function middleware(request: NextRequest) {
 
 export const config: MiddlewareConfig = {
   matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - api (API routes)
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico, sitemap.xml, robots.txt (metadata files)
-     */
-    "/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)",
+    "/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|.*\\.(?:png|jpg|jpeg|svg|webp|gif)).*)",
   ],
 };
