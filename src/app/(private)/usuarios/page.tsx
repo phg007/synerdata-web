@@ -1,88 +1,52 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { UserFormModal, type User } from "@/components/user-form-modal";
-import { toast } from "sonner";
-import { UsersDataTable } from "./_components/users-data-table";
-import { userService } from "@/lib/user-services";
 import DashboardLayout from "@/components/dashboard-layout";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useQuery } from "@tanstack/react-query";
+import { useSession } from "next-auth/react";
+import {
+  getUsersByCompany,
+  GetUsersByCompanyResponse,
+} from "./services/get-users-by-company";
+import { columns } from "./components/data-table/columns";
+import { DataTable } from "./components/data-table/data-table";
+import { useState } from "react";
+import { Dialog, DialogTrigger } from "@/components/ui/dialog";
+import InviteUserDialog from "./components/invite-user-dialog";
 
 export default function UsersPage() {
-  const [isUserFormOpen, setIsUserFormOpen] = useState(false);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
-  const [users, setUsers] = useState<User[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const { data: session, status } = useSession();
+  const companyId = session?.user.empresa;
 
-  useEffect(() => {
-    const fetchUsers = async (): Promise<void> => {
-      try {
-        setIsLoading(true);
-        const data = await userService.getUsers();
-        setUsers(data);
-      } catch (err) {
-        console.error("Failed to fetch users:", err);
-        setError("Falha ao carregar usuários.");
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  const [inviteUserDialogOpen, setInviteUserDialogOpen] = useState(false);
 
-    fetchUsers();
-  }, []);
+  const availableUsers = 4;
 
-  const handleAddUser = async (newUser: User): Promise<void> => {
-    try {
-      setIsLoading(true);
+  const {
+    data: users = [],
+    isLoading,
+    isError,
+  } = useQuery<GetUsersByCompanyResponse[]>({
+    queryKey: ["users", companyId],
+    queryFn: () => getUsersByCompany(companyId!),
+    enabled: !!companyId,
+  });
 
-      const userData = {
-        nome: newUser.nome,
-        email: newUser.email,
-        funcao: newUser.funcao,
-        senha: "Administrador",
-      };
-
-      const responseUser = await userService.createUser(userData);
-      if (!responseUser.success) {
-        toast.error(responseUser.message);
-        return;
-      }
-
-      toast.success(responseUser.message);
-    } catch (error) {
-      console.log(error);
-      toast.error("Erro ao criar usuário.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleUpdateUser = async (updatedUser: User): Promise<void> => {
-    try {
-      setIsLoading(true);
-      await userService.updateUser({
-        ...updatedUser,
-        id: String(updatedUser.id),
-      });
-
-      setUsers(
-        users.map((user) => (user.id === updatedUser.id ? updatedUser : user))
-      );
-      setIsEditModalOpen(false);
-      setSelectedUser(null);
-      toast.success("Usuário atualizado com sucesso");
-    } catch (err) {
-      console.error("Erro ao atualizar usuário:", err);
-      toast.error("Erro ao atualizar usuário.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  if (status === "loading" || isLoading) {
+    return (
+      <DashboardLayout>
+        <div className="flex items-center justify-center h-full min-h-[600px]">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
+            <p className="text-slate-600">Carregando...</p>
+          </div>
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout>
@@ -91,10 +55,22 @@ export default function UsersPage() {
           <div className="space-y-4">
             <div className="flex justify-between items-center">
               <h2 className="text-2xl font-bold">Usuários Cadastrados</h2>
-              <Button onClick={() => setIsUserFormOpen(true)}>
-                <UserPlus className="mr-2 h-4 w-4" />
-                Adicionar Usuário
-              </Button>
+
+              <Dialog
+                open={inviteUserDialogOpen}
+                onOpenChange={setInviteUserDialogOpen}
+              >
+                <DialogTrigger asChild>
+                  <Button disabled={users.length === availableUsers}>
+                    <UserPlus className="mr-2 h-4 w-4" />
+                    Convidar Usuário
+                  </Button>
+                </DialogTrigger>
+                <InviteUserDialog
+                  companyId={companyId!}
+                  setOpen={setInviteUserDialogOpen}
+                />
+              </Dialog>
             </div>
             {isLoading && users.length === 0 ? (
               <div className="space-y-3">
@@ -104,38 +80,17 @@ export default function UsersPage() {
                 <Skeleton className="h-10 w-full" />
                 <Skeleton className="h-10 w-full" />
               </div>
-            ) : error ? (
+            ) : isError ? (
               <div className="p-4 text-center">
-                <p className="text-amber-500">{error}</p>
-                <UsersDataTable
-                  data={users}
-                  onEdit={(user) => {
-                    setSelectedUser(user);
-                    setIsEditModalOpen(true);
-                  }}
-                />
+                <p className="text-amber-500">
+                  {"Não foi possível buscar os usuários"}
+                </p>
+                <DataTable columns={columns} data={users} />
               </div>
             ) : (
-              <UsersDataTable
-                data={users}
-                onEdit={(user) => {
-                  setSelectedUser(user);
-                  setIsEditModalOpen(true);
-                }}
-              />
+              <DataTable columns={columns} data={users} />
             )}
           </div>
-          <UserFormModal
-            isOpen={isUserFormOpen}
-            onClose={() => setIsUserFormOpen(false)}
-            onAddUser={handleAddUser}
-          />
-          <UserFormModal
-            isOpen={isEditModalOpen}
-            onClose={() => setIsEditModalOpen(false)}
-            onAddUser={handleUpdateUser}
-            initialData={selectedUser}
-          />
         </CardContent>
       </Card>
     </DashboardLayout>
