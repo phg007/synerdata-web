@@ -378,7 +378,7 @@ export default function HomePage() {
                         asChild
                       >
                         <Link
-                          href={`/checkout?plan=${encodeURIComponent(plan)}&index=${index}`}
+                          href={`/pagamento?plan=${encodeURIComponent(plan)}&index=${index}`}
                         >
                           Aderir Plano
                         </Link>

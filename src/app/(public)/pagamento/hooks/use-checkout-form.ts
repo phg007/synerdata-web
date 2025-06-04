@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { customerSchema, paymentSchema } from "../schemas/validation-schemas";
-import { useRouter } from "next/navigation";
 import { getCardToken, prepareCardData } from "../services/card-service";
 import {
   createSubscription,

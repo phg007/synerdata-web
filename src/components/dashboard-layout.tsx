@@ -93,7 +93,7 @@ const menuItems: MenuItem[] = [
         id: "company-branches",
         label: "Filiais",
         icon: Building,
-        path: "/branches",
+        path: "empresas/filiais",
       },
       {
         id: "employees-sector",

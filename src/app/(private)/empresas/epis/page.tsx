@@ -26,7 +26,7 @@ export default function EPIsPage() {
   } = useQuery({
     queryKey: ["epis"],
     queryFn: () => getEPIs(empresa!),
-    enabled: !!empresa
+    enabled: !!empresa,
   });
 
   const handleAddEPI = () => {

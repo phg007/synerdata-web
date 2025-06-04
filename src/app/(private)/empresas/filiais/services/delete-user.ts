@@ -1,5 +1,9 @@
 import { fetchClient } from "@/utils/fetch-client";
 
+export interface DeleteUserPayload {
+  userId: string;
+}
+
 interface GetUserResponse {
   id: string;
   nome: string;
@@ -10,26 +14,20 @@ interface GetUserResponse {
   criadoPor: string | null;
 }
 
-export interface UpdateUserPayload {
-  userId: string;
-  funcao: string;
-}
-
-export interface UpdateUserResponse {
+export interface DeleteUserResponse {
   succeeded: boolean;
   data: GetUserResponse | null;
   message: string;
 }
 
-export async function updateUser({
+export async function deleteUser({
   userId,
-  funcao,
-}: UpdateUserPayload): Promise<UpdateUserResponse> {
+}: DeleteUserPayload): Promise<DeleteUserResponse> {
   try {
     const response = await fetchClient(`v1/usuarios/${userId}`, {
-      method: "PATCH",
+      method: "DELETE",
       body: JSON.stringify({
-        funcao,
+        userId,
       }),
     });
 
@@ -37,15 +35,15 @@ export async function updateUser({
       const errorData = await response.json();
 
       throw new Error(
-        errorData.error.message || "Ocorreu um erro ao atualizar o usuário."
+        errorData.error.message || "Ocorreu um erro ao excluir o usuário."
       );
     }
 
-    const updateUserResponse: UpdateUserResponse = await response.json();
+    const deleteUserResponse: DeleteUserResponse = await response.json();
 
-    return updateUserResponse;
+    return deleteUserResponse;
   } catch (error) {
-    console.error("Ocorreu um erro ao atualizar o usuário.", error);
+    console.error("Ocorreu um erro ao excluir o usuário.", error);
     throw error;
   }
 }

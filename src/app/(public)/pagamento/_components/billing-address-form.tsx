@@ -38,10 +38,9 @@ export default function BillingAddressForm({ form }: BillingAddressFormProps) {
     });
   };
 
-  // Efeito para buscar o endereço pelo CEP
-  useEffect(() => {
-    const cep = form.watch("billingAddress.zipCode");
+  const cep = form.watch("billingAddress.zipCode");
 
+  useEffect(() => {
     if (cep && cep.replace(/\D/g, "").length === 8) {
       const fetchAddress = async () => {
         setIsLoadingCep(true);
@@ -61,13 +60,7 @@ export default function BillingAddressForm({ form }: BillingAddressFormProps) {
               shouldValidate: true,
             });
 
-            // Foca no campo de número após preencher o endereço
-            const numberInput = document.querySelector(
-              'input[name="billingAddress.number"]'
-            ) as HTMLInputElement;
-            if (numberInput) {
-              numberInput.focus();
-            }
+            form.setFocus("billingAddress.number");
           }
         } catch (error) {
           console.error("Erro ao buscar CEP:", error);
@@ -76,11 +69,10 @@ export default function BillingAddressForm({ form }: BillingAddressFormProps) {
         }
       };
 
-      // Debounce para evitar múltiplas requisições
       const timeoutId = setTimeout(fetchAddress, 500);
       return () => clearTimeout(timeoutId);
     }
-  }, [form.watch("billingAddress.zipCode"), form]);
+  }, [cep, form]);
 
   return (
     <div className="space-y-4">

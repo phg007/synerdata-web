@@ -47,7 +47,9 @@ export default function RecoverPasswordPage() {
       });
 
       if (!response.succeeded) {
-        throw new Error(response.message || "Não foi possível recuperar sua senha.");
+        throw new Error(
+          response.message || "Não foi possível recuperar sua senha."
+        );
       }
 
       toast.success("Recuperação de senha", {

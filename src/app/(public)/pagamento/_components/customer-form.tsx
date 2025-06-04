@@ -68,9 +68,9 @@ export default function CustomerForm({ form, onSubmit }: CustomerFormProps) {
     form.setValue("address.zipCode", formattedValue, { shouldValidate: true });
   };
 
-  useEffect(() => {
-    const cep = form.watch("address.zipCode");
+  const cep = form.watch("address.zipCode");
 
+  useEffect(() => {
     if (cep && cep.replace(/\D/g, "").length === 8) {
       const fetchAddress = async () => {
         setIsLoadingCep(true);
@@ -90,12 +90,7 @@ export default function CustomerForm({ form, onSubmit }: CustomerFormProps) {
               shouldValidate: true,
             });
 
-            const numberInput = document.querySelector(
-              'input[name="address.number"]'
-            ) as HTMLInputElement;
-            if (numberInput) {
-              numberInput.focus();
-            }
+            form.setFocus("address.number");
           }
         } catch (error) {
           console.error("Erro ao buscar CEP:", error);
@@ -107,7 +102,7 @@ export default function CustomerForm({ form, onSubmit }: CustomerFormProps) {
       const timeoutId = setTimeout(fetchAddress, 500);
       return () => clearTimeout(timeoutId);
     }
-  }, [form.watch("address.zipCode"), form]);
+  }, [cep, form]);
 
   const handleSubmit = form.handleSubmit(() => {
     onSubmit();
