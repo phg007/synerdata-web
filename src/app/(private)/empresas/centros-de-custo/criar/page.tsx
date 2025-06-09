@@ -21,68 +21,49 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Loader2, Building, ArrowLeft } from "lucide-react";
+import { Loader2, DollarSign, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { updateDepartment } from "../../services/update-department";
+import { useMutation } from "@tanstack/react-query";
+import { createCostCenter } from "../services/create-cost-center";
 import Link from "next/link";
-import { getDepartmentById } from "../../services/get-department-by-id";
-import { use, useEffect } from "react";
-import { DepartmentObjectResponse } from "../../interfaces/department-interface";
+import { useSession } from "next-auth/react";
 
 const formSchema = z.object({
   nome: z.string().min(1, "Nome é obrigatório"),
 });
 
-type UpdateDepartmentFormData = z.infer<typeof formSchema>;
+type CreateCostCenterFormData = z.infer<typeof formSchema>;
 
-export default function UpdateDepartmentPage({
-  params,
-}: {
-  params: Promise<{ departmentId: string }>;
-}) {
-  const { departmentId } = use(params);
-
+export default function CreateCostCenterPage() {
+  const { data: session } = useSession();
   const router = useRouter();
 
-  const { data: department } = useQuery<DepartmentObjectResponse>({
-    queryKey: ["department", departmentId],
-    queryFn: () => getDepartmentById(departmentId!),
-    enabled: !!departmentId,
-  });
+  const companyId = session?.user.empresa;
 
-  const form = useForm<UpdateDepartmentFormData>({
+  const form = useForm<CreateCostCenterFormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       nome: "",
     },
   });
 
-  useEffect(() => {
-    if (department) {
-      form.reset({
-        nome: department.nome,
-      });
-    }
-  }, [department, form]);
-
-  const { mutateAsync: updateDepartmentFn, isPending } = useMutation({
-    mutationFn: updateDepartment,
+  const { mutateAsync: createCostCenterFn, isPending } = useMutation({
+    mutationFn: createCostCenter,
     onSuccess: () => {
-      toast.success("Setor atualizado com sucesso");
+      toast.success("Centro de custo cadastrado com sucesso");
       router.back();
     },
     onError: (error: Error) => {
-      toast.error("Erro ao atualizar o setor", {
+      toast.error("Erro ao cadastrar o centro de custo", {
         description: error.message,
       });
     },
   });
 
-  const onSubmit = async (data: UpdateDepartmentFormData) => {
-    await updateDepartmentFn({
+  const onSubmit = async (data: CreateCostCenterFormData) => {
+    await createCostCenterFn({
       ...data,
-      departmentId,
+      empresaId: companyId!,
     });
   };
 
@@ -91,20 +72,22 @@ export default function UpdateDepartmentPage({
       <div className="container mx-auto px-4 max-w-4xl">
         <div className="mb-8">
           <Link
-            href="/empresas/setores"
+            href="/empresas/centro de custoes"
             className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground mb-4"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Voltar para setores
+            Voltar para centros de custo
           </Link>
           <div className="flex items-center space-x-3">
             <div className="p-2 bg-blue-100 rounded-lg">
-              <Building className="h-6 w-6 text-blue-600" />
+              <DollarSign className="h-6 w-6 text-blue-600" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Editar Setor</h1>
+              <h1 className="text-3xl font-bold text-gray-900">
+                Novo Centro de custo
+              </h1>
               <p className="text-gray-600">
-                Atualize os dados de um setor da sua empresa
+                Cadastre um novo centro de custo para sua empresa
               </p>
             </div>
           </div>
@@ -112,9 +95,10 @@ export default function UpdateDepartmentPage({
 
         <Card>
           <CardHeader>
-            <CardTitle>Informações do Setor</CardTitle>
+            <CardTitle>Informações do Centro de custo</CardTitle>
             <CardDescription>
-              Preencha o campo que deseja atualizar
+              Preencha todos os campos obrigatórios para cadastrar o novo centro
+              de custo
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -130,12 +114,12 @@ export default function UpdateDepartmentPage({
                       name="nome"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Nome do Setor</FormLabel>
+                          <FormLabel>
+                            Nome do Centro de custo{" "}
+                            <span className="text-red-500">*</span>
+                          </FormLabel>
                           <FormControl>
-                            <Input
-                              placeholder="Ex: Recursos Humanos"
-                              {...field}
-                            />
+                            <Input placeholder="Ex: Financeiro" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -149,10 +133,10 @@ export default function UpdateDepartmentPage({
                     {isPending ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Atualizando...
+                        Cadastrando...
                       </>
                     ) : (
-                      "Atualizar Setor"
+                      "Cadastrar Centro de custo"
                     )}
                   </Button>
                 </div>

@@ -16,6 +16,7 @@ import {
   Shield,
   Layers,
   Settings,
+  DollarSign,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -77,10 +78,16 @@ const menuItems = [
         path: "/empresas/filiais",
       },
       {
-        id: "employees-sector",
+        id: "company-departments",
         label: "Setores",
         icon: Briefcase,
         path: "/empresas/setores",
+      },
+      {
+        id: "company-costCenters",
+        label: "Centros de Custo",
+        icon: DollarSign,
+        path: "/empresas/centros-de-custo",
       },
     ],
   },
