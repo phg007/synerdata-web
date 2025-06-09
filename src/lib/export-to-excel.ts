@@ -67,25 +67,33 @@ export function exportToExcel<T>(
       { header: columns.map((col) => col.header) }
     );
 
-    // Convert to CSV string with UTF-8 BOM for Excel compatibility
-    const csvContent = `\ufeff${XLSX.utils.sheet_to_csv(worksheet)}`;
+    // // Convert to CSV string with UTF-8 BOM for Excel compatibility
+    // const csvContent = `\ufeff${XLSX.utils.sheet_to_csv(worksheet)}`;
 
-    // Create a Blob from the CSV string
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8" });
+    // // Create a Blob from the CSV string
+    // const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8" });
 
-    // Create a download link
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `${filename}.csv`;
-    link.click();
+    // // Create a download link
+    // const url = URL.createObjectURL(blob);
 
-    // Clean up
-    setTimeout(() => {
-      URL.revokeObjectURL(url);
-    }, 100);
+    // const link = document.createElement("a");
+    // link.href = url;
+    // link.download = `${filename}.csv`;
+    // link.click();
+
+    // // Clean up
+    // setTimeout(() => {
+    //   URL.revokeObjectURL(url);
+    // }, 100);
+
+    // Criar um workbook contendo a worksheet
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Dados");
+
+    // Salvar o arquivo como .xlsx
+    XLSX.writeFile(workbook, `${filename}.xlsx`);
   } catch (error) {
-    console.error("Error exporting to CSV:", error);
+    console.error("Error exporting to XLSX:", error);
     throw error;
   }
 }

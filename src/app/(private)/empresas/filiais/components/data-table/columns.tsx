@@ -3,9 +3,13 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { DataTableColumnHeader } from "./data-table-column-header";
 import { DataTableRowActions } from "./data-table-row-actions";
-import { GetBranchesByCompanyResponse } from "../../services/get-branches-by-company";
+import {
+  formatCEP,
+  formatCNPJ,
+} from "@/app/(public)/pagamento/utils/checkout-utils";
+import { BranchObjectResponse } from "../../interfaces/branch-interface";
 
-export const columns: ColumnDef<GetBranchesByCompanyResponse>[] = [
+export const columns: ColumnDef<BranchObjectResponse>[] = [
   {
     accessorKey: "id",
     header: ({ column }) => (
@@ -29,14 +33,18 @@ export const columns: ColumnDef<GetBranchesByCompanyResponse>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="CNPJ" />
     ),
-    cell: ({ row }) => <span>{row.getValue("cnpj")}</span>,
+    cell: ({ row }) => (
+      <span className="truncate">{formatCNPJ(row.getValue("cnpj"))}</span>
+    ),
   },
   {
     accessorKey: "rua",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Rua" />
     ),
-    cell: ({ row }) => <span>{row.getValue("rua")}</span>,
+    cell: ({ row }) => (
+      <span className="max-w-[500px] truncate">{row.getValue("rua")}</span>
+    ),
   },
   {
     accessorKey: "numero",
@@ -50,21 +58,29 @@ export const columns: ColumnDef<GetBranchesByCompanyResponse>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Complemento" />
     ),
-    cell: ({ row }) => <span>{row.getValue("complemento")}</span>,
+    cell: ({ row }) => (
+      <span className="max-w-[500px] truncate">
+        {row.getValue("complemento")}
+      </span>
+    ),
   },
   {
     accessorKey: "bairro",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Bairro" />
     ),
-    cell: ({ row }) => <span>{row.getValue("bairro")}</span>,
+    cell: ({ row }) => (
+      <span className="max-w-[500px] truncate">{row.getValue("bairro")}</span>
+    ),
   },
   {
     accessorKey: "cidade",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Cidade" />
     ),
-    cell: ({ row }) => <span>{row.getValue("cidade")}</span>,
+    cell: ({ row }) => (
+      <span className="max-w-[500px] truncate">{row.getValue("cidade")}</span>
+    ),
   },
   {
     accessorKey: "estado",
@@ -78,7 +94,11 @@ export const columns: ColumnDef<GetBranchesByCompanyResponse>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="CEP" />
     ),
-    cell: ({ row }) => <span>{row.getValue("cep")}</span>,
+    cell: ({ row }) => (
+      <span className="max-w-[500px] truncate">
+        {formatCEP(row.getValue("cep"))}
+      </span>
+    ),
   },
   {
     accessorKey: "dataFundacao",
@@ -92,14 +112,18 @@ export const columns: ColumnDef<GetBranchesByCompanyResponse>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Telefone" />
     ),
-    cell: ({ row }) => <span>{row.getValue("telefone")}</span>,
+    cell: ({ row }) => (
+      <span className="max-w-[500px] truncate">{row.getValue("telefone")}</span>
+    ),
   },
   {
     accessorKey: "celular",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Celular" />
     ),
-    cell: ({ row }) => <span>{row.getValue("celular")}</span>,
+    cell: ({ row }) => (
+      <span className="max-w-[500px] truncate">{row.getValue("celular")}</span>
+    ),
   },
   {
     accessorKey: "criadoPor",
