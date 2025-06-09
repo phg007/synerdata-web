@@ -1,7 +1,7 @@
 "use client";
 
 import { Card, CardContent } from "@/components/ui/card";
-import DashboardLayout from "@/components/dashboard-layout";
+import DashboardLayout from "@/components/navabar";
 import ReportUnderDevelopment from "./components/report-under-development";
 import { useSession } from "next-auth/react";
 import { useQuery } from "@tanstack/react-query";

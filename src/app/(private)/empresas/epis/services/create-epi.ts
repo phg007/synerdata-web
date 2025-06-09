@@ -1,25 +1,21 @@
-import { EPIFormData, EPIResponse } from "./epi-interfaces";
+import { fetchClient } from "@/utils/fetch-client";
+
+import { GetEpiResponseData, EpiApiResponse } from "./epi-interfaces";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export async function createEPI(
-  epiData: EPIFormData,
-  empresa: string,
-  token: string
-): Promise<EPIResponse> {
-  if (!token) {
-    throw new Error("Authentication required");
-  }
+  epiData: GetEpiResponseData,
+  empresa: string
+): Promise<EpiApiResponse> {
+  const response = await fetchClient(
+    `${API_BASE_URL}/v1/empresas/${empresa}/epis`,
+    {
+      method: "POST",
 
-  const response = await fetch(`${API_BASE_URL}/v1/empresas/${empresa}/epis`, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
-
-    body: JSON.stringify(epiData),
-  });
+      body: JSON.stringify(epiData),
+    }
+  );
 
   const data = await response.json();
   if (!response.ok) {
