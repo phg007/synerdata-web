@@ -3,7 +3,6 @@
 import { UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import DashboardLayout from "@/components/dashboard-layout";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useQuery } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
@@ -37,19 +36,17 @@ export default function UsersPage() {
 
   if (status === "loading" || isLoading) {
     return (
-      <DashboardLayout>
-        <div className="flex items-center justify-center h-full min-h-[600px]">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
-            <p className="text-slate-600">Carregando...</p>
-          </div>
+      <div className="flex items-center justify-center h-full min-h-[600px]">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
+          <p className="text-slate-600">Carregando...</p>
         </div>
-      </DashboardLayout>
+      </div>
     );
   }
 
   return (
-    <DashboardLayout>
+    <div className="container mx-auto p-4">
       <Card className="bg-white h-full">
         <CardContent className="p-4 h-full">
           <div className="space-y-4">
@@ -93,6 +90,6 @@ export default function UsersPage() {
           </div>
         </CardContent>
       </Card>
-    </DashboardLayout>
+    </div>
   );
 }

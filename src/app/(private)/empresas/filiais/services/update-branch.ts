@@ -1,8 +1,9 @@
 import { fetchClient } from "@/utils/fetch-client";
-import { BranchObjectResponse } from "../interfaces/branch-interface";
 import { ApiResponse } from "@/utils/interfaces/base-response";
+import { BranchObjectResponse } from "../interfaces/branch-interface";
 
-export interface CreateBranchPayload {
+export interface UpdateBranchPayload {
+  branchId: string;
   nome: string;
   cnpj: string;
   rua: string;
@@ -15,10 +16,10 @@ export interface CreateBranchPayload {
   dataFundacao: string;
   telefone?: string;
   celular: string;
-  empresaId: string;
 }
 
-export async function createBranch({
+export async function updateBranch({
+  branchId,
   nome,
   cnpj,
   rua,
@@ -31,11 +32,10 @@ export async function createBranch({
   dataFundacao,
   telefone,
   celular,
-  empresaId,
-}: CreateBranchPayload) {
+}: UpdateBranchPayload) {
   try {
-    const response = await fetchClient(`v1/empresas/${empresaId}/filiais`, {
-      method: "POST",
+    const response = await fetchClient(`v1/empresas/filiais/${branchId}`, {
+      method: "PATCH",
       body: JSON.stringify({
         nome,
         cnpj,
@@ -56,13 +56,13 @@ export async function createBranch({
       const errorData = await response.json();
 
       throw new Error(
-        errorData.error.message || "Ocorreu um erro criar a filial."
+        errorData.error.message || "Ocorreu um erro ao atualizar a filial."
       );
     }
 
     return (await response.json()) as ApiResponse<BranchObjectResponse>;
   } catch (error) {
-    console.error("Ocorreu um erro ao criar a filial.", error);
+    console.error("Ocorreu um erro ao atualizar a filial.", error);
     throw error;
   }
 }

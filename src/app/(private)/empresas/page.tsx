@@ -14,7 +14,7 @@ import { ConfirmationModal } from "@/components/confirmation-modal";
 import { toast } from "sonner";
 import { CompaniesDataTable } from "./_components/companies-data-table";
 import { companyService } from "@/lib/company-service";
-import DashboardLayout from "@/components/dashboard-layout";
+import DashboardLayout from "@/components/navbar";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function CompanyPage(): React.ReactElement {

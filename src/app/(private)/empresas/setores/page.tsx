@@ -8,7 +8,7 @@ import { UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import DashboardLayout from "@/components/dashboard-layout";
+import DashboardLayout from "@/components/navbar";
 import { ConfirmationModal } from "@/components/confirmation-modal";
 import {
   Department,
