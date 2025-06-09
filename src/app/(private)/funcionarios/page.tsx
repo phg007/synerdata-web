@@ -14,7 +14,7 @@ import {
 import { EmployeeEditModal } from "@/app/(private)/funcionarios/_components/employee-edit-modal";
 import { ConfirmationModal } from "@/components/confirmation-modal";
 import { EmployeesDataTable } from "./_components/datatable/employees-data-table";
-import DashboardLayout from "@/components/navabar";
+import DashboardLayout from "@/components/navbar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { employeeService } from "@/lib/employee-service";
 

@@ -3,7 +3,8 @@
 import { Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { DataTable } from "./components/datatable/data-table";
+import { EPIsDataTable } from "./components/datatable/epis-data-table";
+import DashboardLayout from "@/components/navbar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useQuery } from "@tanstack/react-query";
 import { getEPIs } from "@/app/(private)/empresas/epis/services/get-epis";
