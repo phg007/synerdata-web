@@ -1,7 +1,6 @@
 "use client";
 
 import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
-
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -20,24 +19,29 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { useRouter } from "next/navigation";
-import { EPI } from "@/app/(private)/empresas/epis/services/epi-interfaces";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { deleteEPI } from "../../services";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
+import { Row } from "@tanstack/react-table";
+import UpdateEpiDialog from "../edit-epi-dialog";
 
-interface RowActionsProps {
-  epi: EPI;
+interface DataTableRowActionsProps<TData> {
+  row: Row<TData>;
 }
 
-export function RowActions({ epi }: RowActionsProps) {
-  const router = useRouter();
+export function DataTableRowActions<TData>({
+  row,
+}: DataTableRowActionsProps<TData>) {
   const queryClient = useQueryClient();
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const { data: session } = useSession();
   const token = session?.accessToken;
+
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
   const deleteEPIMutation = useMutation({
     mutationFn: (id: string) => deleteEPI(token!, id),
@@ -53,16 +57,8 @@ export function RowActions({ epi }: RowActionsProps) {
     },
   });
 
-  const handleEdit = () => {
-    router.push(`/empresas/epis/editar/${epi.id}`);
-  };
-  const handleDeleteClick = () => {
-    setIsDeleteDialogOpen(true);
-  };
+  const handleDelete = () => deleteEPIMutation.mutate(row.getValue("id"));
 
-  const handleConfirmDelete = () => {
-    deleteEPIMutation.mutate(epi.id);
-  };
   return (
     <>
       <DropdownMenu>
@@ -73,13 +69,18 @@ export function RowActions({ epi }: RowActionsProps) {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuItem onClick={handleEdit}>
+          <DropdownMenuItem
+            onSelect={(e) => {
+              e.preventDefault();
+              setIsEditDialogOpen(true);
+            }}
+          >
             <Pencil className="mr-2 h-4 w-4" />
             Editar
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem
-            onClick={handleDeleteClick}
+            onClick={() => setIsDeleteDialogOpen(true)}
             className="text-red-600"
           >
             <Trash2 className="mr-2 h-4 w-4" />
@@ -87,6 +88,19 @@ export function RowActions({ epi }: RowActionsProps) {
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+
+      {isEditDialogOpen && (
+        <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+          <DialogContent className="max-w-xl">
+            <UpdateEpiDialog
+              epiId={row.getValue("id")}
+              setOpen={setIsEditDialogOpen}
+              key={row.getValue("id")}
+            />
+          </DialogContent>
+        </Dialog>
+      )}
+      {/* Confirmar Exclusão */}
       <AlertDialog
         open={isDeleteDialogOpen}
         onOpenChange={setIsDeleteDialogOpen}
@@ -95,14 +109,14 @@ export function RowActions({ epi }: RowActionsProps) {
           <AlertDialogHeader>
             <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
             <AlertDialogDescription>
-              Tem certeza que deseja excluir o EPI {epi.nome}? Esta ação não
-              pode ser desfeita.
+              Deseja realmente excluir o EPI {row.getValue("nome")}? Essa ação
+              é irreversível.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
             <AlertDialogAction
-              onClick={handleConfirmDelete}
+              onClick={handleDelete}
               className="bg-red-600 hover:bg-red-700"
               disabled={deleteEPIMutation.isPending}
             >

@@ -1,22 +1,12 @@
-import { EPI } from "./epi-interfaces";
+import { fetchClient } from "@/utils/fetch-client";
+import { GetEpiResponseData } from "./epi-interfaces";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
-
-export async function getEPIById(id: string, token: string): Promise<EPI> {
-  if (!token) {
-    throw new Error("Token de autenticação não encontrado");
-  }
-
-  const response = await fetch(`${API_BASE_URL}/v1/empresas/epis/${id}`, {
+export async function getEPIById(id: string): Promise<GetEpiResponseData> {
+  const response = await fetchClient(`v1/empresas/epis/${id}`, {
     method: "GET",
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
   });
-  const data: EPI = await response.json();
+  const data: GetEpiResponseData = await response.json();
 
-  console.log("resposta bruta da API:", JSON.stringify(data, null, 2));
   if (!response.ok) {
     throw new Error(`Erro ${response.status}`);
   }
