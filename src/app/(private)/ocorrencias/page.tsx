@@ -14,6 +14,7 @@ import type { Employee } from "@/app/(private)/funcionarios/_components/employee
 // Import the new component
 import { OccurrencesDataTable } from "./components/occurrences-data-table";
 import DashboardLayout from "@/components/navabar";
+import DashboardLayout from "@/components/navbar";
 
 export default function OccurrencesPage() {
   const [isOccurrenceFormOpen, setIsOccurrenceFormOpen] = useState(false);

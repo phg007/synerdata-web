@@ -1,10 +1,11 @@
-import { getSession } from "next-auth/react";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { getServerSession } from "next-auth";
 
-export async function fetchClient(
+export async function fetchServer(
   url: RequestInfo,
   options: RequestInit = {}
 ): Promise<Response> {
-  const session = await getSession();
+  const session = await getServerSession(authOptions);
 
   const headers = new Headers(options.headers || {});
 
