@@ -1,8 +1,10 @@
 import { fetchClient } from "@/utils/fetch-client";
-import { EPI } from "./epi-interfaces";
+import { GetEpiResponseData } from "./epi-interfaces";
 
-export async function getEPIs(companyId: string): Promise<EPI[]> {
-  const response = await fetchClient(`v1/usuarios/empresa/${companyId}`, {
+export async function getEPIs(
+  companyId: string
+): Promise<GetEpiResponseData[]> {
+  const response = await fetchClient(`v1/empresas/${companyId}/epis`, {
     method: "GET",
   });
 

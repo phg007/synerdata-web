@@ -1,14 +1,10 @@
 "use client";
-import { use } from "react";
-import { useRouter } from "next/navigation";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useSession } from "next-auth/react";
-import { getEPIById, updateEPI } from "@/app/(private)/empresas/epis/services";
+
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { toast } from "sonner";
-import { Textarea } from "@/components/ui/textarea";
-import { Skeleton } from "@/components/ui/skeleton";
 import {
   Dialog,
   DialogContent,
@@ -16,6 +12,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { toast } from "sonner";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Form,
   FormControl,
@@ -24,11 +22,13 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { z } from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { createEPI } from "@/app/(private)/empresas/epis/services/create-epi";
+import type { EpiData } from "@/app/(private)/empresas/epis/services/epi-interfaces";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
-const editEpiSchema = z.object({
+const createEpiSchema = z.object({
   nome: z.string().min(3, {
     message: "O nome deve ter pelo menos 3 caracteres.",
   }),
@@ -40,83 +40,54 @@ const editEpiSchema = z.object({
   }),
 });
 
-type EditEpiFormValues = z.infer<typeof editEpiSchema>;
+type CreateEpiFormValues = z.infer<typeof createEpiSchema>;
 
-export default function EditEPIPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
-  const router = useRouter();
-  const { id } = use(params);
-  const { data: session } = useSession();
-  const token = session?.accessToken;
+export default function CreateEpiDialog() {
   const queryClient = useQueryClient();
+  const { data: session } = useSession();
+  const empresa = session?.user.empresa;
+  const token = session?.accessToken;
+  const router = useRouter();
 
-  const { data: epi, isLoading } = useQuery({
-    queryKey: ["epi", id],
-    queryFn: () => getEPIById(id!, token!),
-    enabled: !!id && !!token,
-  });
-
-  const form = useForm<EditEpiFormValues>({
-    resolver: zodResolver(editEpiSchema),
-    values: {
-      nome: epi?.nome || "",
-      descricao: epi?.descricao || "",
-      equipamentos: epi?.equipamentos || "",
+  const form = useForm<CreateEpiFormValues>({
+    resolver: zodResolver(createEpiSchema),
+    defaultValues: {
+      nome: "",
+      descricao: "",
+      equipamentos: "",
     },
   });
 
-  const updateEPIMutation = useMutation({
-    mutationFn: (data: EditEpiFormValues) =>
-      updateEPI({ ...epi!, ...data }, token!),
+  const createEPIMutation = useMutation({
+    mutationFn: (data: EpiData) => createEPI(data, empresa!, token!),
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ["epi", id] });
-      toast.success(data.message);
+      queryClient.invalidateQueries({ queryKey: ["epis"] });
+      toast.success(data.success);
+      form.reset();
       router.back();
     },
     onError: (error) => {
-      console.error("Erro ao atualizar EPI:", error);
+      console.error("Erro ao criar EPI:", error);
       toast.error(error.message);
     },
   });
 
-  const onSubmit = (data: EditEpiFormValues) => {
-    updateEPIMutation.mutate(data);
+  const onSubmit = (data: CreateEpiFormValues) => {
+    createEPIMutation.mutate(data);
   };
 
   const handleClose = () => {
+    form.reset();
     router.back();
   };
-
-  if (isLoading || !epi) {
-    return (
-      <div className="fixed inset-0 z-50 bg-background/80 flex items-center justify-center">
-        <div className="bg-background p-6 rounded-lg shadow-lg w-[500px]">
-          <Skeleton className="h-8 w-3/4 mb-4" />
-          <Skeleton className="h-4 w-full mb-8" />
-          <div className="space-y-4">
-            <Skeleton className="h-10 w-full" />
-            <Skeleton className="h-20 w-full" />
-            <Skeleton className="h-10 w-full" />
-          </div>
-          <div className="flex justify-end mt-4 gap-2">
-            <Skeleton className="h-10 w-24" />
-            <Skeleton className="h-10 w-24" />
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <Dialog open={true} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Editar EPI</DialogTitle>
+          <DialogTitle>Adicionar Novo EPI</DialogTitle>
           <DialogDescription>
-            Atualize as informações do EPI {epi.nome}.
+            Preencha as informações para adicionar um novo EPI ao sistema.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -131,7 +102,7 @@ export default function EditEPIPage({
                     <Input
                       placeholder="Ex: Kit de Proteção Básico"
                       {...field}
-                      disabled={updateEPIMutation.isPending}
+                      disabled={createEPIMutation.isPending}
                     />
                   </FormControl>
                   <FormMessage />
@@ -149,7 +120,7 @@ export default function EditEPIPage({
                     <Textarea
                       placeholder="Descrição detalhada do kit de EPI e sua finalidade"
                       {...field}
-                      disabled={updateEPIMutation.isPending}
+                      disabled={createEPIMutation.isPending}
                       rows={3}
                     />
                   </FormControl>
@@ -166,9 +137,9 @@ export default function EditEPIPage({
                   <FormLabel>Equipamentos Inclusos</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="Capacete, Luvas, Óculos de Proteção..."
+                      placeholder="Capacete, Luvas, Óculos, etc"
                       {...field}
-                      disabled={updateEPIMutation.isPending}
+                      disabled={createEPIMutation.isPending}
                       rows={4}
                     />
                   </FormControl>
@@ -182,14 +153,12 @@ export default function EditEPIPage({
                 type="button"
                 variant="outline"
                 onClick={handleClose}
-                disabled={updateEPIMutation.isPending}
+                disabled={createEPIMutation.isPending}
               >
                 Cancelar
               </Button>
-              <Button type="submit" disabled={updateEPIMutation.isPending}>
-                {updateEPIMutation.isPending
-                  ? "Salvando..."
-                  : "Salvar Alterações"}
+              <Button type="submit" disabled={createEPIMutation.isPending}>
+                {createEPIMutation.isPending ? "Criando..." : "Criar EPI"}
               </Button>
             </div>
           </form>

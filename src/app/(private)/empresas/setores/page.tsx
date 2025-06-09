@@ -4,6 +4,7 @@ import { Briefcase } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+<<<<<<< HEAD
 import { useQuery } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import { columns } from "./components/data-table/columns";
@@ -11,6 +12,21 @@ import { DataTable } from "./components/data-table/data-table";
 import { getDepartmentsByCompany } from "./services/get-departments-by-company";
 import { DepartmentObjectResponse } from "./interfaces/department-interface";
 import Link from "next/link";
+=======
+import DashboardLayout from "@/components/navabar";
+import { ConfirmationModal } from "@/components/confirmation-modal";
+import {
+  Department,
+  DepartmentFormData,
+  DepartmentFormModal,
+} from "./components/features/department-form-modal";
+import { DepartmentsDataTable } from "./components/datatable/departments-data-table";
+
+import { getDepartments } from "@/app/api/company/department/get-departaments";
+import { createDepartment } from "@/app/api/company/department/create-department";
+import { updateDepartment } from "@/app/api/company/department/update-department";
+import { deleteDepartment } from "@/app/api/company/department/delete-department";
+>>>>>>> cd8ac7d (refactor(company-crud): refactor crud epi)
 
 export default function DepartmentsPage() {
   const { data: session, status } = useSession();
