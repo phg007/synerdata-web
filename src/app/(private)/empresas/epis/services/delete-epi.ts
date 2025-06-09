@@ -1,28 +1,31 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+import { fetchClient } from "@/utils/fetch-client";
+import { ApiResponse } from "@/utils/interfaces/base-response";
+import { EpiObjectResponse } from "../interfaces/epi-interfaces";
 
-export async function deleteEPI(
-  token: string,
-  id: string
-): Promise<{ message: string }> {
-  if (!token) {
-    throw new Error("Authentication required");
+export interface DeleteEpiPayload {
+  epiId: string;
+}
+
+export async function deleteEPI({ epiId }: DeleteEpiPayload) {
+  try {
+    const response = await fetchClient(`v1/empresas/epis/${epiId}`, {
+      method: "DELETE",
+      body: JSON.stringify({
+        epiId,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+
+      throw new Error(
+        errorData.error.message || "Ocorreu um erro ao excluir o Epi."
+      );
+    }
+
+    return (await response.json()) as ApiResponse<EpiObjectResponse>;
+  } catch (error) {
+    console.error("Ocorreu um erro ao excluir a filial.", error);
+    throw error;
   }
-
-  const response = await fetch(`${API_BASE_URL}/v1/empresas/epis/${id}`, {
-    method: "DELETE",
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
-    credentials: "include",
-  });
-
-  const data = await response.json();
-
-  if (!response.ok) {
-    const errorMessage = data?.message || "Erro ao excluir setor";
-    throw new Error(errorMessage);
-  }
-
-  return data;
 }

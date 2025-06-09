@@ -1,12 +1,12 @@
 "use client";
 
 import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
+  DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
@@ -18,16 +18,16 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
+  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
-import { deleteEPI } from "../../services";
+import { deleteEPI } from "../../services/delete-epi";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 import { Row } from "@tanstack/react-table";
-import UpdateEpiDialog from "../edit-epi-dialog";
+
+import Link from "next/link";
 
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
@@ -36,28 +36,34 @@ interface DataTableRowActionsProps<TData> {
 export function DataTableRowActions<TData>({
   row,
 }: DataTableRowActionsProps<TData>) {
-  const queryClient = useQueryClient();
   const { data: session } = useSession();
-  const token = session?.accessToken;
+  const companyId = session?.user.empresa;
 
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const queryClient = useQueryClient();
 
-  const deleteEPIMutation = useMutation({
-    mutationFn: (id: string) => deleteEPI(token!, id),
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ["epis"] });
-      toast.success(data.message);
-      setIsDeleteDialogOpen(false);
+  const { mutateAsync: deleteEpiFn } = useMutation({
+    mutationFn: deleteEPI,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["epis", companyId] });
+
+      toast.success("Epi excluída com sucesso.");
     },
-    onError: (error) => {
-      console.error("Erro ao excluir EPI:", error);
-      toast.error(error.message);
-      setIsDeleteDialogOpen(false);
+    onError: (error: Error) => {
+      toast.error("Erro ao excluir a Epi.", {
+        description: error.message,
+      });
     },
   });
 
-  const handleDelete = () => deleteEPIMutation.mutate(row.getValue("id"));
+  async function handleDelete(epiId: string) {
+    try {
+      await deleteEpiFn({
+        epiId,
+      });
+    } catch (error) {
+      console.error("Erro ao excluir a epi:", error);
+    }
+  }
 
   return (
     <>
@@ -68,63 +74,50 @@ export function DataTableRowActions<TData>({
             <MoreHorizontal className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuItem
-            onSelect={(e) => {
-              e.preventDefault();
-              setIsEditDialogOpen(true);
-            }}
-          >
-            <Pencil className="mr-2 h-4 w-4" />
-            Editar
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem
-            onClick={() => setIsDeleteDialogOpen(true)}
-            className="text-red-600"
-          >
-            <Trash2 className="mr-2 h-4 w-4" />
-            Excluir
-          </DropdownMenuItem>
+        <DropdownMenuContent align="end" className="w-[160px]">
+          <DropdownMenuLabel>Ações</DropdownMenuLabel>
+          <Link href={`epis/editar/${row.getValue("id")}`}>
+            <DropdownMenuItem
+              onSelect={(e) => {
+                e.preventDefault();
+              }}
+            >
+              <Pencil className="mr-2 h-4 w-4" />
+              Editar
+            </DropdownMenuItem>
+          </Link>
+
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <DropdownMenuItem
+                onSelect={(e) => e.preventDefault()}
+                className="text-red-600"
+              >
+                <Trash2 className="mr-2 h-4 w-4" />
+                Excluir
+              </DropdownMenuItem>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Excluir filial</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Tem certeza que deseja excluir a Epi?
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                <AlertDialogAction
+                  type="submit"
+                  className={buttonVariants({ variant: "destructive" })}
+                  onClick={() => handleDelete(row.getValue("id"))}
+                >
+                  Excluir
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </DropdownMenuContent>
       </DropdownMenu>
-
-      {isEditDialogOpen && (
-        <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-          <DialogContent className="max-w-xl">
-            <UpdateEpiDialog
-              epiId={row.getValue("id")}
-              setOpen={setIsEditDialogOpen}
-              key={row.getValue("id")}
-            />
-          </DialogContent>
-        </Dialog>
-      )}
-      {/* Confirmar Exclusão */}
-      <AlertDialog
-        open={isDeleteDialogOpen}
-        onOpenChange={setIsDeleteDialogOpen}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
-            <AlertDialogDescription>
-              Deseja realmente excluir o EPI {row.getValue("nome")}? Essa ação é
-              irreversível.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDelete}
-              className="bg-red-600 hover:bg-red-700"
-              disabled={deleteEPIMutation.isPending}
-            >
-              {deleteEPIMutation.isPending ? "Excluindo..." : "Excluir"}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </>
   );
 }

@@ -1,24 +1,35 @@
 import { fetchClient } from "@/utils/fetch-client";
-import { GetEpiResponseData, EpiApiResponse } from "./epi-interfaces";
+import { ApiResponse } from "@/utils/interfaces/base-response";
+import { EpiObjectResponse } from "../interfaces/epi-interfaces";
 
-export async function updateEPI(
-  epiPayload: GetEpiResponseData
-): Promise<EpiApiResponse> {
+export interface EpiPlayload {
+  nome: string;
+  descricao: string;
+  equipamentos: string;
+  epiId: string;
+}
+
+export async function updateEPI({
+  nome,
+  descricao,
+  equipamentos,
+  epiId,
+}: EpiPlayload) {
   try {
-    const response = await fetchClient(`v1/empresas/epis/${epiPayload.id}`, {
+    const response = await fetchClient(`v1/empresas/epis/${epiId}`, {
       method: "PATCH",
 
-      body: JSON.stringify(epiPayload),
+      body: JSON.stringify({ nome, descricao, equipamentos }),
     });
 
-    const data = await response.json();
-
     if (!response.ok) {
-      const errorMessage = data?.message || `Erro ${response.status}`;
-      throw new Error(errorMessage);
-    }
+      const errorData = await response.json();
 
-    return data;
+      throw new Error(
+        errorData.error.message || "Ocorreu um erro ao atualizar a epi."
+      );
+    }
+    return (await response.json()) as ApiResponse<EpiObjectResponse>;
   } catch (error) {
     console.error("Ocorreu um erro em alterar o Epi .", error);
     throw error;
