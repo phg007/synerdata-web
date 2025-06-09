@@ -1,28 +1,38 @@
 import { fetchClient } from "@/utils/fetch-client";
 
-import { GetEpiResponseData, EpiApiResponse } from "./epi-interfaces";
+import { EpiObjectResponse } from "../interfaces/epi-interfaces";
+import { ApiResponse } from "@/utils/interfaces/base-response";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+export interface EpiPlayload {
+  nome: string;
+  descricao: string;
+  equipamentos: string;
+  empresaId: string;
+}
 
-export async function createEPI(
-  epiData: GetEpiResponseData,
-  empresa: string
-): Promise<EpiApiResponse> {
-  const response = await fetchClient(
-    `${API_BASE_URL}/v1/empresas/${empresa}/epis`,
-    {
+export async function createEPI({
+  nome,
+  descricao,
+  equipamentos,
+  empresaId,
+}: EpiPlayload) {
+  try {
+    const response = await fetchClient(`v1/empresas/${empresaId}/epis`, {
       method: "POST",
 
-      body: JSON.stringify(epiData),
+      body: JSON.stringify({ nome, descricao, equipamentos }),
+    });
+
+    const data = (await response.json()) as ApiResponse<EpiObjectResponse>;
+    if (!response.ok) {
+      const errorMessage = data?.message || "Erro ao criar setor";
+
+      throw new Error(errorMessage);
     }
-  );
 
-  const data = await response.json();
-  if (!response.ok) {
-    const errorMessage = data?.message || "Erro ao criar setor";
-
-    throw new Error(errorMessage);
+    return data;
+  } catch (error) {
+    console.error("Ocorreu um erro ao criar o Epi.", error);
+    throw error;
   }
-
-  return data;
 }

@@ -1,15 +1,10 @@
 import { fetchClient } from "@/utils/fetch-client";
-import { GetEpiResponseData } from "./epi-interfaces";
+import { EpiObjectResponse } from "../interfaces/epi-interfaces";
 
-export async function getEPIById(id: string): Promise<GetEpiResponseData> {
+export async function getEPIById(id: string): Promise<EpiObjectResponse> {
   const response = await fetchClient(`v1/empresas/epis/${id}`, {
     method: "GET",
   });
-  const data: GetEpiResponseData = await response.json();
 
-  if (!response.ok) {
-    throw new Error(`Erro ${response.status}`);
-  }
-
-  return data;
+  return await response.json();
 }

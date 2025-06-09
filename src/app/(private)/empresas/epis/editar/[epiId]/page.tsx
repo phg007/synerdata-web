@@ -1,11 +1,12 @@
 "use client";
 
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { getEPIById } from "../../services/get-epi-by-id";
+import { updateEPI } from "../../services/update-epi";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+
 import {
   Form,
   FormControl,
@@ -14,10 +15,11 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-
-import { useRouter } from "next/navigation";
-
-import { useSession } from "next-auth/react";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "sonner";
+import { ArrowLeft, Loader2, Shield } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -25,55 +27,78 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { ArrowLeft, Loader2, Shield } from "lucide-react";
-
-import { useMutation } from "@tanstack/react-query";
-import { createEPI } from "../services/create-epi";
-import { toast } from "sonner";
 import Link from "next/link";
+import { EpiObjectResponse } from "../../interfaces/epi-interfaces";
+import { use, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
-// Schema para validação dos dados do EPI
-const createEpiSchema = z.object({
-  nome: z.string().min(3, "O nome deve ter pelo menos 3 caracteres."),
-  descricao: z.string().min(5, "A descrição deve ter pelo menos 5 caracteres."),
+const editEpiSchema = z.object({
+  nome: z
+    .string()
+    .min(3, { message: "O nome deve ter pelo menos 3 caracteres." }),
+  descricao: z
+    .string()
+    .min(5, { message: "A descrição deve ter pelo menos 5 caracteres." }),
   equipamentos: z
     .string()
-    .min(5, "Os equipamentos devem ter pelo menos 5 caracteres."),
+    .min(5, { message: "Os equipamentos devem ter pelo menos 5 caracteres." }),
 });
 
-type CreateEpiFormValues = z.infer<typeof createEpiSchema>;
+type EditEpiFormValues = z.infer<typeof editEpiSchema>;
 
-export default function CreateEpi() {
+export default function UpdateEpiPage({
+  params,
+}: {
+  params: Promise<{ epiId: string }>;
+}) {
+  const { epiId } = use(params);
   const router = useRouter();
-  const { data: session } = useSession();
-  const companyId = session?.user.empresa;
+  const queryClient = useQueryClient();
 
-  const form = useForm<CreateEpiFormValues>({
-    resolver: zodResolver(createEpiSchema),
+  const { data: epi } = useQuery<EpiObjectResponse>({
+    queryKey: ["epi", epiId],
+    queryFn: () => getEPIById(epiId),
+    enabled: !!epiId,
+  });
+
+  const form = useForm<EditEpiFormValues>({
+    resolver: zodResolver(editEpiSchema),
     defaultValues: {
       nome: "",
       descricao: "",
       equipamentos: "",
     },
-    mode: "onChange",
   });
 
-  const { mutateAsync: createEPIFn, isPending } = useMutation({
-    mutationFn: createEPI,
+  useEffect(() => {
+    if (epi) {
+      form.reset({
+        nome: epi.nome,
+        descricao: epi.descricao,
+        equipamentos: epi.equipamentos,
+      });
+    }
+  }, [epi, form]);
+
+  const { mutateAsync: updateEPIFn, isPending } = useMutation({
+    mutationFn: updateEPI,
     onSuccess: () => {
-      toast.success("Epi cadastrada com sucesso");
+      queryClient.invalidateQueries({ queryKey: ["epis"] });
+      toast.success("Epi atualizado com sucesso");
+
       router.back();
     },
     onError: (error: Error) => {
-      console.error("Erro ao criar EPI:", error);
-      toast.error(error.message);
+      toast.error("Erro ao atualizar o Epi", {
+        description: error.message,
+      });
     },
   });
-
-  const onSubmit = async (data: CreateEpiFormValues) => {
-    await createEPIFn({
+  console.log(`epiId${epiId}`);
+  const onSubmit = async (data: EditEpiFormValues) => {
+    await updateEPIFn({
       ...data,
-      empresaId: companyId!,
+      epiId,
     });
   };
 
@@ -86,16 +111,17 @@ export default function CreateEpi() {
             className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground mb-4"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Voltar para epis
+            Voltar para filiais
           </Link>
+
           <div className="flex items-center space-x-3">
             <div className="p-2 bg-blue-100 rounded-lg">
               <Shield className="h-6 w-6 text-blue-600" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Nova Epis</h1>
+              <h1 className="text-3xl font-bold text-gray-900">Editar Epi</h1>
               <p className="text-gray-600">
-                Cadastre um novo epis para sua empresa
+                Atualize os dados de uma Epi da sua empresa
               </p>
             </div>
           </div>
@@ -103,12 +129,12 @@ export default function CreateEpi() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Adicionar Novo EPI</CardTitle>
+            <CardTitle>Informações do Epi</CardTitle>
             <CardDescription>
-              Preencha as informações para adicionar um novo EPI ao sistema.
+              Preencha os campos que deseja atualizar
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="pt-6">
             <Form {...form}>
               <form
                 onSubmit={form.handleSubmit(onSubmit)}
@@ -121,7 +147,11 @@ export default function CreateEpi() {
                     <FormItem>
                       <FormLabel>Nome do EPI</FormLabel>
                       <FormControl>
-                        <Input {...field} />
+                        <Input
+                          placeholder="Ex: Kit de Proteção Básico"
+                          {...field}
+                          disabled={isPending}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -135,7 +165,12 @@ export default function CreateEpi() {
                     <FormItem>
                       <FormLabel>Descrição</FormLabel>
                       <FormControl>
-                        <Textarea {...field} rows={3} />
+                        <Textarea
+                          placeholder="Descrição detalhada do kit de EPI e sua finalidade"
+                          {...field}
+                          disabled={isPending}
+                          rows={3}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -149,7 +184,12 @@ export default function CreateEpi() {
                     <FormItem>
                       <FormLabel>Equipamentos Inclusos</FormLabel>
                       <FormControl>
-                        <Textarea {...field} rows={4} />
+                        <Textarea
+                          placeholder="Liste os equipamentos inclusos no kit (ex: Capacete, Luvas de Segurança, Óculos de Proteção)"
+                          {...field}
+                          disabled={isPending}
+                          rows={4}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -161,10 +201,10 @@ export default function CreateEpi() {
                     {isPending ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Cadastrando...
+                        Atualizando...
                       </>
                     ) : (
-                      "Cadastrar Epis"
+                      "Atualizar Epi"
                     )}
                   </Button>
                 </div>

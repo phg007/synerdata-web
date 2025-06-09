@@ -46,12 +46,7 @@ const menuItems = [
         icon: Users,
         path: "/funcionarios",
       },
-      {
-        id: "employees-epis",
-        label: "EPIs",
-        icon: Shield,
-        path: "/funcionarios/epis",
-      },
+
       {
         id: "employees-roles",
         label: "Cargos",
@@ -71,6 +66,12 @@ const menuItems = [
         label: "Empresa",
         icon: Building2,
         path: "/empresas",
+      },
+      {
+        id: "company-epis",
+        label: "EPIs",
+        icon: Shield,
+        path: "/empresas/epis",
       },
       {
         id: "company-branches",
