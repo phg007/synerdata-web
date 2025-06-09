@@ -1,8 +1,6 @@
-"use client";
-
-import type * as React from "react";
-import { CheckIcon, PlusCircleIcon } from "lucide-react";
-import type { Column } from "@tanstack/react-table";
+import * as React from "react";
+import { Column } from "@tanstack/react-table";
+import { Check, PlusCircle } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
@@ -45,7 +43,7 @@ export function DataTableFacetedFilter<TData, TValue>({
     <Popover>
       <PopoverTrigger asChild>
         <Button variant="outline" size="sm" className="h-8 border-dashed">
-          <PlusCircleIcon className="mr-2 h-4 w-4" />
+          <PlusCircle />
           {title}
           {selectedValues?.size > 0 && (
             <>
@@ -62,7 +60,7 @@ export function DataTableFacetedFilter<TData, TValue>({
                     variant="secondary"
                     className="rounded-sm px-1 font-normal"
                   >
-                    {selectedValues.size} selecionados
+                    {selectedValues.size} selected
                   </Badge>
                 ) : (
                   options
@@ -113,7 +111,7 @@ export function DataTableFacetedFilter<TData, TValue>({
                           : "opacity-50 [&_svg]:invisible"
                       )}
                     >
-                      <CheckIcon className={cn("h-4 w-4")} />
+                      <Check />
                     </div>
                     {option.icon && (
                       <option.icon className="mr-2 h-4 w-4 text-muted-foreground" />
