@@ -12,9 +12,6 @@ export async function deleteDepartment({
   try {
     const response = await fetchClient(`v1/empresas/setores/${departmentId}`, {
       method: "DELETE",
-      body: JSON.stringify({
-        departmentId,
-      }),
     });
 
     if (!response.ok) {

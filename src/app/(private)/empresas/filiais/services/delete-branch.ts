@@ -10,9 +10,6 @@ export async function deleteBranch({ branchId }: DeleteBranchPayload) {
   try {
     const response = await fetchClient(`v1/empresas/filiais/${branchId}`, {
       method: "DELETE",
-      body: JSON.stringify({
-        branchId,
-      }),
     });
 
     if (!response.ok) {

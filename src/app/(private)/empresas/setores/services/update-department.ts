@@ -23,13 +23,13 @@ export async function updateDepartment({
       const errorData = await response.json();
 
       throw new Error(
-        errorData.error.message || "Ocorreu um erro ao atualizar a setor."
+        errorData.error.message || "Ocorreu um erro ao atualizar o setor."
       );
     }
 
     return (await response.json()) as ApiResponse<DepartmentObjectResponse>;
   } catch (error) {
-    console.error("Ocorreu um erro ao atualizar a setor.", error);
+    console.error("Ocorreu um erro ao atualizar o setor.", error);
     throw error;
   }
 }
