@@ -10,7 +10,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { RoleFormModal } from "./components/features/role-form-modal";
 import { ConfirmationModal } from "@/components/confirmation-modal";
 import { RolesDataTable } from "./components/roles-data-table";
-import DashboardLayout from "@/components/dashboard-layout";
+import DashboardLayout from "@/components/navbar";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   getRoles,

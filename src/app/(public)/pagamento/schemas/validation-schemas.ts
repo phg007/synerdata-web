@@ -3,7 +3,7 @@ import { isValidCNPJ } from "../utils/checkout-utils";
 
 export const addressSchema = z.object({
   zipCode: z.string().min(8, "CEP inválido").max(9),
-  street: z.string().min(3, "Endereço é obrigatório"),
+  street: z.string().min(3, "Rua é obrigatório"),
   number: z.string().min(1, "Número é obrigatório"),
   complement: z.string().optional(),
   neighborhood: z.string().min(2, "Bairro é obrigatório"),

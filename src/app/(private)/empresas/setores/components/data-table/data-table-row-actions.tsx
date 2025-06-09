@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { deleteBranch } from "../../services/delete-branch";
+import { deleteDepartment } from "../../services/delete-department";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 
@@ -40,27 +40,27 @@ export function DataTableRowActions<TData>({
 
   const queryClient = useQueryClient();
 
-  const { mutateAsync: deleteBranchFn } = useMutation({
-    mutationFn: deleteBranch,
+  const { mutateAsync: deleteDepartmentFn } = useMutation({
+    mutationFn: deleteDepartment,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["branches", companyId] });
+      queryClient.invalidateQueries({ queryKey: ["departments", companyId] });
 
-      toast.success("Filial excluída com sucesso.");
+      toast.success("Setor excluído com sucesso.");
     },
     onError: (error: Error) => {
-      toast.error("Erro ao excluir a filial.", {
+      toast.error("Erro ao excluir o setor.", {
         description: error.message,
       });
     },
   });
 
-  async function handleDelete(branchId: string) {
+  async function handleDelete(departmentId: string) {
     try {
-      await deleteBranchFn({
-        branchId,
+      await deleteDepartmentFn({
+        departmentId,
       });
     } catch (error) {
-      console.error("Erro ao excluir a filial:", error);
+      console.error("Erro ao excluir o setor:", error);
     }
   }
 
@@ -78,7 +78,7 @@ export function DataTableRowActions<TData>({
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-[160px]">
           <DropdownMenuLabel>Ações</DropdownMenuLabel>
-          <Link href={`filiais/editar/${row.getValue("id")}`}>
+          <Link href={`setores/editar/${row.getValue("id")}`}>
             <DropdownMenuItem
               onSelect={(e) => {
                 e.preventDefault();
@@ -100,9 +100,9 @@ export function DataTableRowActions<TData>({
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>Excluir filial</AlertDialogTitle>
+                <AlertDialogTitle>Excluir setor</AlertDialogTitle>
                 <AlertDialogDescription>
-                  Tem certeza que deseja excluir a filial?
+                  Tem certeza que deseja excluir o setor?
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>

@@ -1,21 +1,12 @@
 "use client";
 
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Construction, Clock, RefreshCw } from "lucide-react";
+import { Construction, Clock } from "lucide-react";
 import Link from "next/link";
 
-interface ReportUnderDevelopmentProps {
-  onRetry?: () => void;
-  isRetrying?: boolean;
-}
-
-export default function ReportUnderDevelopment({
-  onRetry,
-  isRetrying = false,
-}: ReportUnderDevelopmentProps) {
+export default function ReportUnderDevelopment() {
   return (
-    <div className="flex items-center justify-center h-full min-h-[600px]">
+    <div className="flex items-center justify-center h-full min-h-[600px] py-8">
       <Card className="w-full max-w-2xl mx-4">
         <CardContent className="p-8 text-center">
           <div className="flex justify-center mb-6">
@@ -59,24 +50,6 @@ export default function ReportUnderDevelopment({
                 Relatórios adaptados ao seu segmento de negócio
               </li>
             </ul>
-          </div>
-
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            {onRetry && (
-              <Button
-                onClick={onRetry}
-                disabled={isRetrying}
-                variant="outline"
-                className="flex items-center"
-              >
-                {isRetrying ? (
-                  <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
-                ) : (
-                  <RefreshCw className="mr-2 h-4 w-4" />
-                )}
-                {isRetrying ? "Verificando..." : "Verificar Novamente"}
-              </Button>
-            )}
           </div>
 
           <div className="mt-8 pt-6 border-t border-slate-200">
