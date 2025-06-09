@@ -1,6 +1,6 @@
 "use client";
 
-import { DollarSign } from "lucide-react";
+import { IdCard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -8,21 +8,21 @@ import { useQuery } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import { columns } from "./components/data-table/columns";
 import { DataTable } from "./components/data-table/data-table";
-import { getCostCentersByCompany } from "./services/get-cost-centers-by-company";
-import { CostCenterObjectResponse } from "./interfaces/cost-center-interface";
+import { getCbosByCompany } from "./services/get-cbos-by-company";
+import { CboObjectResponse } from "./interfaces/cbo-interface";
 import Link from "next/link";
 
-export default function CostCentersPage() {
+export default function CbosPage() {
   const { data: session, status } = useSession();
   const companyId = session?.user.empresa;
 
   const {
-    data: costCenters = [],
+    data: cbos = [],
     isLoading,
     isError,
-  } = useQuery<CostCenterObjectResponse[]>({
-    queryKey: ["cost-centers", companyId],
-    queryFn: () => getCostCentersByCompany(companyId!),
+  } = useQuery<CboObjectResponse[]>({
+    queryKey: ["cbos", companyId],
+    queryFn: () => getCbosByCompany(companyId!),
     enabled: !!companyId,
   });
 
@@ -43,17 +43,15 @@ export default function CostCentersPage() {
         <CardContent className="p-4 h-full">
           <div className="space-y-4">
             <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-bold">
-                Centros de Custo Cadastrados
-              </h2>
-              <Link href={"centros-de-custo/criar"}>
+              <h2 className="text-2xl font-bold">Cbos Cadastrados</h2>
+              <Link href={"cbos/criar"}>
                 <Button>
-                  <DollarSign className="mr-2 h-4 w-4" />
-                  Adicionar Centro de Custo
+                  <IdCard className="mr-2 h-4 w-4" />
+                  Adicionar Cbo
                 </Button>
               </Link>
             </div>
-            {isLoading && costCenters.length === 0 ? (
+            {isLoading && cbos.length === 0 ? (
               <div className="space-y-3">
                 <Skeleton className="h-10 w-full" />
                 <Skeleton className="h-10 w-full" />
@@ -64,12 +62,12 @@ export default function CostCentersPage() {
             ) : isError ? (
               <div className="p-4 text-center">
                 <p className="text-amber-500">
-                  {"Não foi possível buscar os centro de custos"}
+                  {"Não foi possível buscar os cbos"}
                 </p>
-                <DataTable columns={columns} data={costCenters} />
+                <DataTable columns={columns} data={cbos} />
               </div>
             ) : (
-              <DataTable columns={columns} data={costCenters} />
+              <DataTable columns={columns} data={cbos} />
             )}
           </div>
         </CardContent>

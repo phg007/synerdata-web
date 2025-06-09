@@ -17,6 +17,7 @@ import {
   Layers,
   Settings,
   DollarSign,
+  IdCard,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -88,6 +89,12 @@ const menuItems = [
         label: "Centros de Custo",
         icon: DollarSign,
         path: "/empresas/centros-de-custo",
+      },
+      {
+        id: "company-cbos",
+        label: "Cbos",
+        icon: IdCard,
+        path: "/empresas/cbos",
       },
     ],
   },
