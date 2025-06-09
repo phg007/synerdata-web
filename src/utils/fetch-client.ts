@@ -16,7 +16,7 @@ export async function fetchClient(
     headers.set("Content-Type", "application/json");
   }
 
-  return fetch(`http://host.docker.internal:3001/api/${url}`, {
+  return fetch(`http://localhost:3001/api/${url}`, {
     ...options,
     headers,
   });

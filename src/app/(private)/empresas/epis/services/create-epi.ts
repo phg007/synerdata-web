@@ -1,32 +1,38 @@
-import { EPIFormData, EPIResponse } from "./epi-interfaces";
+import { fetchClient } from "@/utils/fetch-client";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+import { EpiObjectResponse } from "../interfaces/epi-interfaces";
+import { ApiResponse } from "@/utils/interfaces/base-response";
 
-export async function createEPI(
-  epiData: EPIFormData,
-  empresa: string,
-  token: string
-): Promise<EPIResponse> {
-  if (!token) {
-    throw new Error("Authentication required");
+export interface EpiPlayload {
+  nome: string;
+  descricao: string;
+  equipamentos: string;
+  empresaId: string;
+}
+
+export async function createEPI({
+  nome,
+  descricao,
+  equipamentos,
+  empresaId,
+}: EpiPlayload) {
+  try {
+    const response = await fetchClient(`v1/empresas/${empresaId}/epis`, {
+      method: "POST",
+
+      body: JSON.stringify({ nome, descricao, equipamentos }),
+    });
+
+    const data = (await response.json()) as ApiResponse<EpiObjectResponse>;
+    if (!response.ok) {
+      const errorMessage = data?.message || "Erro ao criar setor";
+
+      throw new Error(errorMessage);
+    }
+
+    return data;
+  } catch (error) {
+    console.error("Ocorreu um erro ao criar o Epi.", error);
+    throw error;
   }
-
-  const response = await fetch(`${API_BASE_URL}/v1/empresas/${empresa}/epis`, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
-
-    body: JSON.stringify(epiData),
-  });
-
-  const data = await response.json();
-  if (!response.ok) {
-    const errorMessage = data?.message || "Erro ao criar setor";
-
-    throw new Error(errorMessage);
-  }
-
-  return data;
 }
