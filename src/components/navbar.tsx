@@ -113,7 +113,7 @@ export default function Navbar() {
   const user = session?.user;
 
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
-  const [activeSubmenu, setActiveSubmenu] = useState<string | null>(null);
+  const [activeSubmenu] = useState<string | null>(null);
   const [isMounted, setIsMounted] = useState(false);
 
   // Evita renderizar até que o componente esteja montado no cliente
@@ -130,9 +130,6 @@ export default function Navbar() {
         item.submenu?.some((sub) => pathname === sub.path)
     );
     setActiveMenu(menu?.id || null);
-
-    const submenu = menu?.submenu?.find((sub) => pathname === sub.path);
-    setActiveSubmenu(submenu?.id || null);
   }, [pathname, isMounted]);
 
   const logout = async () => {
