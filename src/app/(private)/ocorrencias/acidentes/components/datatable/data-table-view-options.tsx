@@ -1,7 +1,7 @@
 "use client";
 
+import { MixerHorizontalIcon } from "@radix-ui/react-icons";
 import type { Table } from "@tanstack/react-table";
-import { SlidersHorizontal } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -28,8 +28,8 @@ export function DataTableViewOptions<TData>({
           size="sm"
           className="ml-auto hidden h-8 lg:flex"
         >
-          <SlidersHorizontal className="mr-2 h-4 w-4" />
-          Visualizar
+          <MixerHorizontalIcon className="mr-2 h-4 w-4" />
+          Visualização
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[150px]">

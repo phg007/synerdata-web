@@ -1,6 +1,6 @@
 "use client";
 
-import * as React from "react";
+import type * as React from "react";
 import { CheckIcon, PlusCircleIcon } from "lucide-react";
 import type { Column } from "@tanstack/react-table";
 
@@ -23,77 +23,23 @@ import {
 } from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
 
-export interface FilterOption {
-  label: string;
-  value: string;
-}
-
-export interface DataTableFacetedFilterProps<TData, TValue> {
+interface DataTableFacetedFilterProps<TData, TValue> {
   column?: Column<TData, TValue>;
   title?: string;
+  options: {
+    label: string;
+    value: string;
+    icon?: React.ComponentType<{ className?: string }>;
+  }[];
 }
 
 export function DataTableFacetedFilter<TData, TValue>({
   column,
   title,
+  options,
 }: DataTableFacetedFilterProps<TData, TValue>) {
   const facets = column?.getFacetedUniqueValues();
   const selectedValues = new Set(column?.getFilterValue() as string[]);
-
-  // Generate options dynamically from column values
-  const options = React.useMemo(() => {
-    if (!facets) return [];
-
-    return Array.from(facets.keys())
-      .filter(
-        (value): value is string | number | boolean =>
-          value !== undefined && value !== null && value !== ""
-      )
-      .map((value) => {
-        // For special cases where we need to map values to labels
-        let label = String(value);
-
-        // Handle specific columns with known mappings
-        if (column?.id === "type") {
-          const typeMap: Record<string, string> = {
-            falta: "Falta",
-            atestado: "Atestado",
-            promocao: "Promoção",
-            demissao: "Demissão",
-            analiseCPF: "Análise de CPF",
-            acidente: "Acidente",
-            atualizacaoProjeto: "Atualização de Projeto",
-            advertencia: "Advertência",
-            acaoTrabalhista: "Ação Trabalhista",
-            epi: "EPI",
-            ferias: "Férias",
-          };
-          label = typeMap[label] || label;
-        } else if (column?.id === "dismissalType") {
-          const dismissalTypeMap: Record<string, string> = {
-            voluntaria: "Voluntária",
-            justa_causa: "Justa Causa",
-            sem_justa_causa: "Sem Justa Causa",
-          };
-          label = dismissalTypeMap[label] || label;
-        } else if (column?.id === "cpfStatus") {
-          const cpfStatusMap: Record<string, string> = {
-            regular: "Regular",
-            irregular: "Irregular",
-          };
-          label = cpfStatusMap[label] || label;
-        } else if (column?.id === "employeeId") {
-          // For employeeId, we need to get the employee name from the parent component
-          // This is handled in the cell renderer of the occurrences-data-table.tsx
-        }
-
-        return {
-          label,
-          value: String(value),
-        };
-      })
-      .sort((a, b) => a.label.localeCompare(b.label));
-  }, [facets, column]);
 
   return (
     <Popover>
@@ -169,6 +115,9 @@ export function DataTableFacetedFilter<TData, TValue>({
                     >
                       <CheckIcon className={cn("h-4 w-4")} />
                     </div>
+                    {option.icon && (
+                      <option.icon className="mr-2 h-4 w-4 text-muted-foreground" />
+                    )}
                     <span>{option.label}</span>
                     {facets?.get(option.value) && (
                       <span className="ml-auto flex h-4 w-4 items-center justify-center font-mono text-xs">
