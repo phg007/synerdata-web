@@ -1,8 +1,10 @@
 "use client";
 
 import type React from "react";
+
 import type { Column } from "@tanstack/react-table";
-import { ChevronsUpDown, ArrowUpDown, EyeOff } from "lucide-react";
+import { ChevronsUpDown, EyeOff, SortAsc, SortDesc } from "lucide-react";
+
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -39,9 +41,9 @@ export function DataTableColumnHeader<TData, TValue>({
           >
             <span>{title}</span>
             {column.getIsSorted() === "desc" ? (
-              <ArrowUpDown className="ml-2 h-4 w-4" />
+              <SortDesc className="ml-2 h-4 w-4" />
             ) : column.getIsSorted() === "asc" ? (
-              <ArrowUpDown className="ml-2 h-4 w-4" />
+              <SortAsc className="ml-2 h-4 w-4" />
             ) : (
               <ChevronsUpDown className="ml-2 h-4 w-4" />
             )}
@@ -49,11 +51,11 @@ export function DataTableColumnHeader<TData, TValue>({
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start">
           <DropdownMenuItem onClick={() => column.toggleSorting(false)}>
-            <ArrowUpDown className="mr-2 h-3.5 w-3.5 text-muted-foreground/70" />
+            <SortAsc className="mr-2 h-3.5 w-3.5 text-muted-foreground/70" />
             Crescente
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => column.toggleSorting(true)}>
-            <ArrowUpDown className="mr-2 h-3.5 w-3.5 text-muted-foreground/70" />
+            <SortDesc className="mr-2 h-3.5 w-3.5 text-muted-foreground/70" />
             Decrescente
           </DropdownMenuItem>
           <DropdownMenuSeparator />

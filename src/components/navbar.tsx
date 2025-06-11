@@ -18,6 +18,7 @@ import {
   Settings,
   DollarSign,
   IdCard,
+  AlertTriangle,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -104,6 +105,15 @@ const menuItems = [
     label: "Ocorrências",
     icon: FileText,
     path: "/ocorrencias",
+
+    submenu: [
+      {
+        id: "occurrences-accidents",
+        label: "Acidentes",
+        icon: AlertTriangle,
+        path: "/ocorrencias/acidentes",
+      },
+    ],
   },
 ];
 
