@@ -13,6 +13,7 @@ export const columns: ColumnDef<AcidentesObjectResponse>[] = [
     header: "ID",
     cell: ({ row }) => row.getValue("id"),
   },
+
   {
     accessorKey: "funcionario.nome",
     header: ({ column }) => (
