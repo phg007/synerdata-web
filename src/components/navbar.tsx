@@ -19,6 +19,7 @@ import {
   DollarSign,
   IdCard,
   AlertTriangle,
+  Clock,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -112,6 +113,12 @@ const menuItems = [
         label: "Acidentes",
         icon: AlertTriangle,
         path: "/ocorrencias/acidentes",
+      },
+      {
+        id: "occurrences-absences",
+        label: "Faltas",
+        icon: Clock,
+        path: "/ocorrencias/faltas",
       },
     ],
   },
