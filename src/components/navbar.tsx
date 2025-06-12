@@ -20,6 +20,7 @@ import {
   IdCard,
   AlertTriangle,
   Clock,
+  FileTextIcon,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -119,6 +120,13 @@ const menuItems = [
         label: "Faltas",
         icon: Clock,
         path: "/ocorrencias/faltas",
+      },
+
+      {
+        id: "occurrences-medical-certificates",
+        label: "Atestados Médicos",
+        icon: FileTextIcon,
+        path: "/ocorrencias/atestado-medico",
       },
     ],
   },
