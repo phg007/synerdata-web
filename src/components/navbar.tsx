@@ -21,6 +21,7 @@ import {
   AlertTriangle,
   Clock,
   FileTextIcon,
+  UserX,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -127,6 +128,12 @@ const menuItems = [
         label: "Atestados Médicos",
         icon: FileTextIcon,
         path: "/ocorrencias/atestado-medico",
+      },
+      {
+        id: "occurrences-terminations",
+        label: "Rescisões",
+        icon: UserX,
+        path: "/ocorrencias/rescisoes",
       },
     ],
   },
