@@ -3,9 +3,9 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { DataTableColumnHeader } from "./data-table-column-header";
 import { DataTableRowActions } from "./data-table-row-actions";
-import { DepartmentObjectResponse } from "../../interfaces/cbo-interface";
+import { CboObjectResponse } from "../../interfaces/cbo-interface";
 
-export const columns: ColumnDef<DepartmentObjectResponse>[] = [
+export const columns: ColumnDef<CboObjectResponse>[] = [
   {
     accessorKey: "id",
     header: ({ column }) => (
