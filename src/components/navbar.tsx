@@ -22,6 +22,11 @@ import {
   Clock,
   FileTextIcon,
   UserX,
+  Palmtree,
+  ShieldCheck,
+  Scale,
+  Fingerprint,
+  TrendingUp,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -117,18 +122,48 @@ const menuItems = [
         path: "/ocorrencias/acidentes",
       },
       {
-        id: "occurrences-absences",
-        label: "Faltas",
-        icon: Clock,
-        path: "/ocorrencias/faltas",
+        id: "occurrences-labor-actions",
+        label: "Ações Trabalhistas",
+        icon: Scale,
+        path: "/ocorrencias/labor-actions",
       },
-
+      {
+        id: "occurrences-cpf-analysis",
+        label: "Análise CPF",
+        icon: Fingerprint,
+        path: "/ocorrencias/cpf-analysis",
+      },
       {
         id: "occurrences-medical-certificates",
         label: "Atestados Médicos",
         icon: FileTextIcon,
         path: "/ocorrencias/atestado-medico",
       },
+      {
+        id: "occurrences-epi-deliveries",
+        label: "Entregas de EPIs",
+        icon: ShieldCheck,
+        path: "/ocorrencias/epi-deliveries",
+      },
+      {
+        id: "occurrences-absences",
+        label: "Faltas",
+        icon: Clock,
+        path: "/ocorrencias/faltas",
+      },
+      {
+        id: "occurrences-vacations",
+        label: "Férias",
+        icon: Palmtree,
+        path: "/ocorrencias/vacations",
+      },
+      {
+        id: "occurrences-promotions",
+        label: "Promoções",
+        icon: TrendingUp,
+        path: "/ocorrencias/promocoes",
+      },
+
       {
         id: "occurrences-terminations",
         label: "Rescisões",
