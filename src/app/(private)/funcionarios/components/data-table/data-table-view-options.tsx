@@ -1,7 +1,8 @@
 "use client";
 
-import type { Table } from "@tanstack/react-table";
-import { SlidersHorizontal } from "lucide-react";
+import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
+import { Table } from "@tanstack/react-table";
+import { Settings2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -10,10 +11,9 @@ import {
   DropdownMenuContent,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-export interface DataTableViewOptionsProps<TData> {
+interface DataTableViewOptionsProps<TData> {
   table: Table<TData>;
 }
 
@@ -28,8 +28,8 @@ export function DataTableViewOptions<TData>({
           size="sm"
           className="ml-auto hidden h-8 lg:flex"
         >
-          <SlidersHorizontal className="mr-2 h-4 w-4" />
-          Visualizar
+          <Settings2 />
+          Exibir
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[150px]">
