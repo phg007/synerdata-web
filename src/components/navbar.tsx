@@ -13,20 +13,10 @@ import {
   ChevronDown,
   Building,
   Briefcase,
-  Shield,
-  Layers,
   Settings,
   DollarSign,
   IdCard,
-  AlertTriangle,
-  Clock,
-  FileTextIcon,
-  UserX,
-  Palmtree,
-  ShieldCheck,
-  Scale,
-  Fingerprint,
-  TrendingUp,
+  UserCog,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -48,21 +38,6 @@ const menuItems = [
     label: "Funcionários",
     icon: Users,
     path: "/funcionarios",
-    submenu: [
-      {
-        id: "employees-main",
-        label: "Funcionários",
-        icon: Users,
-        path: "/funcionarios",
-      },
-
-      {
-        id: "employees-roles",
-        label: "Cargos",
-        icon: Layers,
-        path: "/funcionarios/roles",
-      },
-    ],
   },
   {
     id: "company",
@@ -75,12 +50,6 @@ const menuItems = [
         label: "Empresa",
         icon: Building2,
         path: "/empresas",
-      },
-      {
-        id: "company-epis",
-        label: "EPIs",
-        icon: Shield,
-        path: "/empresas/epis",
       },
       {
         id: "company-branches",
@@ -106,6 +75,12 @@ const menuItems = [
         icon: IdCard,
         path: "/empresas/cbos",
       },
+      {
+        id: "company-roles",
+        label: "Funções",
+        icon: UserCog,
+        path: "/empresas/funcoes",
+      },
     ],
   },
   {
@@ -113,64 +88,6 @@ const menuItems = [
     label: "Ocorrências",
     icon: FileText,
     path: "/ocorrencias",
-
-    submenu: [
-      {
-        id: "occurrences-accidents",
-        label: "Acidentes",
-        icon: AlertTriangle,
-        path: "/ocorrencias/acidentes",
-      },
-      {
-        id: "occurrences-labor-actions",
-        label: "Ações Trabalhistas",
-        icon: Scale,
-        path: "/ocorrencias/labor-actions",
-      },
-      {
-        id: "occurrences-cpf-analysis",
-        label: "Análise CPF",
-        icon: Fingerprint,
-        path: "/ocorrencias/cpf-analysis",
-      },
-      {
-        id: "occurrences-medical-certificates",
-        label: "Atestados Médicos",
-        icon: FileTextIcon,
-        path: "/ocorrencias/atestado-medico",
-      },
-      {
-        id: "occurrences-epi-deliveries",
-        label: "Entregas de EPIs",
-        icon: ShieldCheck,
-        path: "/ocorrencias/epi-deliveries",
-      },
-      {
-        id: "occurrences-absences",
-        label: "Faltas",
-        icon: Clock,
-        path: "/ocorrencias/faltas",
-      },
-      {
-        id: "occurrences-vacations",
-        label: "Férias",
-        icon: Palmtree,
-        path: "/ocorrencias/ferias",
-      },
-      {
-        id: "occurrences-promotions",
-        label: "Promoções",
-        icon: TrendingUp,
-        path: "/ocorrencias/promocoes",
-      },
-
-      {
-        id: "occurrences-terminations",
-        label: "Rescisões",
-        icon: UserX,
-        path: "/ocorrencias/rescisoes",
-      },
-    ],
   },
 ];
 
@@ -180,7 +97,7 @@ export default function Navbar() {
   const user = session?.user;
 
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
-  const [activeSubmenu] = useState<string | null>(null);
+  const [activeSubmenu, setActiveSubmenu] = useState<string | null>(null);
   const [isMounted, setIsMounted] = useState(false);
 
   // Evita renderizar até que o componente esteja montado no cliente
@@ -197,6 +114,9 @@ export default function Navbar() {
         item.submenu?.some((sub) => pathname === sub.path)
     );
     setActiveMenu(menu?.id || null);
+
+    const submenu = menu?.submenu?.find((sub) => pathname === sub.path);
+    setActiveSubmenu(submenu?.id || null);
   }, [pathname, isMounted]);
 
   const logout = async () => {
