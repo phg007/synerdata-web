@@ -25,13 +25,21 @@ export const columns: ColumnDef<RoleObjectResponse>[] = [
     ),
   },
   {
-    accessorKey: "epis",
+    id: "epis",
+    accessorFn: (row) => row.epis,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Epi(s)" />
     ),
-    cell: ({ row }) => (
-      <span className="truncate font-medium">{row.getValue("epis")}</span>
-    ),
+    cell: ({ row }) => {
+      const epis = row.original.epis;
+
+      const nomes =
+        Array.isArray(epis) && epis.length > 0
+          ? epis.map((epi) => epi.nome).join(", ")
+          : "—";
+
+      return <span className="truncate font-medium">{nomes}</span>;
+    },
   },
   {
     accessorKey: "criadoPor",

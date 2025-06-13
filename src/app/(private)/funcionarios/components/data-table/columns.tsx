@@ -42,8 +42,8 @@ export const columns: ColumnDef<EmployeeObjectResponse>[] = [
     },
   },
   {
-    accessorFn: (row) => row.funcao.nome,
     id: "funcao",
+    accessorFn: (row) => row.funcao.nome,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Função" />
     ),
@@ -52,8 +52,8 @@ export const columns: ColumnDef<EmployeeObjectResponse>[] = [
     ),
   },
   {
-    accessorFn: (row) => row.setor.nome,
     id: "setor",
+    accessorFn: (row) => row.setor.nome,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Setor" />
     ),
