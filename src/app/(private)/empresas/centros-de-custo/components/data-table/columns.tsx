@@ -3,9 +3,9 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { DataTableColumnHeader } from "./data-table-column-header";
 import { DataTableRowActions } from "./data-table-row-actions";
-import { DepartmentObjectResponse } from "../../interfaces/cost-center-interface";
+import { CostCenterObjectResponse } from "../../interfaces/cost-center-interface";
 
-export const columns: ColumnDef<DepartmentObjectResponse>[] = [
+export const columns: ColumnDef<CostCenterObjectResponse>[] = [
   {
     accessorKey: "id",
     header: ({ column }) => (
