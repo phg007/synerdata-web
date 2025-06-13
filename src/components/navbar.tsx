@@ -155,7 +155,7 @@ const menuItems = [
         id: "occurrences-vacations",
         label: "Férias",
         icon: Palmtree,
-        path: "/ocorrencias/vacations",
+        path: "/ocorrencias/ferias",
       },
       {
         id: "occurrences-promotions",
