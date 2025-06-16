@@ -29,7 +29,7 @@ import Link from "next/link";
 import { VacationObjectResponse } from "../../interfaces/vacation-interfaces";
 import { use, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { getVacationById } from "../../services/get-vacations-by-id";
+import { getVacationById } from "../../services/get-vacation-by-id";
 
 const editVacationSchema = z.object({
   dataInicio: z.string().min(1, "A data de início é obrigatória"),

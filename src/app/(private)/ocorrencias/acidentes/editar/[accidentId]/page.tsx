@@ -1,8 +1,8 @@
 "use client";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getaccidentById } from "../../services/get-accidents-by-id";
-import { updateAccident } from "../../services/update-accidents";
+import { getaccidentById } from "../../services/get-accident-by-id";
+import { updateAccident } from "../../services/update-accident";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -28,7 +28,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import Link from "next/link";
-import { AcidentesObjectResponse } from "../../interfaces/accidents-interfaces";
+import { AcidentesObjectResponse } from "../../interfaces/accident-interfaces";
 import { use, useEffect } from "react";
 import { useRouter } from "next/navigation";
 

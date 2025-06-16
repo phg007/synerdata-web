@@ -28,7 +28,7 @@ import {
 import { AlertTriangle, ArrowLeft, Loader2 } from "lucide-react";
 
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { createAccident } from "../services/create-accidents";
+import { createAccident } from "../services/create-accident";
 import { toast } from "sonner";
 import Link from "next/link";
 import { Select } from "@radix-ui/react-select";

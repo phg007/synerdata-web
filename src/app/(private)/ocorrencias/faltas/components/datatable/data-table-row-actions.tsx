@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/alert-dialog";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { deleteAbsence } from "../../services/delete-absences";
+import { deleteAbsence } from "../../services/delete-absence";
 import { toast } from "sonner";
 import { Row } from "@tanstack/react-table";
 import Link from "next/link";

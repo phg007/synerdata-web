@@ -1,8 +1,8 @@
 "use client";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getAbsenceById } from "../../services/get-absence-by-id";
-import { updateAbsence } from "../../services/update-absence";
+import { getMedicalCertificateById } from "../../services/get-certificate-by-id";
+import { updateMedicalCertificate } from "../../services/update-certificate";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -18,7 +18,7 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { ArrowLeft, Clock, Loader2 } from "lucide-react";
+import { ArrowLeft, FileTextIcon, Loader2 } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -27,71 +27,80 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import Link from "next/link";
-import { AbsencesObjectResponse } from "../../interfaces/absence-interfaces";
+import { MedicalCertificateObjectResponse } from "../../interfaces/certificate-interfaces";
 import { use, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
-const editAbsenceSchema = z.object({
+const editMedicalCertificateSchema = z.object({
   motivo: z
     .string()
     .min(1, "O motivo é obrigatório")
     .max(255, "O motivo deve ter no máximo 255 caracteres"),
-  data: z.string().min(1, "A data é obrigatória"),
+  dataInicio: z.string().min(1, "A data de início é obrigatória"),
+  dataFim: z.string().min(1, "A data de fim é obrigatória"),
 });
 
-type EditAbsenceFormValues = z.infer<typeof editAbsenceSchema>;
+type EditMedicalCertificateFormValues = z.infer<
+  typeof editMedicalCertificateSchema
+>;
 
-export default function UpdateAbsencePage({
+export default function UpdateMedicalCertificatePage({
   params,
 }: {
-  params: Promise<{ absenceId: string }>;
+  params: Promise<{ certificateId: string }>;
 }) {
-  const { absenceId } = use(params);
+  const { certificateId } = use(params);
   const router = useRouter();
   const queryClient = useQueryClient();
 
-  const { data: absence } = useQuery<AbsencesObjectResponse>({
-    queryKey: ["absence", absenceId],
-    queryFn: () => getAbsenceById(absenceId),
-    enabled: !!absenceId,
-  });
+  const { data: medicalCertificate } =
+    useQuery<MedicalCertificateObjectResponse>({
+      queryKey: ["medical-certificate", certificateId],
+      queryFn: () => getMedicalCertificateById(certificateId),
+      enabled: !!certificateId,
+    });
 
-  const form = useForm<EditAbsenceFormValues>({
-    resolver: zodResolver(editAbsenceSchema),
+  const form = useForm<EditMedicalCertificateFormValues>({
+    resolver: zodResolver(editMedicalCertificateSchema),
     defaultValues: {
       motivo: "",
-      data: "",
+      dataInicio: "",
+      dataFim: "",
     },
   });
 
   useEffect(() => {
-    if (absence) {
-      const [day, month, year] = absence.data.split("/");
+    if (medicalCertificate) {
       form.reset({
-        motivo: absence.motivo,
-        data: `${year}-${month}-${day}`,
+        motivo: medicalCertificate.motivo,
+        dataInicio: new Date(medicalCertificate.dataInicio)
+          .toISOString()
+          .split("T")[0],
+        dataFim: new Date(medicalCertificate.dataFim)
+          .toISOString()
+          .split("T")[0],
       });
     }
-  }, [absence, form]);
+  }, [medicalCertificate, form]);
 
-  const { mutateAsync: updateAbsenceFn, isPending } = useMutation({
-    mutationFn: updateAbsence,
+  const { mutateAsync: updateMedicalCertificateFn, isPending } = useMutation({
+    mutationFn: updateMedicalCertificate,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["absences"] });
-      toast.success("Falta atualizada com sucesso");
+      queryClient.invalidateQueries({ queryKey: ["medical-certificates"] });
+      toast.success("Atestado atualizado com sucesso");
       router.back();
     },
     onError: (error: Error) => {
-      toast.error("Erro ao atualizar a falta", {
+      toast.error("Erro ao atualizar o atestado", {
         description: error.message,
       });
     },
   });
 
-  const onSubmit = async (data: EditAbsenceFormValues) => {
-    await updateAbsenceFn({
+  const onSubmit = async (data: EditMedicalCertificateFormValues) => {
+    await updateMedicalCertificateFn({
       ...data,
-      absenceId,
+      certificateId,
     });
   };
 
@@ -100,21 +109,23 @@ export default function UpdateAbsencePage({
       <div className="container mx-auto px-4 max-w-4xl">
         <div className="mb-8">
           <Link
-            href="/ocorrencias/faltas"
+            href="/ocorrencias/atestado-medico"
             className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground mb-4"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Voltar para Faltas
+            Voltar para Atestados
           </Link>
 
           <div className="flex items-center space-x-3">
             <div className="p-2 bg-blue-100 rounded-lg">
-              <Clock className="h-6 w-6 text-blue-600" />
+              <FileTextIcon className="h-6 w-6 text-blue-600" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Editar Falta</h1>
+              <h1 className="text-3xl font-bold text-gray-900">
+                Editar Atestado
+              </h1>
               <p className="text-gray-600">
-                Atualize os dados da falta registrada
+                Atualize os dados do atestado médico registrado
               </p>
             </div>
           </div>
@@ -122,9 +133,9 @@ export default function UpdateAbsencePage({
 
         <Card>
           <CardHeader>
-            <CardTitle>Informações da Falta</CardTitle>
+            <CardTitle>Informações do Atestado</CardTitle>
             <CardDescription>
-              Atualize as informações da falta registrada
+              Atualize as informações do atestado registrado
             </CardDescription>
           </CardHeader>
           <CardContent className="pt-6">
@@ -135,10 +146,24 @@ export default function UpdateAbsencePage({
               >
                 <FormField
                   control={form.control}
-                  name="data"
+                  name="dataInicio"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Data da Falta</FormLabel>
+                      <FormLabel>Data de Início</FormLabel>
+                      <FormControl>
+                        <Input type="date" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="dataFim"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Data de Fim</FormLabel>
                       <FormControl>
                         <Input type="date" {...field} />
                       </FormControl>
@@ -152,11 +177,11 @@ export default function UpdateAbsencePage({
                   name="motivo"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Motivo da Falta</FormLabel>
+                      <FormLabel>Motivo do Atestado</FormLabel>
                       <FormControl>
                         <Input
                           {...field}
-                          placeholder="Ex: Atraso, consulta, etc."
+                          placeholder="Ex: Cirurgia, repouso, etc."
                         />
                       </FormControl>
                       <FormMessage />
@@ -172,7 +197,7 @@ export default function UpdateAbsencePage({
                         Atualizando...
                       </>
                     ) : (
-                      "Atualizar Falta"
+                      "Atualizar Atestado"
                     )}
                   </Button>
                 </div>

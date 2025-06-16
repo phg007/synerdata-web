@@ -17,6 +17,15 @@ import {
   DollarSign,
   IdCard,
   UserCog,
+  UserX,
+  AlertTriangle,
+  Clock,
+  FileTextIcon,
+  Fingerprint,
+  Palmtree,
+  Scale,
+  ShieldCheck,
+  TrendingUp,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -88,6 +97,63 @@ const menuItems = [
     label: "Ocorrências",
     icon: FileText,
     path: "/ocorrencias",
+    submenu: [
+      {
+        id: "occurrences-accidents",
+        label: "Acidentes",
+        icon: AlertTriangle,
+        path: "/ocorrencias/acidentes",
+      },
+      {
+        id: "occurrences-labor-actions",
+        label: "Ações Trabalhistas",
+        icon: Scale,
+        path: "/ocorrencias/acoes-trabalhistas",
+      },
+      {
+        id: "occurrences-cpf-analysis",
+        label: "Análise CPF",
+        icon: Fingerprint,
+        path: "/ocorrencias/cpf-analysis",
+      },
+      {
+        id: "occurrences-medical-certificates",
+        label: "Atestados Médicos",
+        icon: FileTextIcon,
+        path: "/ocorrencias/atestado-medico",
+      },
+      {
+        id: "occurrences-epi-deliveries",
+        label: "Entregas de EPIs",
+        icon: ShieldCheck,
+        path: "/ocorrencias/epi-deliveries",
+      },
+      {
+        id: "occurrences-absences",
+        label: "Faltas",
+        icon: Clock,
+        path: "/ocorrencias/faltas",
+      },
+      {
+        id: "occurrences-vacations",
+        label: "Férias",
+        icon: Palmtree,
+        path: "/ocorrencias/ferias",
+      },
+      {
+        id: "occurrences-promotions",
+        label: "Promoções",
+        icon: TrendingUp,
+        path: "/ocorrencias/promocoes",
+      },
+
+      {
+        id: "occurrences-terminations",
+        label: "Rescisões",
+        icon: UserX,
+        path: "/ocorrencias/rescisoes",
+      },
+    ],
   },
 ];
 
