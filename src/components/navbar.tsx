@@ -126,7 +126,7 @@ const menuItems = [
         id: "occurrences-epi-deliveries",
         label: "Entregas de EPIs",
         icon: ShieldCheck,
-        path: "/ocorrencias/epi-deliveries",
+        path: "/ocorrencias/entregas-de-epis",
       },
       {
         id: "occurrences-absences",
@@ -163,7 +163,7 @@ export default function Navbar() {
   const user = session?.user;
 
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
-  const [activeSubmenu, setActiveSubmenu] = useState<string | null>(null);
+
   const [isMounted, setIsMounted] = useState(false);
 
   // Evita renderizar até que o componente esteja montado no cliente
@@ -180,9 +180,6 @@ export default function Navbar() {
         item.submenu?.some((sub) => pathname === sub.path)
     );
     setActiveMenu(menu?.id || null);
-
-    const submenu = menu?.submenu?.find((sub) => pathname === sub.path);
-    setActiveSubmenu(submenu?.id || null);
   }, [pathname, isMounted]);
 
   const logout = async () => {
@@ -312,32 +309,6 @@ export default function Navbar() {
           )}
         </div>
       </header>
-
-      {activeSubmenu &&
-        (activeMenu === "employees" || activeMenu === "company") && (
-          <div className="bg-white border-b px-4 py-2">
-            <div className="container mx-auto text-sm text-gray-700">
-              <nav className="flex items-center gap-2">
-                <Link
-                  href={
-                    activeMenu === "employees" ? "/funcionarios" : "/empresas"
-                  }
-                  className="text-gray-500 hover:text-gray-700"
-                >
-                  {activeMenu === "employees" ? "Funcionários" : "Empresa"}
-                </Link>
-                <span>/</span>
-                <span className="font-medium">
-                  {
-                    menuItems
-                      .find((item) => item.id === activeMenu)
-                      ?.submenu?.find((sub) => sub.id === activeSubmenu)?.label
-                  }
-                </span>
-              </nav>
-            </div>
-          </div>
-        )}
     </div>
   );
 }
