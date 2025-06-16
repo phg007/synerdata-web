@@ -3,9 +3,9 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { DataTableColumnHeader } from "./data-table-column-header";
 import { DataTableRowActions } from "./data-table-row-actions";
-import { AbsencesObjectResponse } from "../../interfaces/absence-interfaces";
+import { MedicalCertificateObjectResponse } from "../../interfaces/certificate-interfaces";
 
-export const columns: ColumnDef<AbsencesObjectResponse>[] = [
+export const columns: ColumnDef<MedicalCertificateObjectResponse>[] = [
   {
     accessorKey: "id",
     header: ({ column }) => (
@@ -22,11 +22,18 @@ export const columns: ColumnDef<AbsencesObjectResponse>[] = [
     cell: ({ row }) => <span>{row.getValue("funcionario.nome")}</span>,
   },
   {
-    accessorKey: "data",
+    accessorKey: "dataInicio",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Data" />
+      <DataTableColumnHeader column={column} title="Início" />
     ),
-    cell: ({ row }) => <span>{row.getValue("data")}</span>,
+    cell: ({ row }) => <span>{row.getValue("dataInicio")}</span>,
+  },
+  {
+    accessorKey: "dataFim",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Fim" />
+    ),
+    cell: ({ row }) => <span>{row.getValue("dataFim")}</span>,
   },
   {
     accessorKey: "motivo",

@@ -5,7 +5,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { DataTableColumnHeader } from "./data-table-column-header";
 import { DataTableRowActions } from "./data-table-row-actions";
 
-import { AcidentesObjectResponse } from "../../interfaces/accidents-interfaces";
+import { AcidentesObjectResponse } from "../../interfaces/accident-interfaces";
 
 export const columns: ColumnDef<AcidentesObjectResponse>[] = [
   {

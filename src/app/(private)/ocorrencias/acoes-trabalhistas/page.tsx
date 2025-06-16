@@ -1,28 +1,28 @@
 "use client";
 
-import { Palmtree } from "lucide-react";
+import { Scale } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { DataTable } from "./components/datatable/data-table";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useQuery } from "@tanstack/react-query";
-import { getVacationsByCompany } from "./services/get-vacations-by-company";
+import { getLaborActionsByCompany } from "./services/get-labor-actions-by-company";
 import { useSession } from "next-auth/react";
 import { columns } from "./components/datatable/columns";
 import Link from "next/link";
-import { VacationObjectResponse } from "./interfaces/vacation-interfaces";
+import { LaborActionObjectResponse } from "./interfaces/labor-action";
 
-export default function VacationsPage() {
+export default function LaborActionsPage() {
   const { data: session, status } = useSession();
   const companyId = session?.user.empresa;
 
   const {
-    data: vacations = [],
+    data: laborActions = [],
     isLoading,
     isError,
-  } = useQuery<VacationObjectResponse[]>({
-    queryKey: ["vacations", companyId],
-    queryFn: () => getVacationsByCompany(companyId!),
+  } = useQuery<LaborActionObjectResponse[]>({
+    queryKey: ["labor-actions", companyId],
+    queryFn: () => getLaborActionsByCompany(companyId!),
     enabled: !!companyId,
   });
 
@@ -43,18 +43,20 @@ export default function VacationsPage() {
         <CardContent className="p-4 h-full">
           <div className="space-y-4 h-full">
             <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-bold">Férias Cadastradas</h2>
+              <h2 className="text-2xl font-bold">
+                Ações Trabalhistas Cadastradas
+              </h2>
               <div className="flex gap-2">
-                <Link href={"ferias/adicionar"}>
+                <Link href={"acoes-trabalhistas/adicionar"}>
                   <Button disabled={isLoading}>
-                    <Palmtree className="mr-2 h-4 w-4" />
-                    Adicionar Férias
+                    <Scale className="mr-2 h-4 w-4" />
+                    Adicionar Ação
                   </Button>
                 </Link>
               </div>
             </div>
 
-            {isLoading && vacations.length === 0 ? (
+            {isLoading && laborActions.length === 0 ? (
               <div className="space-y-3">
                 <Skeleton className="h-10 w-full" />
                 <Skeleton className="h-10 w-full" />
@@ -65,12 +67,12 @@ export default function VacationsPage() {
             ) : isError ? (
               <div className="p-4 text-center">
                 <p className="text-amber-500">
-                  Não foi possível buscar as férias
+                  Não foi possível buscar as ações trabalhistas
                 </p>
-                <DataTable columns={columns} data={vacations} />
+                <DataTable columns={columns} data={laborActions} />
               </div>
             ) : (
-              <DataTable columns={columns} data={vacations} />
+              <DataTable columns={columns} data={laborActions} />
             )}
           </div>
         </CardContent>

@@ -1,10 +1,10 @@
 import { fetchClient } from "@/utils/fetch-client";
 import { acidentesObjectResponse } from "../interfaces/accident-interfaces";
 
-export async function getaccidentsByCompany(
-  companyId: string
-): Promise<acidentesObjectResponse[]> {
-  const response = await fetchClient(`v1/empresas/${companyId}/acidentes`, {
+export async function getaccidentById(
+  id: string
+): Promise<acidentesObjectResponse> {
+  const response = await fetchClient(`v1/funcionarios/acidentes/${id}`, {
     method: "GET",
   });
 

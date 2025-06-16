@@ -10,7 +10,7 @@ import { getaccidentsByCompany } from "./services/get-accidents-by-company";
 import { useSession } from "next-auth/react";
 import { columns } from "./components/datatable/columns";
 import Link from "next/link";
-import { AcidentesObjectResponse } from "./interfaces/accidents-interfaces";
+import { AcidentesObjectResponse } from "./interfaces/accident-interfaces";
 
 export default function AccidentsPage() {
   const { data: session, status } = useSession();
