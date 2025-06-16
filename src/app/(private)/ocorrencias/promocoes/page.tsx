@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { DataTable } from "./components/datatable/data-table";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useQuery } from "@tanstack/react-query";
-import { getPromotionsByCompany } from "./services/get-promotion-by-company";
+import { getPromotionsByCompany } from "./services/get-promotions-by-company";
 import { useSession } from "next-auth/react";
 import { columns } from "./components/datatable/columns";
 import Link from "next/link";

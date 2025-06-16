@@ -10,7 +10,7 @@ import { getAbsencesByCompany } from "./services/get-absences-by-company";
 import { useSession } from "next-auth/react";
 import { columns } from "./components/datatable/columns";
 import Link from "next/link";
-import { AbsencesObjectResponse } from "./interfaces/absences-interfaces";
+import { AbsencesObjectResponse } from "./interfaces/absence-interfaces";
 
 export default function AbsencesPage() {
   const { data: session, status } = useSession();

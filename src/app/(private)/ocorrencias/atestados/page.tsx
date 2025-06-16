@@ -1,28 +1,28 @@
 "use client";
 
-import { Palmtree } from "lucide-react";
+import { FileTextIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { DataTable } from "./components/datatable/data-table";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useQuery } from "@tanstack/react-query";
-import { getVacationsByCompany } from "./services/get-vacations-by-company";
+import { getMedicalCertificatesByCompany } from "./services/get-certificates-by-company";
 import { useSession } from "next-auth/react";
 import { columns } from "./components/datatable/columns";
 import Link from "next/link";
-import { VacationObjectResponse } from "./interfaces/vacation-interfaces";
+import { MedicalCertificateObjectResponse } from "./interfaces/certificate-interfaces";
 
-export default function VacationsPage() {
+export default function MedicalCertificatesPage() {
   const { data: session, status } = useSession();
   const companyId = session?.user.empresa;
 
   const {
-    data: vacations = [],
+    data: medicalCertificates = [],
     isLoading,
     isError,
-  } = useQuery<VacationObjectResponse[]>({
-    queryKey: ["vacations", companyId],
-    queryFn: () => getVacationsByCompany(companyId!),
+  } = useQuery<MedicalCertificateObjectResponse[]>({
+    queryKey: ["medical-certificates", companyId],
+    queryFn: () => getMedicalCertificatesByCompany(companyId!),
     enabled: !!companyId,
   });
 
@@ -43,18 +43,18 @@ export default function VacationsPage() {
         <CardContent className="p-4 h-full">
           <div className="space-y-4 h-full">
             <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-bold">Férias Cadastradas</h2>
+              <h2 className="text-2xl font-bold">Atestados Cadastrados</h2>
               <div className="flex gap-2">
-                <Link href={"ferias/adicionar"}>
+                <Link href={"atestado-medico/adicionar"}>
                   <Button disabled={isLoading}>
-                    <Palmtree className="mr-2 h-4 w-4" />
-                    Adicionar Férias
+                    <FileTextIcon className="mr-2 h-4 w-4" />
+                    Adicionar Atestado
                   </Button>
                 </Link>
               </div>
             </div>
 
-            {isLoading && vacations.length === 0 ? (
+            {isLoading && medicalCertificates.length === 0 ? (
               <div className="space-y-3">
                 <Skeleton className="h-10 w-full" />
                 <Skeleton className="h-10 w-full" />
@@ -65,12 +65,12 @@ export default function VacationsPage() {
             ) : isError ? (
               <div className="p-4 text-center">
                 <p className="text-amber-500">
-                  Não foi possível buscar as férias
+                  Não foi possível buscar os atestados
                 </p>
-                <DataTable columns={columns} data={vacations} />
+                <DataTable columns={columns} data={medicalCertificates} />
               </div>
             ) : (
-              <DataTable columns={columns} data={vacations} />
+              <DataTable columns={columns} data={medicalCertificates} />
             )}
           </div>
         </CardContent>
