@@ -114,7 +114,7 @@ const menuItems = [
         id: "occurrences-cpf-analysis",
         label: "Análise CPF",
         icon: Fingerprint,
-        path: "/ocorrencias/cpf-analysis",
+        path: "/ocorrencias/analises-de-cpf",
       },
       {
         id: "occurrences-medical-certificates",
