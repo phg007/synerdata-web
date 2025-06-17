@@ -45,7 +45,7 @@ export default function AccidentsPage() {
             <div className="flex justify-between items-center">
               <h2 className="text-2xl font-bold">Acidentes Cadastrados</h2>
               <div className="flex gap-2">
-                <Link href={"acidentes/adicionar"}>
+                <Link href={"acidentes/criar"}>
                   <Button disabled={isLoading}>
                     <AlertTriangle className="mr-2 h-4 w-4" />
                     Adicionar Acidente
