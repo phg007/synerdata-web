@@ -26,6 +26,7 @@ import {
   Scale,
   ShieldCheck,
   TrendingUp,
+  FolderOpen,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -55,12 +56,6 @@ const menuItems = [
     path: "/empresas",
     submenu: [
       {
-        id: "company-main",
-        label: "Empresa",
-        icon: Building2,
-        path: "/empresas",
-      },
-      {
         id: "company-branches",
         label: "Filiais",
         icon: Building,
@@ -89,6 +84,12 @@ const menuItems = [
         label: "Funções",
         icon: UserCog,
         path: "/empresas/funcoes",
+      },
+      {
+        id: "company-projects",
+        label: "Projetos",
+        icon: FolderOpen,
+        path: "/empresas/projetos",
       },
     ],
   },
