@@ -114,8 +114,8 @@ export function prepareSubscriptionData(
   cardToken: string,
   billingAddress: AddressFormData
 ): SubscriptionData {
-  const line_1 = `${billingAddress.number}, ${billingAddress.street}, ${billingAddress.neighborhood}`;
-  const zipCode = billingAddress.zipCode.replace(/\D/g, "");
+  const line_1 = `${customerData.address.number}, ${customerData.address.street}, ${customerData.address.neighborhood}`;
+  const zipCode = customerData.address.zipCode.replace(/\D/g, "");
   const homePhoneNumbers =
     customerData.phones.homePhone?.replace(/\D/g, "") || undefined;
   const mobilePhoneNumbers = customerData.phones.mobilePhone.replace(/\D/g, "");
@@ -130,10 +130,10 @@ export function prepareSubscriptionData(
       type: "company",
       address: {
         line_1: line_1,
-        line_2: billingAddress.complement,
+        line_2: customerData.address.complement,
         zip_code: zipCode,
-        city: billingAddress.city,
-        state: billingAddress.state,
+        city: customerData.address.city,
+        state: customerData.address.state,
         country: "BR",
       },
       phones: {

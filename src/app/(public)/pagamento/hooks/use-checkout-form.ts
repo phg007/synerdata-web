@@ -50,7 +50,8 @@ export function useCheckoutForm() {
     defaultValues: {
       cardHolderName: "",
       cardNumber: "",
-      expiryDate: "",
+      expiryMonth: "",
+      expiryYear: "",
       cvv: "",
       sameAddress: true,
       billingAddress: {

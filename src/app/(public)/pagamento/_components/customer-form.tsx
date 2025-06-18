@@ -125,7 +125,9 @@ export default function CustomerForm({ form, onSubmit }: CustomerFormProps) {
               name="companyName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Nome da empresa</FormLabel>
+                  <FormLabel>
+                    Nome da empresa <span className="text-red-500">*</span>
+                  </FormLabel>
                   <FormControl>
                     <div className="relative">
                       <Input placeholder="Empresa Ltda." {...field} />
@@ -144,7 +146,9 @@ export default function CustomerForm({ form, onSubmit }: CustomerFormProps) {
               name="tradeName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Nome fantasia</FormLabel>
+                  <FormLabel>
+                    Nome fantasia <span className="text-red-500">*</span>
+                  </FormLabel>
                   <FormControl>
                     <div className="relative">
                       <Input placeholder="XYZ" {...field} />
@@ -164,7 +168,9 @@ export default function CustomerForm({ form, onSubmit }: CustomerFormProps) {
               name="cnpj"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>CNPJ</FormLabel>
+                  <FormLabel>
+                    CNPJ <span className="text-red-500">*</span>
+                  </FormLabel>
                   <FormControl>
                     <Input
                       placeholder="00.000.000/0000-00"
@@ -182,7 +188,9 @@ export default function CustomerForm({ form, onSubmit }: CustomerFormProps) {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>E-mail</FormLabel>
+                  <FormLabel>
+                    E-mail <span className="text-red-500">*</span>
+                  </FormLabel>
                   <FormControl>
                     <div className="relative">
                       <Input placeholder="contato@empresa.com" {...field} />
@@ -225,7 +233,9 @@ export default function CustomerForm({ form, onSubmit }: CustomerFormProps) {
               name="phones.mobilePhone"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Telefone</FormLabel>
+                  <FormLabel>
+                    Celular <span className="text-red-500">*</span>
+                  </FormLabel>
                   <FormControl>
                     <div className="relative">
                       <Input
@@ -255,7 +265,9 @@ export default function CustomerForm({ form, onSubmit }: CustomerFormProps) {
                 name="address.zipCode"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>CEP</FormLabel>
+                    <FormLabel>
+                      CEP <span className="text-red-500">*</span>
+                    </FormLabel>
                     <FormControl>
                       <div className="relative">
                         <Input
@@ -280,7 +292,9 @@ export default function CustomerForm({ form, onSubmit }: CustomerFormProps) {
                 name="address.street"
                 render={({ field }) => (
                   <FormItem className="md:col-span-2">
-                    <FormLabel>Endereço</FormLabel>
+                    <FormLabel>
+                      Endereço <span className="text-red-500">*</span>
+                    </FormLabel>
                     <FormControl>
                       <Input placeholder="Rua, Avenida, etc." {...field} />
                     </FormControl>
@@ -296,7 +310,9 @@ export default function CustomerForm({ form, onSubmit }: CustomerFormProps) {
                 name="address.number"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Número</FormLabel>
+                    <FormLabel>
+                      Número <span className="text-red-500">*</span>
+                    </FormLabel>
                     <FormControl>
                       <Input placeholder="123" {...field} />
                     </FormControl>
@@ -324,7 +340,9 @@ export default function CustomerForm({ form, onSubmit }: CustomerFormProps) {
                 name="address.neighborhood"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Bairro</FormLabel>
+                    <FormLabel>
+                      Bairro <span className="text-red-500">*</span>
+                    </FormLabel>
                     <FormControl>
                       <Input placeholder="Centro" {...field} />
                     </FormControl>
@@ -340,7 +358,9 @@ export default function CustomerForm({ form, onSubmit }: CustomerFormProps) {
                 name="address.city"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Cidade</FormLabel>
+                    <FormLabel>
+                      Cidade <span className="text-red-500">*</span>
+                    </FormLabel>
                     <FormControl>
                       <Input placeholder="São Paulo" {...field} />
                     </FormControl>
@@ -354,7 +374,9 @@ export default function CustomerForm({ form, onSubmit }: CustomerFormProps) {
                 name="address.state"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Estado</FormLabel>
+                    <FormLabel>
+                      Estado <span className="text-red-500">*</span>
+                    </FormLabel>
                     <FormControl>
                       <Select
                         value={field.value}

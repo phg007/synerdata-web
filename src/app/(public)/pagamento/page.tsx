@@ -43,6 +43,7 @@ export default function CheckoutPage() {
             form={paymentForm}
             onSubmit={nextStep}
             onBack={prevStep}
+            customerAddress={customerForm.getValues("address")}
           />
         );
       case "review":

@@ -20,7 +20,7 @@ import {
   formatCurrency,
   getPlanBadgeColors,
 } from "../utils/checkout-utils";
-import { getFeaturesForPlan } from "@/app/page";
+import { getFeaturesForPlan } from "@/lib/get-features-for-plan";
 
 interface ReviewStepProps {
   customerData: CustomerFormData;
@@ -47,7 +47,6 @@ export default function ReviewStep({
   const planColors = getPlanBadgeColors(planType);
   const monthlyPrice = calculatePrice(planType, employeeCount);
 
-  // Função para mascarar o número do cartão
   const maskCardNumber = (cardNumber: string) => {
     const cleanNumber = cardNumber.replace(/\s/g, "");
     const lastFour = cleanNumber.slice(-4);
@@ -64,7 +63,6 @@ export default function ReviewStep({
       </div>
 
       <div className="space-y-6">
-        {/* Dados da empresa */}
         <div className="bg-slate-50 rounded-lg p-4 border border-slate-200">
           <div className="flex items-center mb-3">
             <Building2 className="h-5 w-5 text-slate-500 mr-2" />
@@ -119,7 +117,6 @@ export default function ReviewStep({
           </div>
         </div>
 
-        {/* Dados de pagamento */}
         <div className="bg-slate-50 rounded-lg p-4 border border-slate-200">
           <div className="flex items-center mb-3">
             <CreditCard className="h-5 w-5 text-slate-500 mr-2" />
@@ -141,36 +138,35 @@ export default function ReviewStep({
             </div>
             <div>
               <span className="text-slate-500">Validade:</span>{" "}
-              <span className="font-medium">{paymentData.expiryDate}</span>
+              <span className="font-medium">
+                {paymentData.expiryMonth}/{paymentData.expiryYear}
+              </span>
             </div>
           </div>
 
-          {!paymentData.sameAddress && paymentData.billingAddress && (
-            <div className="mt-4 pt-3 border-t border-slate-200">
-              <div className="flex items-center mb-2">
-                <MapPin className="h-5 w-5 text-slate-500 mr-2" />
-                <h4 className="font-medium">Endereço de cobrança</h4>
-              </div>
-
-              <div className="text-sm">
-                <p>
-                  {paymentData.billingAddress.street},{" "}
-                  {paymentData.billingAddress.number}
-                  {paymentData.billingAddress.complement &&
-                    `, ${paymentData.billingAddress.complement}`}
-                </p>
-                <p>
-                  {paymentData.billingAddress.neighborhood} -{" "}
-                  {paymentData.billingAddress.city}/
-                  {paymentData.billingAddress.state}
-                </p>
-                <p>CEP: {paymentData.billingAddress.zipCode}</p>
-              </div>
+          <div className="mt-4 pt-3 border-t border-slate-200">
+            <div className="flex items-center mb-2">
+              <MapPin className="h-5 w-5 text-slate-500 mr-2" />
+              <h4 className="font-medium">Endereço de cobrança</h4>
             </div>
-          )}
+
+            <div className="text-sm">
+              <p>
+                {paymentData.billingAddress.street},{" "}
+                {paymentData.billingAddress.number}
+                {paymentData.billingAddress.complement &&
+                  `, ${paymentData.billingAddress.complement}`}
+              </p>
+              <p>
+                {paymentData.billingAddress.neighborhood} -{" "}
+                {paymentData.billingAddress.city}/
+                {paymentData.billingAddress.state}
+              </p>
+              <p>CEP: {paymentData.billingAddress.zipCode}</p>
+            </div>
+          </div>
         </div>
 
-        {/* Resumo do plano */}
         <div className="bg-slate-50 rounded-lg p-4 border border-slate-200">
           <div className="flex items-center mb-3">
             <div

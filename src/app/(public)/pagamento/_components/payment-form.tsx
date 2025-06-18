@@ -4,7 +4,10 @@ import type React from "react";
 
 import { useEffect } from "react";
 import type { UseFormReturn } from "react-hook-form";
-import type { PaymentFormData } from "../schemas/validation-schemas";
+import type {
+  AddressFormData,
+  PaymentFormData,
+} from "../schemas/validation-schemas";
 import {
   Form,
   FormControl,
@@ -13,53 +16,46 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ChevronLeft, ChevronRight, CreditCard, Lock } from "lucide-react";
-import { formatCardNumber, formatExpiryDate } from "../utils/checkout-utils";
+import { formatCardNumber } from "../utils/checkout-utils";
 import BillingAddressForm from "./billing-address-form";
 
 interface PaymentFormProps {
   form: UseFormReturn<PaymentFormData>;
   onSubmit: () => void;
   onBack: () => void;
+  customerAddress: AddressFormData;
 }
 
 export default function PaymentForm({
   form,
   onSubmit,
   onBack,
+  customerAddress,
 }: PaymentFormProps) {
   const sameAddress = form.watch("sameAddress");
 
-  // Função para lidar com a formatação do número do cartão
   const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const formattedValue = formatCardNumber(e.target.value);
     form.setValue("cardNumber", formattedValue, { shouldValidate: true });
   };
 
-  // Função para lidar com a formatação da data de validade
-  const handleExpiryDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const formattedValue = formatExpiryDate(e.target.value);
-    form.setValue("expiryDate", formattedValue, { shouldValidate: true });
-  };
-
-  // Efeito para limpar os campos de endereço de cobrança quando sameAddress for true
   useEffect(() => {
     if (sameAddress) {
-      form.setValue("billingAddress", {
-        zipCode: "",
-        street: "",
-        number: "",
-        complement: "",
-        neighborhood: "",
-        city: "",
-        state: "",
-      });
+      form.setValue("billingAddress", customerAddress);
       form.clearErrors("billingAddress");
     }
-  }, [sameAddress, form]);
+  }, [sameAddress, customerAddress, form]);
 
   const handleSubmit = form.handleSubmit(() => {
     onSubmit();
@@ -68,7 +64,6 @@ export default function PaymentForm({
   const handleSameAddressChange = (checked: boolean) => {
     form.setValue("sameAddress", checked, { shouldValidate: true });
 
-    // Se marcar o checkbox, limpa os erros de validação
     if (checked) {
       form.clearErrors("billingAddress");
     }
@@ -97,7 +92,9 @@ export default function PaymentForm({
             name="cardHolderName"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Nome no cartão</FormLabel>
+                <FormLabel>
+                  Nome no cartão <span className="text-red-500">*</span>
+                </FormLabel>
                 <FormControl>
                   <Input
                     className="uppercase"
@@ -110,13 +107,15 @@ export default function PaymentForm({
             )}
           />
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <FormField
               control={form.control}
               name="cardNumber"
               render={({ field }) => (
                 <FormItem className="md:col-span-2">
-                  <FormLabel>Número do cartão</FormLabel>
+                  <FormLabel>
+                    Número do cartão <span className="text-red-500">*</span>
+                  </FormLabel>
                   <FormControl>
                     <div className="relative">
                       <Input
@@ -134,20 +133,35 @@ export default function PaymentForm({
               )}
             />
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="md:col-span-1 grid grid-cols-2 gap-4">
               <FormField
                 control={form.control}
-                name="expiryDate"
+                name="expiryMonth"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Validade</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="MM/AA"
-                        {...field}
-                        onChange={handleExpiryDateChange}
-                      />
-                    </FormControl>
+                    <FormLabel>
+                      Mês <span className="text-red-500">*</span>
+                    </FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Mês" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {Array.from({ length: 12 }, (_, i) => {
+                          const month = (i + 1).toString().padStart(2, "0");
+                          return (
+                            <SelectItem key={month} value={month}>
+                              {month}
+                            </SelectItem>
+                          );
+                        })}
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -155,18 +169,53 @@ export default function PaymentForm({
 
               <FormField
                 control={form.control}
-                name="cvv"
+                name="expiryYear"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>CVV</FormLabel>
-                    <FormControl>
-                      <Input placeholder="123" {...field} maxLength={4} />
-                    </FormControl>
+                    <FormLabel>
+                      Ano <span className="text-red-500">*</span>
+                    </FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Ano" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {Array.from({ length: 31 }, (_, i) => {
+                          const year = new Date().getFullYear() + i;
+                          return (
+                            <SelectItem key={year} value={String(year)}>
+                              {year}
+                            </SelectItem>
+                          );
+                        })}
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}
               />
             </div>
+
+            <FormField
+              control={form.control}
+              name="cvv"
+              render={({ field }) => (
+                <FormItem className="md:col-span-1">
+                  <FormLabel>
+                    CVV <span className="text-red-500">*</span>
+                  </FormLabel>
+                  <FormControl>
+                    <Input placeholder="123" {...field} maxLength={4} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </div>
 
           <div className="pt-4 border-t border-slate-200">

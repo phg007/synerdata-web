@@ -37,14 +37,8 @@ export interface CardData {
   };
 }
 
-/**
- * Obtém um token de cartão do PagarMe
- * @param cardData Dados do cartão e endereço de cobrança
- * @returns Token do cartão
- */
 export async function getCardToken(cardData: CardData): Promise<string> {
   try {
-    // Chamada para a API do PagarMe para tokenizar o cartão
     const response = await fetch(
       "https://api.pagar.me/core/v5/tokens?appId=pk_p27EZ88AcKtpZemd",
       {
@@ -81,7 +75,6 @@ export function prepareCardData(
   paymentData: PaymentFormData,
   billingAddress: AddressFormData
 ): CardData {
-  const [expirationMonth, expirationYear] = paymentData.expiryDate.split("/");
   const line_1 = `${billingAddress.number}, ${billingAddress.street}, ${billingAddress.neighborhood}`;
   const zipCode = billingAddress.zipCode.replace(/\D/g, "");
 
@@ -89,8 +82,8 @@ export function prepareCardData(
     number: paymentData.cardNumber.replace(/\s/g, ""),
     holder_name: paymentData.cardHolderName.toLocaleUpperCase(),
     holder_document: customerData.cnpj.replace(/\D/g, ""),
-    exp_month: parseInt(expirationMonth),
-    exp_year: parseInt(expirationYear),
+    exp_month: parseInt(paymentData.expiryMonth),
+    exp_year: parseInt(paymentData.expiryYear),
     cvv: paymentData.cvv,
     billing_address: {
       line_1: line_1,

@@ -36,23 +36,26 @@ export const customerSchema = z.object({
 });
 export type CustomerFormData = z.infer<typeof customerSchema>;
 
+const currentYear = new Date().getFullYear();
+
 export const paymentSchema = z
   .object({
     cardHolderName: z.string().min(3, "Nome no cartão é obrigatório"),
     cardNumber: z.string().min(16, "Número do cartão inválido").max(19),
-    expiryDate: z
+    expiryMonth: z
       .string()
-      .regex(/^\d{2}\/\d{2}$/, "Formato inválido (MM/AA)")
-      .refine(
-        (val) => {
-          const [month] = val.split("/");
-          const monthNum = Number(month);
-          return monthNum >= 1 && monthNum <= 12;
-        },
-        {
-          message: "Mês inválido (use valores entre 01 e 12)",
-        }
-      ),
+      .refine((val) => Number(val) >= 1 && Number(val) <= 12, {
+        message: "Mês inválido",
+      }),
+    expiryYear: z.string().refine(
+      (val) => {
+        const year = Number(val);
+        return year >= currentYear && year <= currentYear + 10;
+      },
+      {
+        message: "Ano inválido",
+      }
+    ),
     cvv: z.string().min(3, "CVV inválido").max(4),
     sameAddress: z.boolean(),
     billingAddress: z.object({
