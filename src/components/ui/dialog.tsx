@@ -120,5 +120,4 @@ export {
   DialogFooter,
   DialogTitle,
   DialogDescription,
-  dialogCloseFn,
 };

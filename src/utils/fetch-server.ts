@@ -1,11 +1,11 @@
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { nextAuthOptions } from "./auth-options";
 import { getServerSession } from "next-auth";
 
 export async function fetchServer(
   url: RequestInfo,
   options: RequestInit = {}
 ): Promise<Response> {
-  const session = await getServerSession(authOptions);
+  const session = await getServerSession(nextAuthOptions);
 
   const headers = new Headers(options.headers || {});
 

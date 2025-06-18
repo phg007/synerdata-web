@@ -1,6 +1,6 @@
 import { fetchClient } from "@/utils/fetch-client";
 import { ApiResponse } from "@/utils/interfaces/base-response";
-import { acidentesObjectResponse } from "../interfaces/accident-interfaces";
+import { AcidentesObjectResponse } from "../interfaces/accident-interfaces";
 
 export interface DeleteAccidentPayload {
   accidentId: string;
@@ -22,7 +22,7 @@ export async function deleteAccident({ accidentId }: DeleteAccidentPayload) {
       );
     }
 
-    return (await response.json()) as ApiResponse<acidentesObjectResponse>;
+    return (await response.json()) as ApiResponse<AcidentesObjectResponse>;
   } catch (error) {
     console.error("Erro ao excluir o acidente:", error);
     throw error;

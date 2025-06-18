@@ -1,9 +1,9 @@
 import { fetchClient } from "@/utils/fetch-client";
-import { acidentesObjectResponse } from "../interfaces/accident-interfaces";
+import { AcidentesObjectResponse } from "../interfaces/accident-interfaces";
 
 export async function getaccidentById(
   id: string
-): Promise<acidentesObjectResponse> {
+): Promise<AcidentesObjectResponse> {
   const response = await fetchClient(`v1/funcionarios/acidentes/${id}`, {
     method: "GET",
   });

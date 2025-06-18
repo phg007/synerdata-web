@@ -1,6 +1,6 @@
 import { fetchClient } from "@/utils/fetch-client";
 import { ApiResponse } from "@/utils/interfaces/base-response";
-import { acidentesObjectResponse } from "../interfaces/accident-interfaces";
+import { AcidentesObjectResponse } from "../interfaces/accident-interfaces";
 
 export interface UpdateAccidentPayload {
   accidentId: string;
@@ -41,7 +41,7 @@ export async function updateAccident({
       );
     }
 
-    return (await response.json()) as ApiResponse<acidentesObjectResponse>;
+    return (await response.json()) as ApiResponse<AcidentesObjectResponse>;
   } catch (error) {
     console.error("Erro ao atualizar o acidente:", error);
     throw error;

@@ -8,6 +8,7 @@ declare module "next-auth" {
       email: string;
       empresa: string;
       funcao: string;
+      primeiroAcesso: boolean;
     };
     accessToken: string;
   }
@@ -18,6 +19,7 @@ declare module "next-auth" {
     email: string;
     empresa: string;
     funcao: string;
+    primeiroAcesso: boolean;
     accessToken: string;
   }
 }

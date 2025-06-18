@@ -1,8 +1,11 @@
 import { withUt } from "uploadthing/tw";
+import tailwindcssAnimate from "tailwindcss-animate";
+import tailwindTypography from "@tailwindcss/typography";
+import { Config } from "tailwindcss";
 
 /** @type {import('tailwindcss').Config} */
-const config = {
-  darkMode: ["class"],
+const config: Config = {
+  darkMode: "class",
   content: [
     "./pages/**/*.{ts,tsx}",
     "./components/**/*.{ts,tsx}",
@@ -61,23 +64,23 @@ const config = {
       },
       keyframes: {
         "accordion-down": {
-          from: { height: 0 },
+          from: { height: "0" },
           to: { height: "var(--radix-accordion-content-height)" },
         },
         "accordion-up": {
           from: { height: "var(--radix-accordion-content-height)" },
-          to: { height: 0 },
+          to: { height: "0" },
         },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
       },
-      typography: (theme) => ({
+      typography: (theme: (path: string) => string) => ({
         DEFAULT: {
           css: {
             maxWidth: "65ch",
-            color: theme("colors.gray.600", "rgb(55 65 81)"),
+            color: theme("colors.gray.600"),
             h1: {
               color: "#2A0F55",
               fontWeight: "600",
@@ -108,7 +111,7 @@ const config = {
       }),
     },
   },
-  plugins: [require("tailwindcss-animate"), require("@tailwindcss/typography")],
+  plugins: [tailwindcssAnimate, tailwindTypography],
 };
 
 export default withUt(config);

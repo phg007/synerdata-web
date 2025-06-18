@@ -1,6 +1,6 @@
 import { fetchClient } from "@/utils/fetch-client";
 
-export interface GetUsersResponse {
+export interface GetUserResponse {
   id: string;
   nome: string;
   email: string;
@@ -10,7 +10,7 @@ export interface GetUsersResponse {
   criadoPor: string | null;
 }
 
-export async function getUsers(): Promise<GetUsersResponse[]> {
+export async function getUsers(): Promise<GetUserResponse[]> {
   const response = await fetchClient("v1/usuarios", {
     method: "GET",
   });

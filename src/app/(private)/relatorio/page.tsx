@@ -1,19 +1,30 @@
+"use client";
+
 import { getPbUrlByCompany } from "./services/get-pburl-by-company";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { redirect } from "next/navigation";
 import CustomerReport from "./components/customer-report";
+import { useSession } from "next-auth/react";
+import { useQuery } from "@tanstack/react-query";
 
-export default async function DashboardPage() {
-  const session = await getServerSession(authOptions);
+export default function DashboardPage() {
+  const { data: session, status } = useSession();
+  const companyId = session?.user.empresa;
 
-  if (!session) {
-    redirect("/login");
+  const { data: pbUrl, isLoading } = useQuery({
+    queryKey: ["pbUrl", companyId],
+    queryFn: () => getPbUrlByCompany(companyId!),
+    enabled: !!companyId,
+  });
+
+  if (status === "loading" || isLoading) {
+    return (
+      <div className="flex items-center justify-center h-full min-h-[600px]">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
+          <p className="text-slate-600">Carregando...</p>
+        </div>
+      </div>
+    );
   }
 
-  const companyId = session.user.empresa;
-
-  const pbUrl = await getPbUrlByCompany(companyId);
-
-  return <CustomerReport pbUrl={pbUrl} />;
+  return <CustomerReport pbUrl={pbUrl!} />;
 }
