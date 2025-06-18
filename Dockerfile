@@ -4,7 +4,7 @@ FROM base AS deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
-COPY package.json package-lock.json* ./
+COPY package.json package-lock.json* tsconfig.json ./
 RUN npm ci --omit=dev
 
 COPY . ./
