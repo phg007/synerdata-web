@@ -45,7 +45,7 @@ export default function TerminationsPage() {
             <div className="flex justify-between items-center">
               <h2 className="text-2xl font-bold">Rescisões Cadastradas</h2>
               <div className="flex gap-2">
-                <Link href={"rescisoes/adicionar"}>
+                <Link href={"rescisoes/criar"}>
                   <Button disabled={isLoading}>
                     <UserX className="mr-2 h-4 w-4" />
                     Adicionar Rescisão
