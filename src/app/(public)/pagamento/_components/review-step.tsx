@@ -20,7 +20,7 @@ import {
   formatCurrency,
   getPlanBadgeColors,
 } from "../utils/checkout-utils";
-import { getFeaturesForPlan } from "@/app/page";
+import { getFeaturesForPlan } from "@/lib/get-features-for-plan";
 
 interface ReviewStepProps {
   customerData: CustomerFormData;
