@@ -27,6 +27,8 @@ COPY --from=deps /app/.next/static ./.next/static
 COPY --from=deps /app/package.json ./package.json
 COPY --from=deps /app/node_modules ./node_modules
 
+RUN mkdir -p /app/.next/cache && chown -R nextjs:nodejs /app/.next
+
 USER nextjs
 
 EXPOSE 3000
