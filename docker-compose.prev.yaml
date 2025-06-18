@@ -3,5 +3,3 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    ports:
-      - "3002:3000"

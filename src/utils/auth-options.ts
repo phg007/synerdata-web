@@ -1,6 +1,8 @@
 import { AuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
+const API_URL = process.env.API_URL;
+
 export const nextAuthOptions: AuthOptions = {
   providers: [
     CredentialsProvider({
@@ -13,19 +15,16 @@ export const nextAuthOptions: AuthOptions = {
         if (!credentials) return null;
 
         try {
-          const loginRes = await fetch(
-            "http://host.docker.internal:3001/api/v1/auth/sign-in",
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                email: credentials.email,
-                senha: credentials.password,
-              }),
-            }
-          );
+          const loginRes = await fetch(`${API_URL}/v1/auth/sign-in`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              email: credentials.email,
+              senha: credentials.password,
+            }),
+          });
 
           if (!loginRes.ok) return null;
 
@@ -34,15 +33,12 @@ export const nextAuthOptions: AuthOptions = {
 
           if (!accessToken) return null;
 
-          const profileRes = await fetch(
-            "http://host.docker.internal:3001/api/v1/usuarios/perfil",
-            {
-              method: "GET",
-              headers: {
-                Authorization: `Bearer ${accessToken}`,
-              },
-            }
-          );
+          const profileRes = await fetch(`${API_URL}/v1/usuarios/perfil`, {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          });
 
           if (!profileRes.ok) return null;
 
