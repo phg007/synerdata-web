@@ -45,7 +45,7 @@ export default function VacationsPage() {
             <div className="flex justify-between items-center">
               <h2 className="text-2xl font-bold">Férias Cadastradas</h2>
               <div className="flex gap-2">
-                <Link href={"ferias/adicionar"}>
+                <Link href={"ferias/criar"}>
                   <Button disabled={isLoading}>
                     <Palmtree className="mr-2 h-4 w-4" />
                     Adicionar Férias

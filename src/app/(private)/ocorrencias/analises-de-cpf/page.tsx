@@ -45,7 +45,7 @@ export default function CpfAnalysesPage() {
             <div className="flex justify-between items-center">
               <h2 className="text-2xl font-bold">Análises de CPF</h2>
               <div className="flex gap-2">
-                <Link href="analises-de-cpf/adicionar">
+                <Link href="analises-de-cpf/criar">
                   <Button disabled={isLoading}>
                     <Fingerprint className="mr-2 h-4 w-4" />
                     Nova Análise
