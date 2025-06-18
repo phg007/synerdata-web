@@ -4,7 +4,7 @@ FROM base AS deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
-COPY package.json package-lock.json* tsconfig.json ./
+COPY package.json package-lock.json* ./
 RUN npm ci --omit=dev
 
 COPY . ./
@@ -21,9 +21,11 @@ ENV NEXT_SHARP_PATH="/app/node_modules/sharp"
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
+COPY --from=deps /app/public ./public
 COPY --from=deps /app/.next/standalone ./
 COPY --from=deps /app/.next/static ./.next/static
-COPY --from=deps /app/public ./public
+COPY --from=deps /app/package.json ./package.json
+COPY --from=deps /app/node_modules ./node_modules
 
 USER nextjs
 
