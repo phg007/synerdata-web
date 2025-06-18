@@ -6,8 +6,12 @@
     "react-is": "^19.0.0-rc-69d4b800-20241021"
   },
   "scripts": {
-    "dev": "docker compose --profile dev up",
-    "dev:build": "docker compose --profile dev up --build",
+    "dev": "docker compose -f docker-compose.dev.yaml up",
+    "dev:down": "docker compose -f docker-compose.dev.yaml down",
+    "dev:build": "docker compose -f docker-compose.dev.yaml up --build",
+    "prod:up": "docker compose -f docker-compose.prod.yaml up",
+    "prod:down": "docker compose -f docker-compose.prod.yaml down",
+    "prod:build": "docker compose -f docker-compose.prod.yaml build",
     "start:dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
