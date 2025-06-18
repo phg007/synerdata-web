@@ -3,7 +3,7 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { signIn } from "next-auth/react";
+import { getSession, signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
@@ -63,7 +63,17 @@ export default function LoginPage() {
       toast.success("Usuário autenticado", {
         description: "Você será redirecionado para a página inicial.",
       });
-      router.replace("/relatorio");
+
+      const session = await getSession();
+
+      console.log(session?.user.primeiroAcesso);
+      console.log(session?.user.funcao);
+
+      if (session?.user?.primeiroAcesso && session?.user?.funcao === "ADMIN") {
+        router.replace("/finalizar-cadastro");
+      } else {
+        router.replace("/relatorio");
+      }
     }
   }
 
