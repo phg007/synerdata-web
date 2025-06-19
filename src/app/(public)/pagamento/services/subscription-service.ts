@@ -1,3 +1,4 @@
+import { fetchClient } from "@/utils/fetch-client";
 import {
   AddressFormData,
   CustomerFormData,
@@ -87,16 +88,14 @@ export async function createSubscription(
   subscriptionData: SubscriptionData
 ): Promise<SubscriptionResponse> {
   try {
-    const response = await fetch("http://localhost:3001/api/v1/auth/sign-up", {
+    const response = await fetchClient("/v1/auth/sign-up", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
       body: JSON.stringify(subscriptionData),
     });
 
     if (!response.ok) {
       const errorData = await response.json();
+
       throw new Error(errorData.message || "Erro ao criar assinatura");
     }
 

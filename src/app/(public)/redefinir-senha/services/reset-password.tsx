@@ -19,19 +19,13 @@ export async function resetPassword({
   recoveryToken,
 }: ResetPasswordBody) {
   try {
-    const response = await fetch(
-      "http://localhost:3001/api/v1/auth/reset-password",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          novaSenha: password,
-          recoveryToken,
-        }),
-      }
-    );
+    const response = await fetch("/v1/auth/reset-password", {
+      method: "POST",
+      body: JSON.stringify({
+        novaSenha: password,
+        recoveryToken,
+      }),
+    });
 
     if (!response.ok) {
       const errorData = await response.json();
