@@ -45,7 +45,7 @@ export default function PromotionsPage() {
             <div className="flex justify-between items-center">
               <h2 className="text-2xl font-bold">Promoções Cadastradas</h2>
               <div className="flex gap-2">
-                <Link href={"promocoes/adicionar"}>
+                <Link href={"promocoes/criar"}>
                   <Button disabled={isLoading}>
                     <TrendingUp className="mr-2 h-4 w-4" />
                     Adicionar Promoção
