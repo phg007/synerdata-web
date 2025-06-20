@@ -336,11 +336,11 @@ export default function HomePage() {
                         className="w-full bg-white text-[#340D64] hover:bg-white/90 border-2 border-[#340D64]"
                         asChild
                       >
-                        <Link
+                        {/* <Link
                           href={`/solicitar-demonstracao?plan=${encodeURIComponent(plan)}`}
                         >
                           Solicitar demonstração
-                        </Link>
+                        </Link> */}
                       </Button>
                       <Button
                         className="w-full bg-[#340D64] text-white hover:bg-[#4A1491]"

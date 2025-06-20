@@ -609,7 +609,9 @@ export default function CheckoutPage() {
                 <Button
                   type="submit"
                   disabled={!form.formState.isValid || form.formState.isLoading}
-                  className={`w-full py-3 px-4 rounded-lg font-semibold text-white text-sm`}
+                  className={
+                    "w-full py-3 px-4 rounded-lg font-semibold text-white text-sm"
+                  }
                 >
                   {isPending ? (
                     <>
