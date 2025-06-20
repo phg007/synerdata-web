@@ -1,3 +1,5 @@
+import { fetchClient } from "@/utils/fetch-client";
+
 export interface RecoveryPasswordResponse {
   succeeded: boolean;
   data: null;
@@ -15,18 +17,12 @@ export interface RecoveryPasswordBody {
 
 export async function recoveryPassword({ email }: RecoveryPasswordBody) {
   try {
-    const response = await fetch(
-      "http://localhost:3001/api/v1/auth/recovery-password",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email,
-        }),
-      }
-    );
+    const response = await fetchClient("/v1/auth/recovery-password", {
+      method: "POST",
+      body: JSON.stringify({
+        email,
+      }),
+    });
 
     if (!response.ok) {
       const errorData = await response.json();

@@ -9,6 +9,13 @@ export interface CompleteCompanyRegistrationPayload {
   cnaePrincipal: string;
   segmento: string;
   ramoAtuacao: string;
+  cep: string;
+  rua: string;
+  numero: string;
+  complemento?: string;
+  bairro: string;
+  cidade: string;
+  estado: string;
   empresaId: string;
 }
 
@@ -20,6 +27,13 @@ export async function completeCompanyRegistration({
   cnaePrincipal,
   segmento,
   ramoAtuacao,
+  cep,
+  rua,
+  numero,
+  complemento,
+  bairro,
+  cidade,
+  estado,
   empresaId,
 }: CompleteCompanyRegistrationPayload) {
   try {
@@ -35,6 +49,13 @@ export async function completeCompanyRegistration({
           cnaePrincipal,
           segmento,
           ramoAtuacao,
+          cep,
+          rua,
+          numero,
+          complemento,
+          bairro,
+          cidade,
+          estado,
         }),
       }
     );
