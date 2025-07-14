@@ -27,6 +27,8 @@ import {
   ShieldCheck,
   TrendingUp,
   FolderOpen,
+  Shield,
+  CircleAlert,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -80,6 +82,12 @@ const menuItems = [
         path: "/empresas/cbos",
       },
       {
+        id: "company-epis",
+        label: "Epis",
+        icon: Shield,
+        path: "/empresas/epis",
+      },
+      {
         id: "company-roles",
         label: "Funções",
         icon: UserCog,
@@ -99,6 +107,12 @@ const menuItems = [
     icon: FileText,
     path: "/ocorrencias",
     submenu: [
+      {
+        id: "occurrences-warnings",
+        label: "Advertências",
+        icon: CircleAlert,
+        path: "/ocorrencias/advertencias",
+      },
       {
         id: "occurrences-accidents",
         label: "Acidentes",
@@ -121,7 +135,7 @@ const menuItems = [
         id: "occurrences-medical-certificates",
         label: "Atestados Médicos",
         icon: FileTextIcon,
-        path: "/ocorrencias/atestado-medico",
+        path: "/ocorrencias/atestados",
       },
       {
         id: "occurrences-epi-deliveries",

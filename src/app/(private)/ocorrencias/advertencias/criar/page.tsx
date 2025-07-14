@@ -22,8 +22,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { ArrowLeft, Loader2, Palmtree } from "lucide-react";
+import { ArrowLeft, CircleAlert, Loader2 } from "lucide-react";
+
 import { useMutation, useQuery } from "@tanstack/react-query";
+import { createWarning } from "../services/create-warning";
 import { toast } from "sonner";
 import Link from "next/link";
 import {
@@ -33,22 +35,21 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { EmployeeObjectResponse } from "@/app/(private)/funcionarios/interfaces/employee-interface";
+import { getEmployeesByCompany } from "@/app/(private)/funcionarios/services/get-employees-by-company";
 
-import {
-  EmployeeObjectResponse,
-  getEmployeesByCompany,
-} from "../services/get-employees-by-company";
-import { createVacation } from "../services/create-vacation";
-
-const createVacationSchema = z.object({
-  dataInicio: z.string().min(1, "A data de início é obrigatória"),
-  dataFim: z.string().min(1, "A data de término é obrigatória"),
+const createWarningSchema = z.object({
+  data: z.string().min(1, "A data é obrigatória"),
+  motivo: z
+    .string()
+    .min(1, "O motivo é obrigatório")
+    .max(255, "O motivo deve ter no máximo 255 caracteres"),
   funcionarioId: z.string().min(1, "Selecione o funcionário"),
 });
 
-type CreateVacationFormValues = z.infer<typeof createVacationSchema>;
+type CreateWarningFormValues = z.infer<typeof createWarningSchema>;
 
-export default function CreateVacationPage() {
+export default function CreateWarning() {
   const { data: session } = useSession();
   const companyId = session?.user.empresa;
 
@@ -58,32 +59,34 @@ export default function CreateVacationPage() {
     enabled: !!companyId,
   });
 
-  const defaultValues: CreateVacationFormValues = {
-    dataInicio: "",
-    dataFim: "",
-    funcionarioId: "",
-  };
-
-  const form = useForm<CreateVacationFormValues>({
-    resolver: zodResolver(createVacationSchema),
-    defaultValues,
+  const form = useForm<CreateWarningFormValues>({
+    resolver: zodResolver(createWarningSchema),
+    defaultValues: {
+      funcionarioId: "",
+      data: "",
+      motivo: "",
+    },
     mode: "onChange",
   });
 
-  const { mutateAsync: createVacationFn, isPending } = useMutation({
-    mutationFn: createVacation,
+  const { mutateAsync: createWarningFn, isPending } = useMutation({
+    mutationFn: createWarning,
     onSuccess: () => {
-      toast.success("Férias cadastradas com sucesso");
-      form.reset(defaultValues);
+      toast.success("Advertência cadastrada com sucesso");
+      form.reset();
     },
     onError: (error: Error) => {
-      console.error("Erro ao cadastrar férias:", error);
+      console.error("Erro ao cadastrar advertência:", error);
       toast.error(error.message);
     },
   });
 
-  const onSubmit = async (data: CreateVacationFormValues) => {
-    await createVacationFn(data);
+  const onSubmit = async (data: CreateWarningFormValues) => {
+    const isoDate = new Date(data.data).toISOString();
+    await createWarningFn({
+      ...data,
+      data: isoDate,
+    });
   };
 
   return (
@@ -91,20 +94,22 @@ export default function CreateVacationPage() {
       <div className="container mx-auto px-4 max-w-4xl">
         <div className="mb-8">
           <Link
-            href="/ocorrencias/ferias"
+            href="/ocorrencias/advertencias"
             className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground mb-4"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Voltar para Férias
+            Voltar para Advertências
           </Link>
           <div className="flex items-center space-x-3">
             <div className="p-2 bg-blue-100 rounded-lg">
-              <Palmtree className="h-6 w-6 text-blue-600" />
+              <CircleAlert className="h-6 w-6 text-blue-600" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Nova Férias</h1>
+              <h1 className="text-3xl font-bold text-gray-900">
+                Nova Advertência
+              </h1>
               <p className="text-gray-600">
-                Cadastre um novo período de férias
+                Cadastre uma nova advertência para o funcionário
               </p>
             </div>
           </div>
@@ -112,9 +117,10 @@ export default function CreateVacationPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Informações das Férias</CardTitle>
+            <CardTitle>Nova Advertência</CardTitle>
             <CardDescription>
-              Preencha os dados abaixo para cadastrar férias
+              Preencha todos os campos obrigatórios para cadastrar uma nova
+              Advertência
             </CardDescription>
           </CardHeader>
           <CardContent className="pt-6">
@@ -157,27 +163,12 @@ export default function CreateVacationPage() {
 
                   <FormField
                     control={form.control}
-                    name="dataInicio"
+                    name="data"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>
-                          Data de Início <span className="text-red-500">*</span>
-                        </FormLabel>
-                        <FormControl>
-                          <Input type="date" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="dataFim"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>
-                          Data de Fim <span className="text-red-500">*</span>
+                          Data da Advertência{" "}
+                          <span className="text-red-500">*</span>
                         </FormLabel>
                         <FormControl>
                           <Input type="date" {...field} />
@@ -188,6 +179,26 @@ export default function CreateVacationPage() {
                   />
                 </div>
 
+                <FormField
+                  control={form.control}
+                  name="motivo"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>
+                        Motivo da Advertência{" "}
+                        <span className="text-red-500">*</span>
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          placeholder="Ex: Atraso, advertência justificada, etc."
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
                 <div className="flex justify-end space-x-4 pt-6 border-t">
                   <Button type="submit" disabled={isPending}>
                     {isPending ? (
@@ -196,7 +207,7 @@ export default function CreateVacationPage() {
                         Cadastrando...
                       </>
                     ) : (
-                      "Cadastrar Férias"
+                      "Cadastrar Advertência"
                     )}
                   </Button>
                 </div>

@@ -98,7 +98,7 @@ export default function CreateMedicalCertificatePage() {
       <div className="container mx-auto px-4 max-w-4xl">
         <div className="mb-8">
           <Link
-            href="/ocorrencias/atestado-medico"
+            href="/ocorrencias/atestados"
             className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground mb-4"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
@@ -139,10 +139,13 @@ export default function CreateMedicalCertificatePage() {
                     name="funcionarioId"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Funcionário</FormLabel>
+                        <FormLabel>
+                          Funcionário <span className="text-red-500">*</span>
+                        </FormLabel>
                         <Select
                           onValueChange={field.onChange}
                           defaultValue={field.value}
+                          {...field}
                         >
                           <FormControl>
                             <SelectTrigger>
@@ -167,7 +170,9 @@ export default function CreateMedicalCertificatePage() {
                     name="motivo"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Motivo</FormLabel>
+                        <FormLabel>
+                          Motivo <span className="text-red-500">*</span>
+                        </FormLabel>
                         <FormControl>
                           <Input
                             {...field}
@@ -186,7 +191,9 @@ export default function CreateMedicalCertificatePage() {
                     name="dataInicio"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Data de Início</FormLabel>
+                        <FormLabel>
+                          Data de Início <span className="text-red-500">*</span>
+                        </FormLabel>
                         <FormControl>
                           <Input type="date" {...field} />
                         </FormControl>
@@ -200,7 +207,9 @@ export default function CreateMedicalCertificatePage() {
                     name="dataFim"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Data de Fim</FormLabel>
+                        <FormLabel>
+                          Data de Fim <span className="text-red-500">*</span>
+                        </FormLabel>
                         <FormControl>
                           <Input type="date" {...field} />
                         </FormControl>

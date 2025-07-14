@@ -155,10 +155,13 @@ export default function CreateTerminationPage() {
                     name="funcionarioId"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Funcionário</FormLabel>
+                        <FormLabel>
+                          Funcionário <span className="text-red-500">*</span>
+                        </FormLabel>
                         <Select
                           onValueChange={field.onChange}
                           defaultValue={field.value}
+                          {...field}
                         >
                           <FormControl>
                             <SelectTrigger>
@@ -183,7 +186,10 @@ export default function CreateTerminationPage() {
                     name="data"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Data da Demissão</FormLabel>
+                        <FormLabel>
+                          Data da Demissão{" "}
+                          <span className="text-red-500">*</span>
+                        </FormLabel>
                         <FormControl>
                           <Input type="date" {...field} />
                         </FormControl>
@@ -199,7 +205,9 @@ export default function CreateTerminationPage() {
                     name="motivoInterno"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Motivo Interno</FormLabel>
+                        <FormLabel>
+                          Motivo Interno <span className="text-red-500">*</span>
+                        </FormLabel>
                         <FormControl>
                           <Textarea {...field} placeholder="Ex: performance" />
                         </FormControl>
@@ -213,7 +221,10 @@ export default function CreateTerminationPage() {
                     name="motivoTrabalhista"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Motivo Trabalhista</FormLabel>
+                        <FormLabel>
+                          Motivo Trabalhista{" "}
+                          <span className="text-red-500">*</span>
+                        </FormLabel>
                         <FormControl>
                           <Textarea {...field} placeholder="Ex: acordo mútuo" />
                         </FormControl>
@@ -229,7 +240,10 @@ export default function CreateTerminationPage() {
                     name="acaoTrabalhista"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Ação Trabalhista</FormLabel>
+                        <FormLabel>
+                          Ação Trabalhista{" "}
+                          <span className="text-red-500">*</span>
+                        </FormLabel>
                         <FormControl>
                           <Input {...field} placeholder="" />
                         </FormControl>
@@ -243,7 +257,10 @@ export default function CreateTerminationPage() {
                     name="formaDemissao"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Forma de Demissão</FormLabel>
+                        <FormLabel>
+                          Forma de Demissão{" "}
+                          <span className="text-red-500">*</span>
+                        </FormLabel>
                         <FormControl>
                           <Input {...field} placeholder="Ex: sem justa causa" />
                         </FormControl>

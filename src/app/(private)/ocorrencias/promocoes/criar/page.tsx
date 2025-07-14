@@ -46,10 +46,12 @@ import {
 
 const createPromotionSchema = z.object({
   data: z.string().min(1, "A data da promoção é obrigatória"),
-  salario: z.coerce.number({
-    required_error: "O salário é obrigatório",
-    invalid_type_error: "Informe um salário válido",
-  }),
+  salario: z.coerce
+    .number({
+      required_error: "O salário é obrigatório",
+      invalid_type_error: "Informe um salário válido",
+    })
+    .min(1, "O salário deve ser maior que R$ 1,00"),
   funcaoId: z.string().min(1, "Selecione a nova função"),
   funcionarioId: z.string().min(1, "Selecione o funcionário"),
 });
@@ -146,10 +148,13 @@ export default function CreatePromotionPage() {
                     name="funcionarioId"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Funcionário</FormLabel>
+                        <FormLabel>
+                          Funcionário <span className="text-red-500">*</span>
+                        </FormLabel>
                         <Select
                           onValueChange={field.onChange}
                           defaultValue={field.value}
+                          {...field}
                         >
                           <FormControl>
                             <SelectTrigger>
@@ -174,7 +179,10 @@ export default function CreatePromotionPage() {
                     name="data"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Data da Promoção</FormLabel>
+                        <FormLabel>
+                          Data da Promoção{" "}
+                          <span className="text-red-500">*</span>
+                        </FormLabel>
                         <FormControl>
                           <Input type="date" {...field} />
                         </FormControl>
@@ -190,7 +198,9 @@ export default function CreatePromotionPage() {
                     name="funcaoId"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Nova Função</FormLabel>
+                        <FormLabel>
+                          Nova Função <span className="text-red-500">*</span>
+                        </FormLabel>
                         <Select
                           onValueChange={field.onChange}
                           defaultValue={field.value}
@@ -218,7 +228,9 @@ export default function CreatePromotionPage() {
                     name="salario"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Novo Salário</FormLabel>
+                        <FormLabel>
+                          Novo Salário <span className="text-red-500">*</span>
+                        </FormLabel>
                         <FormControl>
                           <Input
                             type="number"

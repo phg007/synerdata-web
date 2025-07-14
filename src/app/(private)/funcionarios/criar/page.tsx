@@ -280,6 +280,7 @@ export default function CreateEmployeePage() {
     mutationFn: createEmployee,
     onSuccess: () => {
       toast.success("Funcionário cadastrado com sucesso!");
+      form.reset();
     },
     onError: (error: Error) => {
       toast.error("Erro ao cadastrar funcionário", {
@@ -523,6 +524,7 @@ export default function CreateEmployeePage() {
                         <Select
                           onValueChange={field.onChange}
                           defaultValue={field.value}
+                          {...field}
                         >
                           <FormControl>
                             <SelectTrigger>
@@ -555,6 +557,7 @@ export default function CreateEmployeePage() {
                         <Select
                           onValueChange={field.onChange}
                           defaultValue={field.value}
+                          {...field}
                         >
                           <FormControl>
                             <SelectTrigger>
@@ -599,6 +602,7 @@ export default function CreateEmployeePage() {
                         <Select
                           onValueChange={field.onChange}
                           defaultValue={field.value}
+                          {...field}
                         >
                           <FormControl>
                             <SelectTrigger>
@@ -966,6 +970,7 @@ export default function CreateEmployeePage() {
                         <Select
                           onValueChange={field.onChange}
                           defaultValue={field.value}
+                          {...field}
                         >
                           <FormControl>
                             <SelectTrigger>
@@ -1045,6 +1050,7 @@ export default function CreateEmployeePage() {
                         <Select
                           onValueChange={field.onChange}
                           defaultValue={field.value}
+                          {...field}
                         >
                           <FormControl>
                             <SelectTrigger>
@@ -1075,6 +1081,7 @@ export default function CreateEmployeePage() {
                         <Select
                           onValueChange={field.onChange}
                           defaultValue={field.value}
+                          {...field}
                         >
                           <FormControl>
                             <SelectTrigger>
@@ -1126,6 +1133,7 @@ export default function CreateEmployeePage() {
                         <Select
                           onValueChange={field.onChange}
                           defaultValue={field.value}
+                          {...field}
                         >
                           <FormControl>
                             <SelectTrigger>
@@ -1187,6 +1195,7 @@ export default function CreateEmployeePage() {
                         <Select
                           onValueChange={field.onChange}
                           defaultValue={field.value}
+                          {...field}
                         >
                           <FormControl>
                             <SelectTrigger>
@@ -1217,6 +1226,7 @@ export default function CreateEmployeePage() {
                         <Select
                           onValueChange={field.onChange}
                           defaultValue={field.value}
+                          {...field}
                         >
                           <FormControl>
                             <SelectTrigger>
@@ -1459,6 +1469,7 @@ export default function CreateEmployeePage() {
                         <Select
                           onValueChange={field.onChange}
                           defaultValue={field.value}
+                          {...field}
                         >
                           <FormControl>
                             <SelectTrigger>

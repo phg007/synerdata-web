@@ -3,7 +3,6 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useRouter } from "next/navigation";
 import {
   Form,
   FormControl,
@@ -36,7 +35,6 @@ type CreateDepartmentFormData = z.infer<typeof formSchema>;
 
 export default function CreateDepartmentPage() {
   const { data: session } = useSession();
-  const router = useRouter();
 
   const companyId = session?.user.empresa;
 
@@ -51,7 +49,7 @@ export default function CreateDepartmentPage() {
     mutationFn: createDepartment,
     onSuccess: () => {
       toast.success("Setor cadastrado com sucesso");
-      router.back();
+      form.reset();
     },
     onError: (error: Error) => {
       toast.error("Erro ao cadastrar o setor", {

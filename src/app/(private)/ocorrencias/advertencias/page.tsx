@@ -1,28 +1,28 @@
 "use client";
 
-import { UserCog } from "lucide-react";
+import { CircleAlert } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { DataTable } from "./components/datatable/data-table";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useQuery } from "@tanstack/react-query";
+import { getWarningsByCompany } from "./services/get-warnings-by-company";
 import { useSession } from "next-auth/react";
-import { columns } from "./components/data-table/columns";
-import { DataTable } from "./components/data-table/data-table";
-import { getRolesByCompany } from "./services/get-roles-by-company";
-import { RoleObjectResponse } from "./interfaces/role-interface";
+import { columns } from "./components/datatable/columns";
 import Link from "next/link";
+import { WarningObjectResponse } from "./interfaces/warning-interface";
 
-export default function RolesPage() {
+export default function WarningsPage() {
   const { data: session, status } = useSession();
   const companyId = session?.user.empresa;
 
   const {
-    data: roles = [],
+    data: warnings = [],
     isLoading,
     isError,
-  } = useQuery<RoleObjectResponse[]>({
-    queryKey: ["roles", companyId],
-    queryFn: () => getRolesByCompany(companyId!),
+  } = useQuery<WarningObjectResponse[]>({
+    queryKey: ["warnings", companyId],
+    queryFn: () => getWarningsByCompany(companyId!),
     enabled: !!companyId,
   });
 
@@ -41,17 +41,20 @@ export default function RolesPage() {
     <div className="container mx-auto p-4">
       <Card className="bg-white h-full">
         <CardContent className="p-4 h-full">
-          <div className="space-y-4">
+          <div className="space-y-4 h-full">
             <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-bold">Funções Cadastradas</h2>
-              <Link href={"funcoes/criar"}>
-                <Button>
-                  <UserCog className="mr-2 h-4 w-4" />
-                  Adicionar Função
-                </Button>
-              </Link>
+              <h2 className="text-2xl font-bold">Advertências Cadastradas</h2>
+              <div className="flex gap-2">
+                <Link href={"advertencias/criar"}>
+                  <Button disabled={isLoading}>
+                    <CircleAlert className="mr-2 h-4 w-4" />
+                    Adicionar Advertencia
+                  </Button>
+                </Link>
+              </div>
             </div>
-            {isLoading && roles.length === 0 ? (
+
+            {isLoading && warnings.length === 0 ? (
               <div className="space-y-3">
                 <Skeleton className="h-10 w-full" />
                 <Skeleton className="h-10 w-full" />
@@ -62,12 +65,12 @@ export default function RolesPage() {
             ) : isError ? (
               <div className="p-4 text-center">
                 <p className="text-amber-500">
-                  {"Não foi possível buscar as funções"}
+                  {"Não foi possível buscar as advertências"}
                 </p>
-                <DataTable columns={columns} data={roles} />
+                <DataTable columns={columns} data={warnings} />
               </div>
             ) : (
-              <DataTable columns={columns} data={roles} />
+              <DataTable columns={columns} data={warnings} />
             )}
           </div>
         </CardContent>

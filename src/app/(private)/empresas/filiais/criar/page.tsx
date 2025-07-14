@@ -5,7 +5,6 @@ import type React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useRouter } from "next/navigation";
 import {
   Form,
   FormControl,
@@ -104,7 +103,6 @@ const estados = [
 
 export default function CreateBranchPage() {
   const { data: session } = useSession();
-  const router = useRouter();
 
   const companyId = session?.user.empresa;
 
@@ -130,7 +128,7 @@ export default function CreateBranchPage() {
     mutationFn: createBranch,
     onSuccess: () => {
       toast.success("Filial cadastrada com sucesso");
-      router.back();
+      form.reset();
     },
     onError: (error: Error) => {
       toast.error("Erro ao cadastrar a filial", {

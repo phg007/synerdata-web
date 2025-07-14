@@ -240,14 +240,6 @@ export default function UpdateaccidentPage({
                 />
 
                 <div className="flex justify-end space-x-4 pt-6 border-t">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => router.back()}
-                    disabled={isPending}
-                  >
-                    Cancelar
-                  </Button>
                   <Button type="submit" disabled={isPending}>
                     {isPending ? (
                       <>

@@ -157,10 +157,13 @@ export default function CreateLaborActionPage() {
                     name="funcionarioId"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Funcionário</FormLabel>
+                        <FormLabel>
+                          Funcionário <span className="text-red-500">*</span>
+                        </FormLabel>
                         <Select
                           onValueChange={field.onChange}
                           defaultValue={field.value}
+                          {...field}
                         >
                           <FormControl>
                             <SelectTrigger>
@@ -184,7 +187,10 @@ export default function CreateLaborActionPage() {
                     name="numeroProcesso"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Número do Processo</FormLabel>
+                        <FormLabel>
+                          Número do Processo{" "}
+                          <span className="text-red-500">*</span>
+                        </FormLabel>
                         <FormControl>
                           <Input {...field} />
                         </FormControl>
@@ -197,7 +203,9 @@ export default function CreateLaborActionPage() {
                     name="tribunal"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Tribunal</FormLabel>
+                        <FormLabel>
+                          Tribunal <span className="text-red-500">*</span>
+                        </FormLabel>
                         <FormControl>
                           <Input {...field} />
                         </FormControl>
@@ -210,7 +218,10 @@ export default function CreateLaborActionPage() {
                     name="dataAjuizamento"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Data do Ajuizamento</FormLabel>
+                        <FormLabel>
+                          Data do Ajuizamento{" "}
+                          <span className="text-red-500">*</span>
+                        </FormLabel>
                         <FormControl>
                           <Input type="date" {...field} />
                         </FormControl>
@@ -223,7 +234,9 @@ export default function CreateLaborActionPage() {
                     name="reclamante"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Reclamante</FormLabel>
+                        <FormLabel>
+                          Reclamante <span className="text-red-500">*</span>
+                        </FormLabel>
                         <FormControl>
                           <Input {...field} />
                         </FormControl>
@@ -236,7 +249,9 @@ export default function CreateLaborActionPage() {
                     name="reclamado"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Reclamado</FormLabel>
+                        <FormLabel>
+                          Reclamado <span className="text-red-500">*</span>
+                        </FormLabel>
                         <FormControl>
                           <Input {...field} />
                         </FormControl>
@@ -367,7 +382,9 @@ export default function CreateLaborActionPage() {
                     name="descricao"
                     render={({ field }) => (
                       <FormItem className="md:col-span-2">
-                        <FormLabel>Descrição</FormLabel>
+                        <FormLabel>
+                          Descrição <span className="text-red-500">*</span>
+                        </FormLabel>
                         <FormControl>
                           <Input {...field} />
                         </FormControl>
@@ -380,7 +397,10 @@ export default function CreateLaborActionPage() {
                     name="dataConhecimento"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Data do Conhecimento</FormLabel>
+                        <FormLabel>
+                          Data do Conhecimento{" "}
+                          <span className="text-red-500">*</span>
+                        </FormLabel>
                         <FormControl>
                           <Input type="date" {...field} />
                         </FormControl>

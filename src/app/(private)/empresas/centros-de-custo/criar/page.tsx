@@ -3,7 +3,6 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useRouter } from "next/navigation";
 import {
   Form,
   FormControl,
@@ -36,7 +35,6 @@ type CreateCostCenterFormData = z.infer<typeof formSchema>;
 
 export default function CreateCostCenterPage() {
   const { data: session } = useSession();
-  const router = useRouter();
 
   const companyId = session?.user.empresa;
 
@@ -51,7 +49,7 @@ export default function CreateCostCenterPage() {
     mutationFn: createCostCenter,
     onSuccess: () => {
       toast.success("Centro de custo cadastrado com sucesso");
-      router.back();
+      form.reset();
     },
     onError: (error: Error) => {
       toast.error("Erro ao cadastrar o centro de custo", {
@@ -72,7 +70,7 @@ export default function CreateCostCenterPage() {
       <div className="container mx-auto px-4 max-w-4xl">
         <div className="mb-8">
           <Link
-            href="/empresas/centro de custoes"
+            href="/empresas/centros-de-custo"
             className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground mb-4"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
