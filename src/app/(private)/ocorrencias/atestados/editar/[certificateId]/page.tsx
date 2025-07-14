@@ -109,7 +109,7 @@ export default function UpdateMedicalCertificatePage({
       <div className="container mx-auto px-4 max-w-4xl">
         <div className="mb-8">
           <Link
-            href="/ocorrencias/atestado-medico"
+            href="/ocorrencias/atestados"
             className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground mb-4"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />

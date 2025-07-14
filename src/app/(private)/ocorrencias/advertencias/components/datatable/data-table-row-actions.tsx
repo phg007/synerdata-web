@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/alert-dialog";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { deleteMedicalCertificate } from "../../services/delete-certificate";
+import { deleteWarning } from "../../services/delete-warning";
 import { toast } from "sonner";
 import { Row } from "@tanstack/react-table";
 import Link from "next/link";
@@ -39,26 +39,24 @@ export function DataTableRowActions<TData>({
   const { data: session } = useSession();
   const companyId = session?.user.empresa;
 
-  const { mutateAsync: deleteMedicalCertificateFn } = useMutation({
-    mutationFn: deleteMedicalCertificate,
+  const { mutateAsync: deleteWarningFn } = useMutation({
+    mutationFn: deleteWarning,
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["medical-certificates", companyId],
-      });
-      toast.success("Atestado excluído com sucesso.");
+      queryClient.invalidateQueries({ queryKey: ["warnings", companyId] });
+      toast.success("Advertência excluída com sucesso.");
     },
     onError: (error: Error) => {
-      toast.error("Erro ao excluir o atestado.", {
+      toast.error("Erro ao excluir a advertência.", {
         description: error.message,
       });
     },
   });
 
-  async function handleDelete(certificateId: string) {
+  async function handleDelete(warningId: string) {
     try {
-      await deleteMedicalCertificateFn({ certificateId });
+      await deleteWarningFn({ warningId });
     } catch (error) {
-      console.error("Erro ao excluir o atestado:", error);
+      console.error("Erro ao excluir a advertência:", error);
     }
   }
 
@@ -74,7 +72,7 @@ export function DataTableRowActions<TData>({
       <DropdownMenuContent align="end" className="w-[160px]">
         <DropdownMenuLabel>Ações</DropdownMenuLabel>
 
-        <Link href={`atestados/editar/${row.getValue("id")}`}>
+        <Link href={`advertencias/editar/${row.getValue("id")}`}>
           <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
             <Pencil className="mr-2 h-4 w-4" />
             Editar
@@ -94,9 +92,9 @@ export function DataTableRowActions<TData>({
 
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>Excluir atestado</AlertDialogTitle>
+              <AlertDialogTitle>Excluir advertência</AlertDialogTitle>
               <AlertDialogDescription>
-                Tem certeza que deseja excluir este atestado médico?
+                Tem certeza que deseja excluir esta advertência?
               </AlertDialogDescription>
             </AlertDialogHeader>
 

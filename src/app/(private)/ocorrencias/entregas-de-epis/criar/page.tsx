@@ -2,13 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import {
-  ArrowLeft,
-  Check,
-  ChevronsUpDown,
-  Loader2,
-  ShieldCheck,
-} from "lucide-react";
+import { ArrowLeft, Loader2, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { useForm } from "react-hook-form";
@@ -16,14 +10,8 @@ import * as z from "zod";
 
 import { Button } from "@/components/ui/button";
 import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-} from "@/components/ui/command";
-import {
   Form,
+  FormControl,
   FormField,
   FormItem,
   FormLabel,
@@ -37,12 +25,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
 import { createEpiDelivery } from "../services/create-epi-delivery";
@@ -53,6 +35,14 @@ import {
 
 import { EpiObjectResponse } from "@/app/(private)/empresas/epis/interfaces/epi-interfaces";
 import { getEPIsByCompany } from "@/app/(private)/empresas/epis/services/get-epis-by-company";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { MultiSelect } from "@/components/ui/multi-select";
 
 const schema = z.object({
   funcionarioId: z
@@ -154,45 +144,27 @@ export default function CreateEpiDeliveryPage() {
                     name="funcionarioId"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Funcionário</FormLabel>
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <Button
-                              variant="outline"
-                              className="w-full justify-between"
-                            >
-                              {field.value
-                                ? employees.find((e) => e.id === field.value)
-                                    ?.nome
-                                : "Selecione o funcionário"}
-                              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                            </Button>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-[300px] p-0">
-                            <Command>
-                              <CommandInput placeholder="Buscar..." />
-                              <CommandEmpty>Nenhum encontrado</CommandEmpty>
-                              <CommandGroup>
-                                {employees.map((e) => (
-                                  <CommandItem
-                                    key={e.id}
-                                    onSelect={() => field.onChange(e.id)}
-                                  >
-                                    <Check
-                                      className={cn(
-                                        "mr-2 h-4 w-4",
-                                        field.value === e.id
-                                          ? "opacity-100"
-                                          : "opacity-0"
-                                      )}
-                                    />
-                                    {e.nome}
-                                  </CommandItem>
-                                ))}
-                              </CommandGroup>
-                            </Command>
-                          </PopoverContent>
-                        </Popover>
+                        <FormLabel>
+                          Funcionário <span className="text-red-500">*</span>
+                        </FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                          {...field}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Selecione o funcionário" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {employees.map((employee) => (
+                              <SelectItem key={employee.id} value={employee.id}>
+                                {employee.nome}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -203,7 +175,10 @@ export default function CreateEpiDeliveryPage() {
                     name="data"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Data da Entrega</FormLabel>
+                        <FormLabel>
+                          Data da Entrega{" "}
+                          <span className="text-red-500">*</span>
+                        </FormLabel>
                         <Input type="date" {...field} />
                         <FormMessage />
                       </FormItem>
@@ -216,56 +191,21 @@ export default function CreateEpiDeliveryPage() {
                   name="epis"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>EPIs</FormLabel>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <Button
-                            variant="outline"
-                            className="w-full justify-between"
-                          >
-                            {field.value.length > 0
-                              ? `${field.value.length} selecionado(s)`
-                              : "Selecione os EPIs"}
-                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-[300px] p-0">
-                          <Command>
-                            <CommandInput placeholder="Buscar EPI..." />
-                            <CommandEmpty>Nenhum encontrado</CommandEmpty>
-                            <CommandGroup>
-                              {epis.map((epi) => {
-                                const checked = field.value.includes(epi.id);
-                                return (
-                                  <CommandItem
-                                    key={epi.id}
-                                    onSelect={() =>
-                                      checked
-                                        ? field.onChange(
-                                            field.value.filter(
-                                              (id) => id !== epi.id
-                                            )
-                                          )
-                                        : field.onChange([
-                                            ...field.value,
-                                            epi.id,
-                                          ])
-                                    }
-                                  >
-                                    <Check
-                                      className={cn(
-                                        "mr-2 h-4 w-4",
-                                        checked ? "opacity-100" : "opacity-0"
-                                      )}
-                                    />
-                                    {epi.nome}
-                                  </CommandItem>
-                                );
-                              })}
-                            </CommandGroup>
-                          </Command>
-                        </PopoverContent>
-                      </Popover>
+                      <FormLabel>
+                        EPIs <span className="text-red-500">*</span>
+                      </FormLabel>
+                      <FormControl>
+                        <MultiSelect<EpiObjectResponse>
+                          items={epis}
+                          value={field.value || []}
+                          onChange={field.onChange}
+                          getItemValue={(epi) => epi.id}
+                          getItemLabel={(epi) => epi.nome}
+                          placeholder="Selecione os EPIs"
+                          searchPlaceholder="Buscar EPIs..."
+                          emptyMessage="Nenhum EPI encontrado."
+                        />
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -277,7 +217,9 @@ export default function CreateEpiDeliveryPage() {
                     name="motivo"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Motivo</FormLabel>
+                        <FormLabel>
+                          Motivo <span className="text-red-500">*</span>
+                        </FormLabel>
                         <Input {...field} />
                         <FormMessage />
                       </FormItem>
@@ -288,7 +230,9 @@ export default function CreateEpiDeliveryPage() {
                     name="entreguePor"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Entregue Por</FormLabel>
+                        <FormLabel>
+                          Entregue Por <span className="text-red-500">*</span>
+                        </FormLabel>
                         <Input {...field} />
                         <FormMessage />
                       </FormItem>

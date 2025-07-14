@@ -2,13 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import {
-  ArrowLeft,
-  Check,
-  ChevronsUpDown,
-  Fingerprint,
-  Loader2,
-} from "lucide-react";
+import { ArrowLeft, Fingerprint, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { useForm } from "react-hook-form";
@@ -16,14 +10,8 @@ import * as z from "zod";
 
 import { Button } from "@/components/ui/button";
 import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-} from "@/components/ui/command";
-import {
   Form,
+  FormControl,
   FormField,
   FormItem,
   FormLabel,
@@ -37,12 +25,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { toast } from "sonner";
 
 import { createCpfAnalysis } from "../services/create-cpf-Analysis";
@@ -131,45 +121,27 @@ export default function CreateCpfAnalysisPage() {
                   name="funcionarioId"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Funcionário</FormLabel>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <Button
-                            variant="outline"
-                            className="w-full justify-between"
-                          >
-                            {field.value
-                              ? employees.find((e) => e.id === field.value)
-                                  ?.nome
-                              : "Selecione o funcionário"}
-                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-[300px] p-0">
-                          <Command>
-                            <CommandInput placeholder="Buscar..." />
-                            <CommandEmpty>Nenhum encontrado</CommandEmpty>
-                            <CommandGroup>
-                              {employees.map((e) => (
-                                <CommandItem
-                                  key={e.id}
-                                  onSelect={() => field.onChange(e.id)}
-                                >
-                                  <Check
-                                    className={cn(
-                                      "mr-2 h-4 w-4",
-                                      field.value === e.id
-                                        ? "opacity-100"
-                                        : "opacity-0"
-                                    )}
-                                  />
-                                  {e.nome}
-                                </CommandItem>
-                              ))}
-                            </CommandGroup>
-                          </Command>
-                        </PopoverContent>
-                      </Popover>
+                      <FormLabel>
+                        Funcionário <span className="text-red-500">*</span>
+                      </FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                        {...field}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecione o funcionário" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {employees.map((employee) => (
+                            <SelectItem key={employee.id} value={employee.id}>
+                              {employee.nome}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -180,7 +152,9 @@ export default function CreateCpfAnalysisPage() {
                   name="descricao"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Descrição</FormLabel>
+                      <FormLabel>
+                        Descrição <span className="text-red-500">*</span>
+                      </FormLabel>
                       <Textarea
                         {...field}
                         placeholder="Informe a descrição da análise"

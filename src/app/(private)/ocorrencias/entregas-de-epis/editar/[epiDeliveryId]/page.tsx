@@ -2,13 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import {
-  ArrowLeft,
-  Check,
-  ChevronsUpDown,
-  Loader2,
-  ShieldCheck,
-} from "lucide-react";
+import { ArrowLeft, Loader2, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { useForm } from "react-hook-form";
@@ -16,14 +10,8 @@ import * as z from "zod";
 
 import { Button } from "@/components/ui/button";
 import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-} from "@/components/ui/command";
-import {
   Form,
+  FormControl,
   FormField,
   FormItem,
   FormLabel,
@@ -37,12 +25,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
 import { getEpiDeliveryById } from "../../services/get-epi-delivery-by-id";
@@ -52,7 +34,7 @@ import { EpiDeliveryObjectResponse } from "../../interfaces/epi-delivery-interfa
 import { getEPIsByCompany } from "@/app/(private)/empresas/epis/services/get-epis-by-company";
 import { EpiObjectResponse } from "@/app/(private)/empresas/epis/interfaces/epi-interfaces";
 import { use, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { MultiSelect } from "@/components/ui/multi-select";
 
 const schema = z.object({
   data: z
@@ -81,7 +63,6 @@ export default function UpdateEpiDeliveryPage({
 
   const { epiDeliveryId } = use(params);
   const queryClient = useQueryClient();
-  const router = useRouter();
 
   const { data: delivery } = useQuery<EpiDeliveryObjectResponse>({
     queryKey: ["epi-delivery", epiDeliveryId],
@@ -123,7 +104,7 @@ export default function UpdateEpiDeliveryPage({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["epi-deliveries"] });
       toast.success("Entrega atualizada");
-      router.back();
+      form.reset();
     },
     onError: (e: Error) => toast.error(e.message),
   });
@@ -140,7 +121,7 @@ export default function UpdateEpiDeliveryPage({
       <div className="container mx-auto max-w-4xl px-4">
         <div className="mb-8">
           <Link
-            href="/ocorrencias/entregas-epis"
+            href="/ocorrencias/entregas-de-epis"
             className="mb-4 inline-flex items-center text-sm text-muted-foreground hover:text-foreground"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
@@ -202,55 +183,18 @@ export default function UpdateEpiDeliveryPage({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>EPIs</FormLabel>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <Button
-                            variant="outline"
-                            className="w-full justify-between"
-                          >
-                            {field.value.length > 0
-                              ? `${field.value.length} selecionado(s)`
-                              : "Selecione os EPIs"}
-                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-[300px] p-0">
-                          <Command>
-                            <CommandInput placeholder="Buscar EPI..." />
-                            <CommandEmpty>Nenhum encontrado</CommandEmpty>
-                            <CommandGroup>
-                              {epis.map((epi) => {
-                                const checked = field.value.includes(epi.id);
-                                return (
-                                  <CommandItem
-                                    key={epi.id}
-                                    onSelect={() =>
-                                      checked
-                                        ? field.onChange(
-                                            field.value.filter(
-                                              (id) => id !== epi.id
-                                            )
-                                          )
-                                        : field.onChange([
-                                            ...field.value,
-                                            epi.id,
-                                          ])
-                                    }
-                                  >
-                                    <Check
-                                      className={cn(
-                                        "mr-2 h-4 w-4",
-                                        checked ? "opacity-100" : "opacity-0"
-                                      )}
-                                    />
-                                    {epi.nome}
-                                  </CommandItem>
-                                );
-                              })}
-                            </CommandGroup>
-                          </Command>
-                        </PopoverContent>
-                      </Popover>
+                      <FormControl>
+                        <MultiSelect<EpiObjectResponse>
+                          items={epis}
+                          value={field.value || []}
+                          onChange={field.onChange}
+                          getItemValue={(epi) => epi.id}
+                          getItemLabel={(epi) => epi.nome}
+                          placeholder="Selecione os EPIs"
+                          searchPlaceholder="Buscar EPIs..."
+                          emptyMessage="Nenhum EPI encontrado."
+                        />
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}

@@ -15,8 +15,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 
-import { useRouter } from "next/navigation";
-
 import { useSession } from "next-auth/react";
 import {
   Card,
@@ -32,7 +30,6 @@ import { createEPI } from "../services/create-epi";
 import { toast } from "sonner";
 import Link from "next/link";
 
-// Schema para validação dos dados do EPI
 const createEpiSchema = z.object({
   nome: z.string().min(3, "O nome deve ter pelo menos 3 caracteres."),
   descricao: z.string().min(5, "A descrição deve ter pelo menos 5 caracteres."),
@@ -44,7 +41,6 @@ const createEpiSchema = z.object({
 type CreateEpiFormValues = z.infer<typeof createEpiSchema>;
 
 export default function CreateEpi() {
-  const router = useRouter();
   const { data: session } = useSession();
   const companyId = session?.user.empresa;
 
@@ -62,7 +58,7 @@ export default function CreateEpi() {
     mutationFn: createEPI,
     onSuccess: () => {
       toast.success("Epi cadastrada com sucesso");
-      router.back();
+      form.reset();
     },
     onError: (error: Error) => {
       console.error("Erro ao criar EPI:", error);

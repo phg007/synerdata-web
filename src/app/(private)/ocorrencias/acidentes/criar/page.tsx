@@ -15,8 +15,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 
-import { useRouter } from "next/navigation";
-
 import { useSession } from "next-auth/react";
 import {
   Card,
@@ -66,10 +64,8 @@ const createAccidentSchema = z.object({
 type CreateAccidentFormValues = z.infer<typeof createAccidentSchema>;
 
 export default function CreateAccident() {
-  const router = useRouter();
   const { data: session } = useSession();
   const companyId = session?.user.empresa;
-  // const queryClient = useQueryClient();
 
   const { data: employees = [] } = useQuery<EmployeeObjectResponse[]>({
     queryKey: ["employees", companyId],
@@ -94,7 +90,7 @@ export default function CreateAccident() {
     mutationFn: createAccident,
     onSuccess: () => {
       toast.success("Acidente  cadastrada com sucesso");
-      router.back();
+      form.reset();
     },
     onError: (error: Error) => {
       console.error("Erro ao criar Acidente :", error);
@@ -157,10 +153,13 @@ export default function CreateAccident() {
                     name="funcionarioId"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Funcionário</FormLabel>
+                        <FormLabel>
+                          Funcionário <span className="text-red-500">*</span>
+                        </FormLabel>
                         <Select
                           onValueChange={field.onChange}
                           defaultValue={field.value}
+                          {...field}
                         >
                           <FormControl>
                             <SelectTrigger>
@@ -185,7 +184,10 @@ export default function CreateAccident() {
                     name="data"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Data do Acidente</FormLabel>
+                        <FormLabel>
+                          Data do Acidente{" "}
+                          <span className="text-red-500">*</span>
+                        </FormLabel>
                         <FormControl>
                           <Input
                             type="date"
@@ -218,7 +220,10 @@ export default function CreateAccident() {
                   name="natureza"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Natureza do Acidente</FormLabel>
+                      <FormLabel>
+                        Natureza do Acidente{" "}
+                        <span className="text-red-500">*</span>
+                      </FormLabel>
                       <FormControl>
                         <Input
                           {...field}
@@ -235,7 +240,10 @@ export default function CreateAccident() {
                   name="descricao"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Descrição do Acidente</FormLabel>
+                      <FormLabel>
+                        Descrição do Acidente{" "}
+                        <span className="text-red-500">*</span>
+                      </FormLabel>
                       <FormControl>
                         <Textarea
                           {...field}
@@ -253,7 +261,9 @@ export default function CreateAccident() {
                   name="medidasTomadas"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Medidas Tomadas</FormLabel>
+                      <FormLabel>
+                        Medidas Tomadas <span className="text-red-500">*</span>
+                      </FormLabel>
                       <FormControl>
                         <Textarea
                           {...field}
@@ -267,14 +277,6 @@ export default function CreateAccident() {
                 />
 
                 <div className="flex justify-end space-x-4 pt-6 border-t">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => router.back()}
-                    disabled={isPending}
-                  >
-                    Cancelar
-                  </Button>
                   <Button type="submit" disabled={isPending}>
                     {isPending ? (
                       <>

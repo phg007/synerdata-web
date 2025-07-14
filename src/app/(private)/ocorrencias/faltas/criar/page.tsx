@@ -14,7 +14,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 
-import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import {
   Card,
@@ -41,7 +40,6 @@ import {
   getEmployeesByCompany,
 } from "../services/get-employees-by-company";
 
-// 🧠 Schema baseado no DTO de falta
 const createAbsenceSchema = z.object({
   data: z.string().min(1, "A data é obrigatória"),
   motivo: z
@@ -54,7 +52,6 @@ const createAbsenceSchema = z.object({
 type CreateAbsenceFormValues = z.infer<typeof createAbsenceSchema>;
 
 export default function CreateAbsence() {
-  const router = useRouter();
   const { data: session } = useSession();
   const companyId = session?.user.empresa;
 
@@ -78,7 +75,7 @@ export default function CreateAbsence() {
     mutationFn: createAbsence,
     onSuccess: () => {
       toast.success("Falta cadastrada com sucesso");
-      router.back();
+      form.reset();
     },
     onError: (error: Error) => {
       console.error("Erro ao cadastrar falta:", error);
@@ -138,10 +135,13 @@ export default function CreateAbsence() {
                     name="funcionarioId"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Funcionário</FormLabel>
+                        <FormLabel>
+                          Funcionário <span className="text-red-500">*</span>
+                        </FormLabel>
                         <Select
                           onValueChange={field.onChange}
                           defaultValue={field.value}
+                          {...field}
                         >
                           <FormControl>
                             <SelectTrigger>
@@ -166,7 +166,9 @@ export default function CreateAbsence() {
                     name="data"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Data da Falta</FormLabel>
+                        <FormLabel>
+                          Data da Falta <span className="text-red-500">*</span>
+                        </FormLabel>
                         <FormControl>
                           <Input type="date" {...field} />
                         </FormControl>
@@ -181,7 +183,9 @@ export default function CreateAbsence() {
                   name="motivo"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Motivo da Falta</FormLabel>
+                      <FormLabel>
+                        Motivo da Falta <span className="text-red-500">*</span>
+                      </FormLabel>
                       <FormControl>
                         <Input
                           {...field}
