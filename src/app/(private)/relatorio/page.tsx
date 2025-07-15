@@ -26,5 +26,9 @@ export default function DashboardPage() {
     );
   }
 
-  return <CustomerReport pbUrl={pbUrl!} />;
+  return (
+    <div className="h-full">
+      <CustomerReport pbUrl={pbUrl!} />
+    </div>
+  );
 }
