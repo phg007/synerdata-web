@@ -71,14 +71,14 @@ export default function UpdateMedicalCertificatePage({
 
   useEffect(() => {
     if (medicalCertificate) {
+      const [diaInicio, mesInicio, anoInicio] =
+        medicalCertificate.dataInicio.split("/");
+      const [diaFim, mesFim, anoFim] = medicalCertificate.dataFim.split("/");
+
       form.reset({
         motivo: medicalCertificate.motivo,
-        dataInicio: new Date(medicalCertificate.dataInicio)
-          .toISOString()
-          .split("T")[0],
-        dataFim: new Date(medicalCertificate.dataFim)
-          .toISOString()
-          .split("T")[0],
+        dataInicio: `${anoInicio}-${mesInicio}-${diaInicio}`,
+        dataFim: `${anoFim}-${mesFim}-${diaFim}`,
       });
     }
   }, [medicalCertificate, form]);
