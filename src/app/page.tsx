@@ -40,7 +40,7 @@ export default function HomePage() {
           <div className="container flex h-16 items-center justify-between">
             <div className="flex items-center gap-6">
               <Link className="flex items-center space-x-2" href="/">
-                <span className="font-bold text-white text-xl">Synerdata</span>
+                <span className="font-bold text-white text-xl">Synnerdata</span>
               </Link>
               <nav className="hidden md:flex items-center space-x-6 text-sm">
                 <a
@@ -362,11 +362,11 @@ export default function HomePage() {
         <section id="sobre" className="container py-8 md:py-12 lg:py-24">
           <div className="mx-auto flex max-w-[58rem] flex-col items-center justify-center gap-4 text-center">
             <h2 className="font-heading text-3xl leading-[1.1] sm:text-3xl md:text-6xl">
-              Sobre a Synerdata
+              Sobre a Synnerdata
             </h2>
             <div className="max-w-[85%] space-y-4 text-left text-muted-foreground sm:text-lg sm:leading-7">
               <p>
-                Na Synerdata, somos especialistas em transformar dados em
+                Na Synnerdata, somos especialistas em transformar dados em
                 soluções estratégicas para o Departamento Pessoal. Nossa missão
                 é fornecer insights precisos e ferramentas avançadas de
                 inteligência de negócios para otimizar a gestão de pessoas,
@@ -412,7 +412,7 @@ export default function HomePage() {
               Perguntas Frequentes
             </h2>
             <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7">
-              Encontre respostas para as dúvidas mais comuns sobre a Synerdata e
+              Encontre respostas para as dúvidas mais comuns sobre a Synnerdata e
               nossos serviços.
             </p>
           </div>
@@ -522,9 +522,9 @@ export default function HomePage() {
       <footer className="border-t border-white/10 py-8 bg-[#2A0F55] text-white">
         <div className="container flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex flex-col md:flex-row items-center gap-4">
-            <span className="font-bold text-xl">Synerdata</span>
+            <span className="font-bold text-xl">Synnerdata</span>
             <p className="text-sm text-white/70">
-              © {new Date().getFullYear()} Synerdata. Todos os direitos
+              © {new Date().getFullYear()} Synnerdata. Todos os direitos
               reservados.
             </p>
           </div>

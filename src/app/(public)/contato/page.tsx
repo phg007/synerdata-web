@@ -31,8 +31,8 @@ export default function ContactPage() {
               className="text-purple-600 justify-center"
               asChild
             >
-              <a href="mailto:contato@synerdata.com.br">
-                contato@synerdata.com.br
+              <a href="mailto:contato@synnerdata.com.br">
+                contato@synnerdata.com.br
               </a>
             </Button>
           </CardContent>
