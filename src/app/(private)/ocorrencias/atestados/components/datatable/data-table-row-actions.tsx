@@ -74,7 +74,7 @@ export function DataTableRowActions<TData>({
       <DropdownMenuContent align="end" className="w-[160px]">
         <DropdownMenuLabel>Ações</DropdownMenuLabel>
 
-        <Link href={`atestado-medico/editar/${row.getValue("id")}`}>
+        <Link href={`atestados/editar/${row.getValue("id")}`}>
           <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
             <Pencil className="mr-2 h-4 w-4" />
             Editar

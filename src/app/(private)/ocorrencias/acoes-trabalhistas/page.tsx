@@ -47,7 +47,7 @@ export default function LaborActionsPage() {
                 Ações Trabalhistas Cadastradas
               </h2>
               <div className="flex gap-2">
-                <Link href={"acoes-trabalhistas/adicionar"}>
+                <Link href={"acoes-trabalhistas/criar"}>
                   <Button disabled={isLoading}>
                     <Scale className="mr-2 h-4 w-4" />
                     Adicionar Ação

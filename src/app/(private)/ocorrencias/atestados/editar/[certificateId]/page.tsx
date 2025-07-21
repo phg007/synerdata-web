@@ -71,14 +71,14 @@ export default function UpdateMedicalCertificatePage({
 
   useEffect(() => {
     if (medicalCertificate) {
+      const [diaInicio, mesInicio, anoInicio] =
+        medicalCertificate.dataInicio.split("/");
+      const [diaFim, mesFim, anoFim] = medicalCertificate.dataFim.split("/");
+
       form.reset({
         motivo: medicalCertificate.motivo,
-        dataInicio: new Date(medicalCertificate.dataInicio)
-          .toISOString()
-          .split("T")[0],
-        dataFim: new Date(medicalCertificate.dataFim)
-          .toISOString()
-          .split("T")[0],
+        dataInicio: `${anoInicio}-${mesInicio}-${diaInicio}`,
+        dataFim: `${anoFim}-${mesFim}-${diaFim}`,
       });
     }
   }, [medicalCertificate, form]);
@@ -109,7 +109,7 @@ export default function UpdateMedicalCertificatePage({
       <div className="container mx-auto px-4 max-w-4xl">
         <div className="mb-8">
           <Link
-            href="/ocorrencias/atestado-medico"
+            href="/ocorrencias/atestados"
             className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground mb-4"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />

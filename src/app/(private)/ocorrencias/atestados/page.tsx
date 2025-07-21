@@ -45,7 +45,7 @@ export default function MedicalCertificatesPage() {
             <div className="flex justify-between items-center">
               <h2 className="text-2xl font-bold">Atestados Cadastrados</h2>
               <div className="flex gap-2">
-                <Link href={"atestado-medico/adicionar"}>
+                <Link href={"atestados/criar"}>
                   <Button disabled={isLoading}>
                     <FileTextIcon className="mr-2 h-4 w-4" />
                     Adicionar Atestado

@@ -20,8 +20,9 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Eye, EyeOff, CheckCircle2, XCircle } from "lucide-react";
+import { Eye, EyeOff, CheckCircle2, XCircle, Loader2 } from "lucide-react";
 import Link from "next/link";
+import { useMutation } from "@tanstack/react-query";
 
 const activationSchema = z
   .object({
@@ -79,34 +80,29 @@ export default function ActivationForm() {
     }
   }, [searchParams, form]);
 
-  const onSubmit = async (data: ActivationFormData) => {
-    try {
-      const { nome, email, password, activationToken } = data;
-
-      const response = await activateAccount({
-        nome,
-        email,
-        password,
-        activationToken,
-      });
-
-      if (!response.succeeded) {
-        throw new Error(response.message || "Não foi possível ativar a conta.");
-      }
-
+  const { mutateAsync: activateAccountFn, isPending } = useMutation({
+    mutationFn: activateAccount,
+    onSuccess: async () => {
       toast.success("Conta ativada com sucesso!", {
         description: "Você será redirecionado para a página de login.",
       });
 
       router.push("/login");
-    } catch (error) {
+    },
+    onError: (error: Error) => {
       console.error("Erro ao processar ativação:", error);
       toast.error("Erro ao processar ativação", {
         description:
           `${error}` ||
           "Ocorreu um erro ao processar sua ativação. Por favor, tente novamente.",
       });
-    }
+    },
+  });
+
+  const onSubmit = async (data: ActivationFormData) => {
+    await activateAccountFn({
+      ...data,
+    });
   };
 
   const checkPasswordStrength = (password: string) => {
@@ -163,6 +159,7 @@ export default function ActivationForm() {
                       <Input
                         placeholder="seu@email.com"
                         type="email"
+                        disabled
                         {...field}
                       />
                     </FormControl>
@@ -268,7 +265,7 @@ export default function ActivationForm() {
                 control={form.control}
                 name="activationToken"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem className="hidden">
                     <FormLabel>Token de ativação</FormLabel>
                     <FormControl>
                       <Input
@@ -292,8 +289,15 @@ export default function ActivationForm() {
                 .
               </div>
 
-              <Button type="submit" className="w-full">
-                Ativar
+              <Button type="submit" className="w-full" disabled={isPending}>
+                {isPending ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Ativando...
+                  </>
+                ) : (
+                  "Ativar conta"
+                )}
               </Button>
 
               <div className="text-center text-sm">

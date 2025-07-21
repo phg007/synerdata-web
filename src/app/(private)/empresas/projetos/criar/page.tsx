@@ -3,7 +3,6 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useRouter } from "next/navigation";
 import {
   Form,
   FormControl,
@@ -43,7 +42,6 @@ type CreateProjectFormData = z.infer<typeof formSchema>;
 
 export default function CreateProjectPage() {
   const { data: session } = useSession();
-  const router = useRouter();
 
   const companyId = session?.user.empresa;
 
@@ -61,7 +59,7 @@ export default function CreateProjectPage() {
     mutationFn: createProject,
     onSuccess: () => {
       toast.success("Projeto cadastrado com sucesso");
-      router.back();
+      form.reset();
     },
     onError: (error: Error) => {
       toast.error("Erro ao cadastrar o projeto", {

@@ -43,7 +43,7 @@ export default function RolesPage() {
         <CardContent className="p-4 h-full">
           <div className="space-y-4">
             <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-bold">Funcões Cadastradas</h2>
+              <h2 className="text-2xl font-bold">Funções Cadastradas</h2>
               <Link href={"funcoes/criar"}>
                 <Button>
                   <UserCog className="mr-2 h-4 w-4" />

@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 export default function ContactPage() {
   return (
     <div className="container py-12 space-y-8">
-      <h1 className="text-4xl font-bold text-center text-white">
+      <h1 className="text-4xl font-bold text-center">
         Como você prefere falar com a gente?
       </h1>
       <div className="grid gap-8 md:grid-cols-2 max-w-4xl mx-auto">
@@ -31,8 +31,8 @@ export default function ContactPage() {
               className="text-purple-600 justify-center"
               asChild
             >
-              <a href="mailto:contato@synerdata.com.br">
-                contato@synerdata.com.br
+              <a href="mailto:contato@synnerdata.com.br">
+                contato@synnerdata.com.br
               </a>
             </Button>
           </CardContent>

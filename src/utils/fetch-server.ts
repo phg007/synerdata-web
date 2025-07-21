@@ -1,6 +1,8 @@
 import { nextAuthOptions } from "./auth-options";
 import { getServerSession } from "next-auth";
 
+const API_URL = process.env.API_URL;
+
 export async function fetchServer(
   url: RequestInfo,
   options: RequestInit = {}
@@ -17,7 +19,7 @@ export async function fetchServer(
     headers.set("Content-Type", "application/json");
   }
 
-  return fetch(`http://host.docker.internal:3001/api/${url}`, {
+  return fetch(`${API_URL}/${url}`, {
     ...options,
     headers,
   });

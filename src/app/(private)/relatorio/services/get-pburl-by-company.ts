@@ -1,4 +1,4 @@
-import { fetchServer } from "@/utils/fetch-server";
+import { fetchClient } from "@/utils/fetch-client";
 
 export interface GetPbUrlByCompanyResponse {
   succeeded: boolean;
@@ -10,7 +10,7 @@ export async function getPbUrlByCompany(
   companyId: string
 ): Promise<string | null> {
   try {
-    const response = await fetchServer(`v1/empresas/pburl/${companyId}`, {
+    const response = await fetchClient(`v1/empresas/${companyId}/pburl`, {
       method: "GET",
     });
 

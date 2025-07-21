@@ -21,13 +21,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-// import {
-//   Select,
-//   SelectContent,
-//   SelectItem,
-//   SelectTrigger,
-//   SelectValue,
-// } from "@/components/ui/select";
 import { Loader2, Building, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -36,10 +29,14 @@ import Link from "next/link";
 import { getRoleById } from "../../services/get-role-by-id";
 import { use, useEffect } from "react";
 import { RoleObjectResponse } from "../../interfaces/role-interface";
-// import { useSession } from "next-auth/react";
+import { MultiSelect } from "@/components/ui/multi-select";
+import { EpiObjectResponse } from "../../../epis/interfaces/epi-interfaces";
+import { getEPIsByCompany } from "../../../epis/services/get-epis-by-company";
+import { useSession } from "next-auth/react";
 
 const formSchema = z.object({
   nome: z.string().min(1, "Nome é obrigatório"),
+  epis: z.array(z.string()).optional(),
 });
 
 type UpdateRoleFormData = z.infer<typeof formSchema>;
@@ -51,10 +48,10 @@ export default function UpdateRolePage({
 }) {
   const { roleId } = use(params);
 
-  // const { data: session } = useSession();
+  const { data: session } = useSession();
   const router = useRouter();
 
-  // const companyId = session?.user.empresa;
+  const companyId = session?.user.empresa;
 
   const { data: role } = useQuery<RoleObjectResponse>({
     queryKey: ["role", roleId],
@@ -62,16 +59,17 @@ export default function UpdateRolePage({
     enabled: !!roleId,
   });
 
-  // const { data: epis = [] } = useQuery<EpiObjectResponse[]>({
-  //   queryKey: ["epis", companyId],
-  //   queryFn: () => getRolesByCompany(companyId!),
-  //   enabled: !!companyId,
-  // });
+  const { data: epis = [] } = useQuery<EpiObjectResponse[]>({
+    queryKey: ["epis", companyId],
+    queryFn: () => getEPIsByCompany(companyId!),
+    enabled: !!companyId,
+  });
 
   const form = useForm<UpdateRoleFormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       nome: "",
+      epis: [],
     },
   });
 
@@ -79,6 +77,7 @@ export default function UpdateRolePage({
     if (role) {
       form.reset({
         nome: role.nome,
+        epis: role.epis ? role.epis.map((epi) => epi.id) : [],
       });
     }
   }, [role, form]);
@@ -108,7 +107,7 @@ export default function UpdateRolePage({
       <div className="container mx-auto px-4 max-w-4xl">
         <div className="mb-8">
           <Link
-            href="/empresas/setores"
+            href="/empresas/funcoes"
             className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground mb-4"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
@@ -158,33 +157,28 @@ export default function UpdateRolePage({
                       )}
                     />
 
-                    {/* <FormField
+                    <FormField
                       control={form.control}
                       name="epis"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Epis</FormLabel>
-                          <Select
-                            onValueChange={field.onChange}
-                            defaultValue={field.value}
-                          >
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Selecione o(s) epi(s)" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {epis.map(({ id, nome }) => (
-                                <SelectItem key={id} value={id}>
-                                  {nome}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
+                          <FormLabel>EPIs da Função</FormLabel>
+                          <FormControl>
+                            <MultiSelect<EpiObjectResponse>
+                              items={epis}
+                              value={field.value || []}
+                              onChange={field.onChange}
+                              getItemValue={(epi) => epi.id}
+                              getItemLabel={(epi) => epi.nome}
+                              placeholder="Selecione os EPIs para esta função"
+                              searchPlaceholder="Buscar EPIs..."
+                              emptyMessage="Nenhum EPI encontrado."
+                            />
+                          </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
-                    /> */}
+                    />
                   </div>
                 </div>
 

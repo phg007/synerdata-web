@@ -27,6 +27,8 @@ import {
   ShieldCheck,
   TrendingUp,
   FolderOpen,
+  Shield,
+  CircleAlert,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -80,6 +82,12 @@ const menuItems = [
         path: "/empresas/cbos",
       },
       {
+        id: "company-epis",
+        label: "Epis",
+        icon: Shield,
+        path: "/empresas/epis",
+      },
+      {
         id: "company-roles",
         label: "Funções",
         icon: UserCog,
@@ -99,6 +107,12 @@ const menuItems = [
     icon: FileText,
     path: "/ocorrencias",
     submenu: [
+      {
+        id: "occurrences-warnings",
+        label: "Advertências",
+        icon: CircleAlert,
+        path: "/ocorrencias/advertencias",
+      },
       {
         id: "occurrences-accidents",
         label: "Acidentes",
@@ -121,7 +135,7 @@ const menuItems = [
         id: "occurrences-medical-certificates",
         label: "Atestados Médicos",
         icon: FileTextIcon,
-        path: "/ocorrencias/atestado-medico",
+        path: "/ocorrencias/atestados",
       },
       {
         id: "occurrences-epi-deliveries",
@@ -194,7 +208,7 @@ export default function Navbar() {
     <div className="flex flex-col bg-gray-100">
       <header className="bg-[#340D64] text-white shadow z-50">
         <div className="container mx-auto flex justify-between items-center px-4 py-3">
-          <h1 className="text-2xl font-bold">Synerdata</h1>
+          <h1 className="text-2xl font-bold">Synnerdata</h1>
 
           <nav className="flex space-x-2">
             {menuItems.map((item) => (

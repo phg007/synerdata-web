@@ -45,7 +45,7 @@ export default function AbsencesPage() {
             <div className="flex justify-between items-center">
               <h2 className="text-2xl font-bold">Faltas Cadastradas</h2>
               <div className="flex gap-2">
-                <Link href={"faltas/adicionar"}>
+                <Link href={"faltas/criar"}>
                   <Button disabled={isLoading}>
                     <Clock className="mr-2 h-4 w-4" />
                     Adicionar Falta
