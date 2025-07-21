@@ -12,7 +12,7 @@ export default function RefundPolicyPage() {
         <CardContent className="prose prose-lg max-w-none">
           <div className="space-y-6">
             <p>
-              Na Synerdata, nosso compromisso é oferecer serviços digitais de
+              Na Synnerdata, nosso compromisso é oferecer serviços digitais de
               alta qualidade que atendam às suas expectativas. Caso você tenha
               alguma insatisfação com o serviço contratado, esta Política de
               Reembolso detalha as condições e os procedimentos para solicitar
@@ -83,7 +83,7 @@ export default function RefundPolicyPage() {
               <p>Para solicitar um reembolso, siga os passos abaixo:</p>
               <ol className="list-decimal pl-6 space-y-2">
                 <li>
-                  Envie um e-mail para suporte@synerdata.com.br com o assunto:
+                  Envie um e-mail para suporte@synnerdata.com.br com o assunto:
                   Solicitação de Reembolso.
                 </li>
                 <li>
@@ -146,7 +146,7 @@ export default function RefundPolicyPage() {
               <p>
                 Se você tiver dúvidas ou precisar de mais informações sobre a
                 nossa Política de Reembolso, entre em contato pelo e-mail
-                suporte@synerdata.com.br.
+                suporte@synnerdata.com.br.
               </p>
             </section>
           </div>

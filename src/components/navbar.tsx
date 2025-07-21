@@ -208,7 +208,7 @@ export default function Navbar() {
     <div className="flex flex-col bg-gray-100">
       <header className="bg-[#340D64] text-white shadow z-50">
         <div className="container mx-auto flex justify-between items-center px-4 py-3">
-          <h1 className="text-2xl font-bold">Synerdata</h1>
+          <h1 className="text-2xl font-bold">Synnerdata</h1>
 
           <nav className="flex space-x-2">
             {menuItems.map((item) => (
