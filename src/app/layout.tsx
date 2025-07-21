@@ -6,7 +6,7 @@ import ClientLayout from "./client-layout";
 // const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
-  title: "Synerdata - Transforme seus dados em insights estratégicos",
+  title: "Synnerdata - Transforme seus dados em insights estratégicos",
   description:
     "Centralize, analise e tome decisões baseadas em dados com nossa plataforma integrada de gestão empresarial e Power BI.",
 };
