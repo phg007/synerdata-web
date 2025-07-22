@@ -353,7 +353,7 @@ export default function CheckoutForm() {
                   href="mailto:suporte@synnerdata.com"
                   className="text-[#340D64] hover:underline"
                 >
-                  suporte@synnerdata.com
+                  contato@synnerdata.com.br
                 </a>
               </p>
             </div>
