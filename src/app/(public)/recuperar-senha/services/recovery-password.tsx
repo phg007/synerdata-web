@@ -17,7 +17,7 @@ export interface RecoveryPasswordBody {
 
 export async function recoveryPassword({ email }: RecoveryPasswordBody) {
   try {
-    const response = await fetchClient("/v1/auth/recovery-password", {
+    const response = await fetchClient("v1/auth/recovery-password", {
       method: "POST",
       body: JSON.stringify({
         email,

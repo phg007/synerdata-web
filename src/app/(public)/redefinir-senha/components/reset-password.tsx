@@ -220,8 +220,8 @@ export default function ResetPasswordForm() {
                 control={form.control}
                 name="recoveryToken"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Token de ativação</FormLabel>
+                  <FormItem className="hidden">
+                    <FormLabel>Token de recuperação</FormLabel>
                     <FormControl>
                       <Input
                         placeholder="Digite o código recebido"

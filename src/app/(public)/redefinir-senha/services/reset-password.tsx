@@ -1,3 +1,5 @@
+import { fetchClient } from "@/utils/fetch-client";
+
 export interface ResetPasswordResponse {
   succeeded: boolean;
   data: null;
@@ -19,7 +21,7 @@ export async function resetPassword({
   recoveryToken,
 }: ResetPasswordBody) {
   try {
-    const response = await fetch("/v1/auth/reset-password", {
+    const response = await fetchClient("v1/auth/reset-password", {
       method: "POST",
       body: JSON.stringify({
         novaSenha: password,
