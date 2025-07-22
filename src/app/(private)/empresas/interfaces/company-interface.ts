@@ -23,6 +23,7 @@ export interface CompanyObjectResponse extends BaseObjectResponse {
   ramoAtuacao: string;
   logoUrl?: string;
   pbUrl?: string;
-  quantidadeUsuarios: string;
+  quantidadeFuncionarios: string;
+  plano: string;
   idAssinatura: string;
 }
