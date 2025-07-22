@@ -53,46 +53,28 @@ const plansData = {
     icon: "🥇",
     color: "from-yellow-400 to-yellow-600",
     prices: {
-      "0-50": 200,
-      "51-100": 449.9,
-      "101-150": 499.9,
-      "151-200": 559.9,
+      "0-10": 399.0,
+      "11-20": 449.9,
+      "21-30": 499.9,
+      "31-40": 559.9,
+      "41-50": 619.9,
+      "51-60": 699.9,
+      "61-70": 779.9,
+      "71-80": 869.9,
+      "81-90": 969.9,
+      "91-180": 1079.9,
     },
     features: [
-      { name: "Dashboard básico", available: true },
-      { name: "Relatórios mensais", available: true },
-      { name: "Gestão de candidatos", available: true },
-      { name: "Suporte por email", available: true },
-      { name: "Análise básica de dados", available: true },
-      { name: "Relatórios Power BI", available: false },
-      { name: "API completa", available: false },
-      { name: "Integrações avançadas", available: false },
-      { name: "Suporte prioritário", available: false },
-      { name: "Consultoria especializada", available: false },
-    ],
-  },
-  "Platina Vision": {
-    name: "Platina Vision",
-    description: "Recursos avançados de analytics",
-    icon: "🥈",
-    color: "from-slate-400 to-slate-600",
-    prices: {
-      "0-50": 499.0,
-      "51-100": 559.9,
-      "101-150": 619.9,
-      "151-200": 689.9,
-    },
-    features: [
-      { name: "Dashboard básico", available: true },
-      { name: "Relatórios mensais", available: true },
-      { name: "Gestão de candidatos", available: true },
-      { name: "Suporte por email", available: true },
-      { name: "Análise básica de dados", available: true },
-      { name: "Relatórios Power BI", available: true },
-      { name: "API completa", available: true },
-      { name: "Integrações avançadas", available: true },
-      { name: "Suporte prioritário", available: true },
-      { name: "Consultoria especializada", available: false },
+      { name: "Demitidos", available: true },
+      { name: "Faltas", available: true },
+      { name: "Atestados", available: true },
+      { name: "Acidentes", available: true },
+      { name: "Advertências", available: true },
+      { name: "Status do Trabalhador", available: true },
+      { name: "Aniversariantes", available: false },
+      { name: "EPI", available: false },
+      { name: "Ficha Cadastral", available: false },
+      { name: "Folha", available: false },
     ],
   },
   "Diamante Analytics": {
@@ -101,31 +83,73 @@ const plansData = {
     icon: "💎",
     color: "from-blue-400 to-blue-600",
     prices: {
-      "0-50": 599.0,
-      "51-100": 669.9,
-      "101-150": 739.9,
-      "151-200": 821.9,
+      "0-10": 499.0,
+      "11-20": 559.9,
+      "21-30": 619.9,
+      "31-40": 689.9,
+      "41-50": 760.9,
+      "51-60": 849.9,
+      "61-70": 940.9,
+      "71-80": 1049.9,
+      "81-90": 1159.9,
+      "91-180": 1288.9,
     },
     features: [
-      { name: "Dashboard básico", available: true },
-      { name: "Relatórios mensais", available: true },
-      { name: "Gestão de candidatos", available: true },
-      { name: "Suporte por email", available: true },
-      { name: "Análise básica de dados", available: true },
-      { name: "Relatórios Power BI", available: true },
-      { name: "API completa", available: true },
-      { name: "Integrações avançadas", available: true },
-      { name: "Suporte prioritário", available: true },
-      { name: "Consultoria especializada", available: true },
+      { name: "Demitidos", available: true },
+      { name: "Faltas", available: true },
+      { name: "Atestados", available: true },
+      { name: "Acidentes", available: true },
+      { name: "Advertências", available: true },
+      { name: "Status do Trabalhador", available: true },
+      { name: "Aniversariantes", available: true },
+      { name: "EPI", available: true },
+      { name: "Ficha Cadastral", available: true },
+      { name: "Folha", available: false },
+    ],
+  },
+  "Platina Vision": {
+    name: "Platina Vision",
+    description: "Recursos avançados de analytics",
+    icon: "🥈",
+    color: "from-slate-400 to-slate-600",
+    prices: {
+      "0-10": 599.0,
+      "11-20": 669.9,
+      "21-30": 739.9,
+      "31-40": 821.9,
+      "41-50": 912.9,
+      "51-60": 1015.9,
+      "61-70": 1129.9,
+      "71-80": 1252.9,
+      "81-90": 1399.9,
+      "91-180": 1549.9,
+    },
+    features: [
+      { name: "Demitidos", available: true },
+      { name: "Faltas", available: true },
+      { name: "Atestados", available: true },
+      { name: "Acidentes", available: true },
+      { name: "Advertências", available: true },
+      { name: "Status do Trabalhador", available: true },
+      { name: "Aniversariantes", available: true },
+      { name: "EPI", available: true },
+      { name: "Ficha Cadastral", available: true },
+      { name: "Folha", available: true },
     ],
   },
 };
 
 const employeeOptions = [
-  { value: "0-50", label: "Até 50 funcionários" },
-  { value: "51-100", label: "51 a 100 funcionários" },
-  { value: "101-150", label: "101 a 150 funcionários" },
-  { value: "151-200", label: "151 a 200 funcionários" },
+  { value: "0-10", label: "0 a 10 funcionários" },
+  { value: "11-20", label: "11 a 20 funcionários" },
+  { value: "21-30", label: "21 a 30 funcionários" },
+  { value: "31-40", label: "31 a 40 funcionários" },
+  { value: "41-50", label: "41 a 50 funcionários" },
+  { value: "51-60", label: "51 a 60 funcionários" },
+  { value: "61-70", label: "61 a 70 funcionários" },
+  { value: "71-80", label: "71 a 80 funcionários" },
+  { value: "81-90", label: "81 a 90 funcionários" },
+  { value: "91-180", label: "91 a 180 funcionários" },
 ];
 
 const companySchema = z.object({
@@ -157,6 +181,7 @@ export default function CheckoutForm() {
   const searchParams = useSearchParams();
   const initialPlan = searchParams.get("plan") || "Ouro Insights";
   const [paymentLinkGenerated, setPaymentLinkGenerated] = useState(false);
+  const [paymentLink, setPaymentLink] = useState("");
 
   const form = useForm<CompanyFormData>({
     resolver: zodResolver(companySchema),
@@ -168,7 +193,7 @@ export default function CheckoutForm() {
       telefone: "",
       celular: "",
       tipoPlano: initialPlan,
-      quantidadeFuncionarios: "0-50",
+      quantidadeFuncionarios: "0-10",
     },
   });
 
@@ -211,6 +236,7 @@ export default function CheckoutForm() {
       toast.success(
         "Link de pagamento gerado! Uma nova aba será aberta em breve."
       );
+      setPaymentLink(getPaymentLinkResponse.url);
       setPaymentLinkGenerated(true);
 
       setTimeout(() => {
@@ -249,9 +275,20 @@ export default function CheckoutForm() {
             <h1 className="text-2xl font-bold text-[#340D64] mb-2">
               Link de Pagamento Gerado!
             </h1>
-            <p className="text-gray-600">
-              Abrimos o checkout do Pagar.me em uma nova aba. Complete seu
-              pagamento lá para ativar sua assinatura.
+            <p className="text-gray-600 mb-4">
+              O checkout do Pagar.me foi aberto em uma nova aba. Complete seu
+              pagamento para ativar sua assinatura.
+            </p>
+            <p className="text-sm text-gray-500">
+              Caso a nova aba não tenha sido aberta,{" "}
+              <Button
+                variant="link"
+                onClick={() => window.open(paymentLink, "_blank")}
+                className="p-0 text-[#340D64]"
+              >
+                clique aqui para acessar o link de pagamento
+              </Button>
+              .
             </p>
           </div>
 
@@ -316,7 +353,7 @@ export default function CheckoutForm() {
                   href="mailto:suporte@synnerdata.com"
                   className="text-[#340D64] hover:underline"
                 >
-                  suporte@synnerdata.com
+                  contato@synnerdata.com.br
                 </a>
               </p>
             </div>

@@ -286,16 +286,6 @@ export default function Navbar() {
                 <DropdownMenuLabel>
                   <div className="text-sm font-medium">{user?.name}</div>
                   <div className="text-xs text-slate-500">{user?.email}</div>
-                  {user?.empresa && (
-                    <>
-                      <div className="text-xs text-slate-500">
-                        <strong>Empresa:</strong> {user.empresa}
-                      </div>
-                      <div className="mt-1 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-indigo-100 text-indigo-800">
-                        Plano
-                      </div>
-                    </>
-                  )}
                 </DropdownMenuLabel>
 
                 <DropdownMenuSeparator />

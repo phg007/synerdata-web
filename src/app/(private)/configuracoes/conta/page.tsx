@@ -11,38 +11,40 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+// import {
+//   AlertDialog,
+//   AlertDialogAction,
+//   AlertDialogCancel,
+//   AlertDialogContent,
+//   AlertDialogDescription,
+//   AlertDialogFooter,
+//   AlertDialogHeader,
+//   AlertDialogTitle,
+//   AlertDialogTrigger,
+// } from "@/components/ui/alert-dialog";
 import {
   Building2,
   MapPin,
   Phone,
   Mail,
   Calendar,
-  DollarSign,
   FileText,
   Crown,
-  AlertTriangle,
-  Edit,
-  Loader2,
+  ExternalLink,
+  // AlertTriangle,
+  // Edit,
+  // Loader2,
+  // ExternalLink,
 } from "lucide-react";
-import { toast } from "sonner";
-import { useMutation, useQuery } from "@tanstack/react-query";
+// import { toast } from "sonner";
+import { useQuery } from "@tanstack/react-query";
 import { CompanyObjectResponse } from "../../empresas/interfaces/company-interface";
 import { getCompanyById } from "../../empresas/services/get-company-by-id";
-import { cancelSubscription } from "./services/cancel-subscription";
+// import { cancelSubscription } from "./services/cancel-subscription";
 import { getSubscriptionData } from "./services/get-subscription-data";
 import { SubscriptionDataResponse } from "../../empresas/interfaces/subscription-interface";
 import { getPlanBadgeColors } from "@/app/(public)/pagamento/utils/checkout-utils";
+import Link from "next/link";
 
 export default function AccountPage() {
   const { data: session, status } = useSession();
@@ -64,25 +66,25 @@ export default function AccountPage() {
       enabled: !!subscriptionId,
     });
 
-  const { mutateAsync: cancelSubscriptionFn, isPending } = useMutation({
-    mutationFn: cancelSubscription,
-    onSuccess: () => {
-      toast.success("Assinatura cancelada com sucesso.");
-    },
-    onError: (error: Error) => {
-      toast.error("Erro ao cancelar a assinatura.", {
-        description: error.message,
-      });
-    },
-  });
+  // const { mutateAsync: cancelSubscriptionFn, isPending } = useMutation({
+  //   mutationFn: cancelSubscription,
+  //   onSuccess: () => {
+  //     toast.success("Assinatura cancelada com sucesso.");
+  //   },
+  //   onError: (error: Error) => {
+  //     toast.error("Erro ao cancelar a assinatura.", {
+  //       description: error.message,
+  //     });
+  //   },
+  // });
 
-  async function handleCancelSubscription(companyId: string) {
-    try {
-      await cancelSubscriptionFn({ companyId });
-    } catch (error) {
-      console.error("Erro ao cancelar a assinatura:", error);
-    }
-  }
+  // async function handleCancelSubscription(companyId: string) {
+  //   try {
+  //     await cancelSubscriptionFn({ companyId });
+  //   } catch (error) {
+  //     console.error("Erro ao cancelar a assinatura:", error);
+  //   }
+  // }
 
   if (status === "loading" || isCompanyLoading || isSubscriptionLoading) {
     return (
@@ -122,10 +124,10 @@ export default function AccountPage() {
                     Dados principais da organização
                   </CardDescription>
                 </div>
-                <Button variant="outline" size="sm">
+                {/* <Button variant="outline" size="sm">
                   <Edit className="h-4 w-4 mr-2" />
                   Editar
-                </Button>
+                </Button> */}
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="flex items-center space-x-4">
@@ -157,8 +159,10 @@ export default function AccountPage() {
                       Faturamento Anual
                     </p>
                     <p className="text-sm text-slate-600 flex items-center">
-                      <DollarSign className="h-4 w-4 mr-2" />
-                      {company?.faturamento}
+                      {new Intl.NumberFormat("pt-BR", {
+                        style: "currency",
+                        currency: "BRL",
+                      }).format(company?.faturamento || 0)}
                     </p>
                   </div>
                   <div className="space-y-1">
@@ -194,15 +198,22 @@ export default function AccountPage() {
                       {company?.segmento}
                     </p>
                   </div>
-                </div>
-
-                <div className="space-y-1">
-                  <p className="text-sm font-medium text-slate-700">
-                    Ramo de Atuação
-                  </p>
-                  <p className="text-sm text-slate-600">
-                    {company?.ramoAtuacao}
-                  </p>
+                  <div className="space-y-1">
+                    <p className="text-sm font-medium text-slate-700">
+                      Ramo de Atuação
+                    </p>
+                    <p className="text-sm text-slate-600">
+                      {company?.ramoAtuacao}
+                    </p>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-sm font-medium text-slate-700">
+                      Quantidade de Funcionarios
+                    </p>
+                    <p className="text-sm text-slate-600">
+                      Até {company?.quantidadeFuncionarios}
+                    </p>
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -279,7 +290,12 @@ export default function AccountPage() {
                     {planData?.items[0].name}
                   </div>
                   <p className="text-2xl font-bold">
-                    R$ {planData?.items[0].pricing_scheme.price}
+                    {new Intl.NumberFormat("pt-BR", {
+                      style: "currency",
+                      currency: "BRL",
+                    }).format(
+                      (planData?.items[0].pricing_scheme.price ?? 0) / 100
+                    )}
                   </p>
                   <p className="text-sm text-slate-500">
                     por {planData?.interval === "anual" ? "ano" : "mês"}
@@ -293,10 +309,12 @@ export default function AccountPage() {
                     <span className="text-slate-600">Status:</span>
                     <Badge
                       variant={
-                        planData?.status === "ativa" ? "default" : "destructive"
+                        planData?.status === "active"
+                          ? "default"
+                          : "destructive"
                       }
                     >
-                      {planData?.status === "ativa" ? "Ativa" : "Cancelada"}
+                      {planData?.status === "active" ? "Ativa" : "Cancelada"}
                     </Badge>
                   </div>
                   <div className="flex justify-between text-sm">
@@ -311,15 +329,15 @@ export default function AccountPage() {
                   </div>
                 </div>
 
-                <Separator />
+                {/* <Separator />
 
                 <div className="space-y-2">
-                  {/* <Button variant="outline" className="w-full" size="sm">
+                  <Button variant="outline" className="w-full" size="sm">
                     <ExternalLink className="h-4 w-4 mr-2" />
                     Alterar Plano
-                  </Button> */}
+                  </Button>
 
-                  {planData?.status === "ativa" && (
+                  {planData?.status === "active" && (
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
                         <Button
@@ -364,7 +382,7 @@ export default function AccountPage() {
                       </AlertDialogContent>
                     </AlertDialog>
                   )}
-                </div>
+                </div> */}
               </CardContent>
             </Card>
 
@@ -374,11 +392,16 @@ export default function AccountPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
-                  <Button variant="outline" className="w-full" size="sm">
-                    Central de Ajuda
-                  </Button>
-                  <Button variant="outline" className="w-full" size="sm">
-                    Contatar Suporte
+                  <Button
+                    variant="outline"
+                    className="w-full"
+                    size="sm"
+                    asChild
+                  >
+                    <Link href="/contato">
+                      Contatar Suporte
+                      <ExternalLink className="w-4 h-4" />
+                    </Link>
                   </Button>
                 </div>
               </CardContent>
