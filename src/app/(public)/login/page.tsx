@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { getSession, signIn } from "next-auth/react";
@@ -28,7 +28,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 
 const loginSchema = z.object({
   email: z.string().email("E-mail inválido"),
@@ -38,6 +38,7 @@ const loginSchema = z.object({
 type LoginFormData = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
+  const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
 
   const form = useForm<LoginFormData>({
@@ -121,13 +122,26 @@ export default function LoginPage() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Senha</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="password"
-                        placeholder="Sua senha"
-                        {...field}
-                      />
-                    </FormControl>
+                    <div className="relative">
+                      <FormControl>
+                        <Input
+                          placeholder="Digite sua senha"
+                          type={showPassword ? "text" : "password"}
+                          {...field}
+                        />
+                      </FormControl>
+                      <button
+                        type="button"
+                        className="absolute inset-y-0 right-0 flex items-center pr-3"
+                        onClick={() => setShowPassword(!showPassword)}
+                      >
+                        {showPassword ? (
+                          <EyeOff className="h-5 w-5 text-slate-400" />
+                        ) : (
+                          <Eye className="h-5 w-5 text-slate-400" />
+                        )}
+                      </button>
+                    </div>
                     <FormMessage />
                   </FormItem>
                 )}
