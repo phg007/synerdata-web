@@ -350,7 +350,7 @@ export default function CheckoutForm() {
               <p>
                 Precisa de ajuda? Entre em contato:{" "}
                 <a
-                  href="mailto:suporte@synnerdata.com"
+                  href="mailto:contato@synnerdata.com"
                   className="text-[#340D64] hover:underline"
                 >
                   contato@synnerdata.com.br

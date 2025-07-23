@@ -110,7 +110,7 @@ export default function HomePage() {
                   className="bg-primary hover:bg-primary/90"
                   asChild
                 >
-                  <Link href="/solicitar-demonstracao">
+                  <Link href="/contato">
                     Agende sua demonstração
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>
@@ -529,12 +529,6 @@ export default function HomePage() {
             </p>
           </div>
           <div className="flex items-center gap-4">
-            <Link
-              href="#"
-              className="text-white/70 hover:text-white transition-colors"
-            >
-              Termos
-            </Link>
             <Link
               href="/politica-privacidade"
               className="text-white/70 hover:text-white transition-colors"
