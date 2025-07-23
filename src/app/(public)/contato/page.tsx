@@ -58,7 +58,7 @@ export default function ContactPage() {
               asChild
             >
               <a
-                href="https://wa.me/5531998335168"
+                href="https://wa.me/5531997156609"
                 target="_blank"
                 rel="noopener noreferrer"
               >

@@ -19,13 +19,14 @@ export default function ReportUnderDevelopment() {
           </div>
 
           <h1 className="text-2xl font-bold text-slate-900 mb-4">
-            Relatório em Desenvolvimento
+            Relatório pendente
           </h1>
 
           <p className="text-slate-600 mb-6 leading-relaxed">
-            Estamos trabalhando para trazer os melhores insights para sua
-            empresa. Nosso relatório personalizado está sendo desenvolvido e
-            estará disponível em breve.
+            Precisamos apenas que você conclua o preenchimento dos dados de
+            funcionários e lançamento das ocorrências. A partir disso,
+            começaremos a preparar seu relatório personalizado, pronto em até 7
+            dias úteis.
           </p>
 
           <div className="bg-slate-50 rounded-lg p-6 mb-6">
@@ -53,7 +54,7 @@ export default function ReportUnderDevelopment() {
           </div>
 
           <div className="mt-8 pt-6 border-t border-slate-200">
-            <p className="text-sm text-slate-500">
+            <p className="text-sm text-slate-500 mt-3">
               Tem dúvidas? Nossa equipe está pronta para ajudar.{" "}
               <Link
                 href="/contato"
