@@ -83,7 +83,7 @@ export default function RefundPolicyPage() {
               <p>Para solicitar um reembolso, siga os passos abaixo:</p>
               <ol className="list-decimal pl-6 space-y-2">
                 <li>
-                  Envie um e-mail para suporte@synnerdata.com.br com o assunto:
+                  Envie um e-mail para contato@synnerdata.com.br com o assunto:
                   Solicitação de Reembolso.
                 </li>
                 <li>
@@ -146,7 +146,7 @@ export default function RefundPolicyPage() {
               <p>
                 Se você tiver dúvidas ou precisar de mais informações sobre a
                 nossa Política de Reembolso, entre em contato pelo e-mail
-                suporte@synnerdata.com.br.
+                contato@synnerdata.com.br.
               </p>
             </section>
           </div>

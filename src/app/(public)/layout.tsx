@@ -34,12 +34,6 @@ export default function PublicLayout({
           </div>
           <div className="flex items-center gap-4">
             <Link
-              href="#"
-              className="text-white/70 hover:text-white transition-colors"
-            >
-              Termos
-            </Link>
-            <Link
               href="/politica-privacidade"
               className="text-white/70 hover:text-white transition-colors"
             >
