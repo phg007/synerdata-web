@@ -41,9 +41,12 @@ export interface EmployeeObjectResponse extends BaseObjectResponse {
   regimeContratacao: string;
   dataAdmissao: string;
   salario: number;
+  valorAlimentacao: number;
+  valorTransporte: number;
   dataUltimoASO?: string;
   funcao: RoleShortObject;
   setor: DepartmentShortObject;
+  dataExameAdmissional: string;
   vencimentoExperiencia1?: string;
   vencimentoExperiencia2?: string;
   dataExameDemissional?: string;
@@ -57,6 +60,7 @@ export interface EmployeeObjectResponse extends BaseObjectResponse {
   tipoDeficiencia?: string;
   filhos: boolean;
   quantidadeFilhos?: number;
+  filhosAbaixoDe21?: boolean;
   telefone?: string;
   celular: string;
   rua: string;

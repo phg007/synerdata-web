@@ -133,7 +133,7 @@ export default function UpdateCboPage({
                           <FormLabel>Nome do Cbo</FormLabel>
                           <FormControl>
                             <Input
-                              placeholder="Ex: Auxiliar de escritório"
+                              placeholder="Ex: 4110-05: Auxiliar Administrativo"
                               {...field}
                             />
                           </FormControl>

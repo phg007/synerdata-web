@@ -12,6 +12,8 @@ export const columns: ColumnDef<TerminationObjectResponse>[] = [
       <DataTableColumnHeader column={column} title="ID" />
     ),
     cell: ({ row }) => <span>{row.getValue("id")}</span>,
+    enableSorting: false,
+    enableHiding: false,
   },
   {
     accessorFn: (row) => row.funcionario?.nome,
@@ -20,6 +22,9 @@ export const columns: ColumnDef<TerminationObjectResponse>[] = [
       <DataTableColumnHeader column={column} title="Funcionário" />
     ),
     cell: ({ row }) => <span>{row.getValue("funcionario.nome")}</span>,
+    meta: {
+      label: "Funcionário",
+    },
   },
   {
     accessorKey: "data",
@@ -34,6 +39,9 @@ export const columns: ColumnDef<TerminationObjectResponse>[] = [
       <DataTableColumnHeader column={column} title="Motivo Interno" />
     ),
     cell: ({ row }) => <span>{row.getValue("motivoInterno")}</span>,
+    meta: {
+      label: "Motivo Interno",
+    },
   },
   {
     accessorKey: "motivoTrabalhista",
@@ -41,6 +49,9 @@ export const columns: ColumnDef<TerminationObjectResponse>[] = [
       <DataTableColumnHeader column={column} title="Motivo Trabalhista" />
     ),
     cell: ({ row }) => <span>{row.getValue("motivoTrabalhista")}</span>,
+    meta: {
+      label: "Motivo Trabalhista",
+    },
   },
   {
     accessorKey: "acaoTrabalhista",
@@ -48,6 +59,9 @@ export const columns: ColumnDef<TerminationObjectResponse>[] = [
       <DataTableColumnHeader column={column} title="Ação Trabalhista" />
     ),
     cell: ({ row }) => <span>{row.getValue("acaoTrabalhista")}</span>,
+    meta: {
+      label: "Ação Trabalhista",
+    },
   },
   {
     accessorKey: "formaDemissao",
@@ -55,6 +69,9 @@ export const columns: ColumnDef<TerminationObjectResponse>[] = [
       <DataTableColumnHeader column={column} title="Forma de Demissão" />
     ),
     cell: ({ row }) => <span>{row.getValue("formaDemissao")}</span>,
+    meta: {
+      label: "Forma Demissão",
+    },
   },
   {
     accessorKey: "criadoPor",
@@ -62,6 +79,9 @@ export const columns: ColumnDef<TerminationObjectResponse>[] = [
       <DataTableColumnHeader column={column} title="Criado Por" />
     ),
     cell: ({ row }) => <span>{row.getValue("criadoPor")}</span>,
+    meta: {
+      label: "Criado Por",
+    },
   },
   {
     id: "actions",

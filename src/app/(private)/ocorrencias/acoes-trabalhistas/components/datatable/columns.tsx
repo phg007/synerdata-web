@@ -26,6 +26,9 @@ export const columns: ColumnDef<LaborActionObjectResponse>[] = [
         {row.getValue("funcionario.nome")}
       </span>
     ),
+    meta: {
+      label: "Funcionário",
+    },
   },
   {
     accessorKey: "numeroProcesso",
@@ -37,6 +40,9 @@ export const columns: ColumnDef<LaborActionObjectResponse>[] = [
         {row.getValue("numeroProcesso")}
       </span>
     ),
+    meta: {
+      label: "Nº Processo",
+    },
   },
   {
     accessorKey: "tribunal",
@@ -59,6 +65,9 @@ export const columns: ColumnDef<LaborActionObjectResponse>[] = [
           {new Date(data).toLocaleDateString("pt-BR")}
         </span>
       );
+    },
+    meta: {
+      label: "Data Ajuizamento",
     },
   },
   {
@@ -87,6 +96,9 @@ export const columns: ColumnDef<LaborActionObjectResponse>[] = [
     cell: ({ row }) => (
       <span className="truncate">{row.getValue("advogadoReclamante")}</span>
     ),
+    meta: {
+      label: "Adv. Reclamante",
+    },
   },
   {
     accessorKey: "advogadoReclamado",
@@ -96,6 +108,9 @@ export const columns: ColumnDef<LaborActionObjectResponse>[] = [
     cell: ({ row }) => (
       <span className="truncate">{row.getValue("advogadoReclamado")}</span>
     ),
+    meta: {
+      label: "Adv. Reclamado",
+    },
   },
   {
     accessorKey: "descricao",
@@ -107,6 +122,9 @@ export const columns: ColumnDef<LaborActionObjectResponse>[] = [
         {row.getValue("descricao")}
       </span>
     ),
+    meta: {
+      label: "Descrição",
+    },
   },
   {
     accessorKey: "valorCausa",
@@ -123,6 +141,9 @@ export const columns: ColumnDef<LaborActionObjectResponse>[] = [
           }).format(valor)}
         </span>
       );
+    },
+    meta: {
+      label: "Valor Causa",
     },
   },
   {
@@ -144,6 +165,9 @@ export const columns: ColumnDef<LaborActionObjectResponse>[] = [
     cell: ({ row }) => (
       <span className="max-w-[500px] truncate">{row.getValue("decisao")}</span>
     ),
+    meta: {
+      label: "Decisão",
+    },
   },
   {
     accessorKey: "dataConclusao",
@@ -151,6 +175,9 @@ export const columns: ColumnDef<LaborActionObjectResponse>[] = [
       <DataTableColumnHeader column={column} title="Data Conclusão" />
     ),
     cell: ({ row }) => <span>{row.getValue("dataConclusao")}</span>,
+    meta: {
+      label: "Data Conclusão",
+    },
   },
   {
     accessorKey: "recursos",
@@ -177,6 +204,9 @@ export const columns: ColumnDef<LaborActionObjectResponse>[] = [
         </span>
       );
     },
+    meta: {
+      label: "Custas/Despesas",
+    },
   },
   {
     accessorKey: "dataConhecimento",
@@ -184,6 +214,9 @@ export const columns: ColumnDef<LaborActionObjectResponse>[] = [
       <DataTableColumnHeader column={column} title="Data Conhecimento" />
     ),
     cell: ({ row }) => <span>{row.getValue("dataConclusao")}</span>,
+    meta: {
+      label: "Data Conhecimento",
+    },
   },
   {
     accessorKey: "criadoPor",

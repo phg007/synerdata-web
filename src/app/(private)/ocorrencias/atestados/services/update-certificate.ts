@@ -5,15 +5,17 @@ import { MedicalCertificateObjectResponse } from "../interfaces/certificate-inte
 export interface UpdateMedicalCertificatePayload {
   certificateId: string;
   dataInicio: string;
+  cid?: string;
   dataFim: string;
   motivo: string;
 }
 
 export async function updateMedicalCertificate({
   certificateId,
+  motivo,
+  cid,
   dataInicio,
   dataFim,
-  motivo,
 }: UpdateMedicalCertificatePayload) {
   try {
     const response = await fetchClient(
@@ -21,9 +23,10 @@ export async function updateMedicalCertificate({
       {
         method: "PATCH",
         body: JSON.stringify({
+          motivo,
+          cid,
           dataInicio,
           dataFim,
-          motivo,
         }),
       }
     );

@@ -46,6 +46,18 @@ const createMedicalCertificateSchema = z.object({
     .string()
     .min(1, "O motivo é obrigatório")
     .max(255, "O motivo deve ter no máximo 255 caracteres"),
+  cid: z
+    .string()
+    .optional()
+    .refine(
+      (value) =>
+        value === undefined ||
+        value === "" ||
+        /^([A-TV-Z][0-9]{2})(\.[0-9A-Z]{1,2})?$/.test(value),
+      {
+        message: "O CID deve seguir o formato válido (ex: J45.0)",
+      }
+    ),
   funcionarioId: z.string().min(1, "Selecione o funcionário"),
 });
 
@@ -64,9 +76,10 @@ export default function CreateMedicalCertificatePage() {
   });
 
   const defaultValues: CreateMedicalCertificateFormValues = {
+    motivo: "",
+    cid: "",
     dataInicio: "",
     dataFim: "",
-    motivo: "",
     funcionarioId: "",
   };
 
@@ -90,7 +103,9 @@ export default function CreateMedicalCertificatePage() {
   });
 
   const onSubmit = async (data: CreateMedicalCertificateFormValues) => {
-    await createMedicalCertificateFn(data);
+    await createMedicalCertificateFn({
+      ...data,
+    });
   };
 
   return (
@@ -185,7 +200,21 @@ export default function CreateMedicalCertificatePage() {
                   />
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <FormField
+                    control={form.control}
+                    name="cid"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>CID</FormLabel>
+                        <FormControl>
+                          <Input {...field} placeholder="Ex: J45.0" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
                   <FormField
                     control={form.control}
                     name="dataInicio"

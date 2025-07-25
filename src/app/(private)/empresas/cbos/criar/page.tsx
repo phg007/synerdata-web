@@ -114,7 +114,7 @@ export default function CreateCboPage() {
                           </FormLabel>
                           <FormControl>
                             <Input
-                              placeholder="Ex: Auxiliar de escritório"
+                              placeholder="Ex: 4110-05: Auxiliar Administrativo"
                               {...field}
                             />
                           </FormControl>

@@ -29,10 +29,13 @@ export function DataTableViewOptions<TData>({
           className="ml-auto hidden h-8 lg:flex"
         >
           <MixerHorizontalIcon className="mr-2 h-4 w-4" />
-          Visualização
+          Exibir
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-[150px]">
+      <DropdownMenuContent
+        align="end"
+        className="w-[190px] h-96 overflow-y-auto"
+      >
         <DropdownMenuLabel>Alternar colunas</DropdownMenuLabel>
         <DropdownMenuSeparator />
         {table
@@ -42,6 +45,9 @@ export function DataTableViewOptions<TData>({
               typeof column.accessorFn !== "undefined" && column.getCanHide()
           )
           .map((column) => {
+            const label =
+              (column.columnDef.meta as { label?: string })?.label ?? column.id;
+
             return (
               <DropdownMenuCheckboxItem
                 key={column.id}
@@ -49,7 +55,7 @@ export function DataTableViewOptions<TData>({
                 checked={column.getIsVisible()}
                 onCheckedChange={(value) => column.toggleVisibility(!!value)}
               >
-                {column.id}
+                {label}
               </DropdownMenuCheckboxItem>
             );
           })}
