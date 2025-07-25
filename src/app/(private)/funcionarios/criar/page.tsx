@@ -102,7 +102,8 @@ const formSchema = z.object({
     .max(300, "Peso deve estar entre 20kg e 300kg"),
   filhos: z.boolean(),
   quantidadeFilhos: z.number().optional(),
-  nomePai: z.string().min(1, "Nome do pai é obrigatório"),
+  filhosAbaixoDe21: z.boolean().optional(),
+  nomePai: z.string().optional(),
   nomeMae: z.string().min(1, "Nome da mãe é obrigatório"),
   necessidadesEspeciais: z.boolean(),
   tipoDeficiencia: z.string().optional(),
@@ -123,6 +124,8 @@ const formSchema = z.object({
   }),
   dataAdmissao: z.string().min(1, "Data de admissão é obrigatória"),
   salario: z.number().min(0, "Salário deve ser maior que 0"),
+  valorAlimentacao: z.number().min(0, "Valor alimentação deve ser maior que 0"),
+  valorTransporte: z.number().min(0, "Valor transporte deve ser maior que 0"),
   funcao: z.string().min(1, "Função é obrigatória"),
   setor: z.string().min(1, "Setor é obrigatório"),
   gestor: z.string().min(1, "Gestor é obrigatório"),
@@ -136,6 +139,9 @@ const formSchema = z.object({
     .max(44, "Carga horária não pode exceder 44h"),
   escala: z.nativeEnum(Escala, { required_error: "Escala é obrigatória" }),
   centroCusto: z.string().optional(),
+  dataExameAdmissional: z
+    .string()
+    .min(1, "Data do exame admissional é obrigatória"),
   vencimentoExperiencia1: z.string().optional(),
   vencimentoExperiencia2: z.string().optional(),
   dataUltimoASO: z.string().optional(),
@@ -228,9 +234,9 @@ export default function CreateEmployeePage() {
       nome: "",
       carteiraIdentidade: "",
       cpf: "",
-      sexo: undefined,
+      sexo: Sexo.MASCULINO,
       dataNascimento: "",
-      estadoCivil: undefined,
+      estadoCivil: EstadoCivil.SOLTEIRO,
       naturalidade: "",
       nacionalidade: "Brasileira",
       altura: 0,
@@ -242,21 +248,25 @@ export default function CreateEmployeePage() {
       ctpsNumero: "",
       ctpsSerie: "",
       certificadoReservista: "",
-      regimeContratacao: undefined,
+      regimeContratacao: RegimeContratacao.CLT,
       dataAdmissao: "",
       salario: 0,
+      valorAlimentacao: 0,
+      valorTransporte: 0,
       dataUltimoASO: "",
       funcao: "",
       setor: "",
+      dataExameAdmissional: "",
       vencimentoExperiencia1: "",
       vencimentoExperiencia2: "",
       dataExameDemissional: "",
       centroCusto: "",
-      grauInstrucao: undefined,
+      grauInstrucao: GrauInstrucao.FUNDAMENTAL,
       necessidadesEspeciais: false,
       tipoDeficiencia: "",
       filhos: false,
       quantidadeFilhos: 0,
+      filhosAbaixoDe21: false,
       telefone: "",
       celular: "",
       gestor: "",
@@ -272,7 +282,7 @@ export default function CreateEmployeePage() {
       longitude: undefined,
       quantidadeOnibus: 0,
       cargaHoraria: 40,
-      escala: undefined,
+      escala: Escala.SEIS_UM,
     },
   });
 
@@ -349,7 +359,7 @@ export default function CreateEmployeePage() {
   };
 
   const onSubmit = async (data: CreateEmployeeFormData) => {
-    await createEmployeeFn({
+    const employee = {
       ...data,
       cpf: data.cpf.replace(/\D/g, ""),
       pis: data.pis.replace(/\D/g, ""),
@@ -363,8 +373,9 @@ export default function CreateEmployeePage() {
       complemento: data.complemento?.trim() || undefined,
       latitude: data.latitude || undefined,
       longitude: data.longitude || undefined,
-      empresaId: companyId,
-    });
+    };
+
+    await createEmployeeFn({ empresaId: companyId, data: employee });
   };
 
   return (
@@ -673,7 +684,7 @@ export default function CreateEmployeePage() {
                   />
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
                   <FormField
                     control={form.control}
                     name="altura"
@@ -743,29 +754,49 @@ export default function CreateEmployeePage() {
                   />
 
                   {form.watch("filhos") && (
-                    <FormField
-                      control={form.control}
-                      name="quantidadeFilhos"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Quantidade de Filhos</FormLabel>
-                          <FormControl>
-                            <Input
-                              type="number"
-                              min="0"
-                              placeholder="0"
-                              {...field}
-                              onChange={(e) =>
-                                field.onChange(
-                                  Number.parseInt(e.target.value) || 0
-                                )
-                              }
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                    <>
+                      <FormField
+                        control={form.control}
+                        name="quantidadeFilhos"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Quantidade de Filhos</FormLabel>
+                            <FormControl>
+                              <Input
+                                type="number"
+                                min="0"
+                                placeholder="0"
+                                {...field}
+                                onChange={(e) =>
+                                  field.onChange(
+                                    Number.parseInt(e.target.value) || 0
+                                  )
+                                }
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="filhosAbaixoDe21"
+                        render={({ field }) => (
+                          <FormItem className="flex flex-row items-start space-x-3 space-y-0 p-4">
+                            <FormControl>
+                              <Checkbox
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                              />
+                            </FormControl>
+                            <div className="space-y-1 leading-none">
+                              <FormLabel>Filhos abaixo de 21 anos?</FormLabel>
+                            </div>
+                          </FormItem>
+                        )}
+                      />
+                    </>
                   )}
                 </div>
 
@@ -775,9 +806,7 @@ export default function CreateEmployeePage() {
                     name="nomePai"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>
-                          Nome do Pai <span className="text-red-500">*</span>
-                        </FormLabel>
+                        <FormLabel>Nome do Pai</FormLabel>
                         <FormControl>
                           <Input
                             placeholder="Nome completo do pai"
@@ -1024,7 +1053,65 @@ export default function CreateEmployeePage() {
                             decimalScale={2}
                             fixedDecimalScale
                             allowNegative={false}
-                            placeholder="0,00"
+                            value={field.value}
+                            onValueChange={(values) => {
+                              const { floatValue } = values;
+                              field.onChange(floatValue ?? 0);
+                            }}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="valorAlimentacao"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>
+                          Valor Alimentação (R$){" "}
+                          <span className="text-red-500">*</span>
+                        </FormLabel>
+                        <FormControl>
+                          <NumericFormat
+                            customInput={Input}
+                            thousandSeparator="."
+                            decimalSeparator=","
+                            decimalScale={2}
+                            fixedDecimalScale
+                            allowNegative={false}
+                            value={field.value}
+                            onValueChange={(values) => {
+                              const { floatValue } = values;
+                              field.onChange(floatValue ?? 0);
+                            }}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="valorTransporte"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>
+                          Valor Transporte (R$){" "}
+                          <span className="text-red-500">*</span>
+                        </FormLabel>
+                        <FormControl>
+                          <NumericFormat
+                            customInput={Input}
+                            thousandSeparator="."
+                            decimalSeparator=","
+                            decimalScale={2}
+                            fixedDecimalScale
+                            allowNegative={false}
                             value={field.value}
                             onValueChange={(values) => {
                               const { floatValue } = values;
@@ -1203,10 +1290,10 @@ export default function CreateEmployeePage() {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
+                            <SelectItem value={Escala.SEIS_UM}>6x1</SelectItem>
                             <SelectItem value={Escala.DOZE_TRINTA_SEIS}>
                               12x36
                             </SelectItem>
-                            <SelectItem value={Escala.SEIS_UM}>6x1</SelectItem>
                             <SelectItem value={Escala.QUATRO_TRES}>
                               4x3
                             </SelectItem>
@@ -1281,7 +1368,24 @@ export default function CreateEmployeePage() {
                   />
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="dataExameAdmissional"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>
+                          Data do Exame Admissional{" "}
+                          <span className="text-red-500">*</span>
+                        </FormLabel>
+                        <FormControl>
+                          <Input type="date" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
                   <FormField
                     control={form.control}
                     name="dataUltimoASO"

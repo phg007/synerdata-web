@@ -49,10 +49,7 @@ const organizacaoSchema = z.object({
     .string()
     .min(1, "Regime tributário é obrigatório")
     .max(50, "Máximo 50 caracteres"),
-  inscricaoEstadual: z
-    .string()
-    .min(1, "Inscrição estadual é obrigatória")
-    .max(50, "Máximo 50 caracteres"),
+  inscricaoEstadual: z.string().max(50, "Máximo 50 caracteres").optional(),
   cnaePrincipal: z
     .string()
     .min(1, "CNAE principal é obrigatório")
@@ -332,10 +329,7 @@ export default function FinalizarCadastroPage() {
                     name="inscricaoEstadual"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>
-                          Inscrição Estadual{" "}
-                          <span className="text-red-500">*</span>
-                        </FormLabel>
+                        <FormLabel>Inscrição Estadual</FormLabel>
                         <FormControl>
                           <Input placeholder="Ex: 123.456.789.012" {...field} />
                         </FormControl>

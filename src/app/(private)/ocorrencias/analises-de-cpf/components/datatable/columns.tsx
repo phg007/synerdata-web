@@ -12,6 +12,8 @@ export const columns: ColumnDef<CpfAnalysisObjectResponse>[] = [
       <DataTableColumnHeader column={column} title="ID" />
     ),
     cell: ({ row }) => <span>{row.getValue("id")}</span>,
+    enableSorting: false,
+    enableHiding: false,
   },
   {
     accessorFn: (row) => row.funcionario?.nome,
@@ -20,6 +22,9 @@ export const columns: ColumnDef<CpfAnalysisObjectResponse>[] = [
       <DataTableColumnHeader column={column} title="Funcionário" />
     ),
     cell: ({ row }) => <span>{row.getValue("funcionario.nome")}</span>,
+    meta: {
+      label: "Funcionário",
+    },
   },
   {
     accessorKey: "descricao",
@@ -27,6 +32,9 @@ export const columns: ColumnDef<CpfAnalysisObjectResponse>[] = [
       <DataTableColumnHeader column={column} title="Descrição" />
     ),
     cell: ({ row }) => <span>{row.getValue("descricao")}</span>,
+    meta: {
+      label: "Descrição",
+    },
   },
   {
     accessorKey: "criadoPor",
@@ -34,6 +42,9 @@ export const columns: ColumnDef<CpfAnalysisObjectResponse>[] = [
       <DataTableColumnHeader column={column} title="Criado Por" />
     ),
     cell: ({ row }) => <span>{row.getValue("criadoPor")}</span>,
+    meta: {
+      label: "Criado Por",
+    },
   },
   {
     id: "actions",

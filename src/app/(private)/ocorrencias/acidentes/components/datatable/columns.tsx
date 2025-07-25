@@ -30,6 +30,9 @@ export const columns: ColumnDef<AcidentesObjectResponse>[] = [
         {row.getValue("funcionario.nome")}
       </div>
     ),
+    meta: {
+      label: "Funcionário",
+    },
   },
   {
     accessorKey: "descricao",
@@ -41,6 +44,9 @@ export const columns: ColumnDef<AcidentesObjectResponse>[] = [
         {row.getValue("descricao")}
       </span>
     ),
+    meta: {
+      label: "Descrição",
+    },
     enableSorting: true,
     enableHiding: true,
   },
@@ -83,6 +89,9 @@ export const columns: ColumnDef<AcidentesObjectResponse>[] = [
         {row.getValue("medidasTomadas")}
       </span>
     ),
+    meta: {
+      label: "Medidas Tomadas",
+    },
     enableSorting: true,
     enableHiding: true,
   },

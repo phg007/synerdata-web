@@ -2,7 +2,7 @@ import { fetchClient } from "@/utils/fetch-client";
 import { EmployeeObjectResponse } from "../interfaces/employee-interface";
 import { ApiResponse } from "@/utils/interfaces/base-response";
 
-export interface CreateEmployeePayload {
+export interface CreateEmployeeFormValues {
   nome: string;
   carteiraIdentidade: string;
   cpf: string;
@@ -13,7 +13,7 @@ export interface CreateEmployeePayload {
   nacionalidade: string;
   altura: number;
   peso: number;
-  nomePai: string;
+  nomePai?: string;
   nomeMae: string;
   email: string;
   pis: string;
@@ -23,9 +23,12 @@ export interface CreateEmployeePayload {
   regimeContratacao: string;
   dataAdmissao: string;
   salario: number;
+  valorAlimentacao: number;
+  valorTransporte: number;
   dataUltimoASO?: string;
   funcao: string;
   setor: string;
+  dataExameAdmissional: string;
   vencimentoExperiencia1?: string;
   vencimentoExperiencia2?: string;
   dataExameDemissional?: string;
@@ -39,6 +42,7 @@ export interface CreateEmployeePayload {
   tipoDeficiencia?: string;
   filhos: boolean;
   quantidadeFilhos?: number;
+  filhosAbaixoDe21?: boolean;
   telefone?: string;
   celular: string;
   rua: string;
@@ -51,127 +55,27 @@ export interface CreateEmployeePayload {
   latitude?: number;
   longitude?: number;
   quantidadeOnibus?: number;
-  empresaId?: string;
   funcaoId?: string;
   setorId?: string;
   centroCustoId?: string;
   cboId?: string;
 }
 
+interface CreateEmployeePayload {
+  empresaId?: string;
+  data: CreateEmployeeFormValues;
+}
+
 export async function createEmployee({
-  nome,
-  carteiraIdentidade,
-  cpf,
-  sexo,
-  dataNascimento,
-  estadoCivil,
-  naturalidade,
-  nacionalidade,
-  altura,
-  peso,
-  nomePai,
-  nomeMae,
-  email,
-  pis,
-  ctpsNumero,
-  ctpsSerie,
-  certificadoReservista,
-  regimeContratacao,
-  dataAdmissao,
-  salario,
-  dataUltimoASO,
-  funcao,
-  setor,
-  vencimentoExperiencia1,
-  vencimentoExperiencia2,
-  dataExameDemissional,
-  centroCusto,
-  grauInstrucao,
-  gestor,
-  cbo,
-  cargaHoraria,
-  escala,
-  necessidadesEspeciais,
-  tipoDeficiencia,
-  filhos,
-  quantidadeFilhos,
-  telefone,
-  celular,
-  rua,
-  numero,
-  complemento,
-  bairro,
-  cidade,
-  estado,
-  cep,
-  latitude,
-  longitude,
-  quantidadeOnibus,
   empresaId,
-  funcaoId,
-  setorId,
-  centroCustoId,
-  cboId,
+  data,
 }: CreateEmployeePayload) {
   try {
     const response = await fetchClient(
       `v1/empresas/${empresaId}/funcionarios`,
       {
         method: "POST",
-        body: JSON.stringify({
-          nome,
-          carteiraIdentidade,
-          cpf,
-          sexo,
-          dataNascimento,
-          estadoCivil,
-          naturalidade,
-          nacionalidade,
-          altura,
-          peso,
-          nomePai,
-          nomeMae,
-          email,
-          pis,
-          ctpsNumero,
-          ctpsSerie,
-          certificadoReservista,
-          regimeContratacao,
-          dataAdmissao,
-          salario,
-          dataUltimoASO,
-          funcao,
-          setor,
-          vencimentoExperiencia1,
-          vencimentoExperiencia2,
-          dataExameDemissional,
-          centroCusto,
-          grauInstrucao,
-          gestor,
-          cbo,
-          cargaHoraria,
-          escala,
-          necessidadesEspeciais,
-          tipoDeficiencia,
-          filhos,
-          quantidadeFilhos,
-          telefone,
-          celular,
-          rua,
-          numero,
-          complemento,
-          bairro,
-          cidade,
-          estado,
-          cep,
-          latitude,
-          longitude,
-          quantidadeOnibus,
-          funcaoId,
-          setorId,
-          centroCustoId,
-          cboId,
-        }),
+        body: JSON.stringify(data),
       }
     );
 

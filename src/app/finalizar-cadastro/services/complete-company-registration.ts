@@ -5,7 +5,7 @@ export interface CompleteCompanyRegistrationPayload {
   dataFundacao: string;
   faturamento: number;
   regimeTributario: string;
-  inscricaoEstadual: string;
+  inscricaoEstadual?: string;
   cnaePrincipal: string;
   segmento: string;
   ramoAtuacao: string;

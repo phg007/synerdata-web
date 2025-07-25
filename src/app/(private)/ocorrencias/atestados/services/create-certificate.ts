@@ -3,16 +3,18 @@ import { ApiResponse } from "@/utils/interfaces/base-response";
 import { MedicalCertificateObjectResponse } from "../interfaces/certificate-interfaces";
 
 export interface CreateMedicalCertificatePayload {
+  motivo: string;
+  cid?: string;
   dataInicio: string;
   dataFim: string;
-  motivo: string;
   funcionarioId: string;
 }
 
 export async function createMedicalCertificate({
+  motivo,
+  cid,
   dataInicio,
   dataFim,
-  motivo,
   funcionarioId,
 }: CreateMedicalCertificatePayload) {
   try {
@@ -21,9 +23,10 @@ export async function createMedicalCertificate({
       {
         method: "POST",
         body: JSON.stringify({
+          motivo,
+          cid,
           dataInicio,
           dataFim,
-          motivo,
         }),
       }
     );

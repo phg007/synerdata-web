@@ -8,6 +8,7 @@ interface Employee {
 export interface MedicalCertificateObjectResponse extends BaseObjectResponse {
   funcionario: Employee;
   dataInicio: string;
+  cid: string;
   dataFim: string;
   motivo: string;
 }

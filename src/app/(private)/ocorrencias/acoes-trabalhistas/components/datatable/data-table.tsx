@@ -80,7 +80,16 @@ export function DataTable<TData, TValue>({
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id} colSpan={header.colSpan}>
+                    <TableHead
+                      key={header.id}
+                      className={
+                        table.getRowModel().rows?.length &&
+                        header.column.id === "actions"
+                          ? "bg-card before:bg-border sticky right-0 z-20 w-12 before:absolute before:top-0 before:bottom-0 before:left-0 before:w-px"
+                          : undefined
+                      }
+                      colSpan={header.colSpan}
+                    >
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -101,7 +110,14 @@ export function DataTable<TData, TValue>({
                   data-state={row.getIsSelected() && "selected"}
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
+                    <TableCell
+                      key={cell.id}
+                      className={
+                        cell.column.id === "actions"
+                          ? "bg-card group-hover:bg-muted/50 group-hover:dark:bg-muted/40 before:bg-border sticky right-0 z-20 w-12 before:absolute before:top-0 before:bottom-0 before:left-0 before:w-px"
+                          : undefined
+                      }
+                    >
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()
