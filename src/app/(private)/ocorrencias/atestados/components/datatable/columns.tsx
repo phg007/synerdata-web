@@ -12,6 +12,8 @@ export const columns: ColumnDef<MedicalCertificateObjectResponse>[] = [
       <DataTableColumnHeader column={column} title="ID" />
     ),
     cell: ({ row }) => <span>{row.getValue("id")}</span>,
+    enableSorting: false,
+    enableHiding: false,
   },
   {
     accessorFn: (row) => row.funcionario?.nome,
@@ -20,20 +22,16 @@ export const columns: ColumnDef<MedicalCertificateObjectResponse>[] = [
       <DataTableColumnHeader column={column} title="Funcionário" />
     ),
     cell: ({ row }) => <span>{row.getValue("funcionario.nome")}</span>,
+    meta: {
+      label: "Funcionário",
+    },
   },
   {
-    accessorKey: "dataInicio",
+    accessorKey: "cid",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Início" />
+      <DataTableColumnHeader column={column} title="CID" />
     ),
-    cell: ({ row }) => <span>{row.getValue("dataInicio")}</span>,
-  },
-  {
-    accessorKey: "dataFim",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Fim" />
-    ),
-    cell: ({ row }) => <span>{row.getValue("dataFim")}</span>,
+    cell: ({ row }) => <span>{row.getValue("cid")}</span>,
   },
   {
     accessorKey: "motivo",
@@ -43,11 +41,34 @@ export const columns: ColumnDef<MedicalCertificateObjectResponse>[] = [
     cell: ({ row }) => <span>{row.getValue("motivo")}</span>,
   },
   {
+    accessorKey: "dataInicio",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Data Início" />
+    ),
+    cell: ({ row }) => <span>{row.getValue("dataInicio")}</span>,
+    meta: {
+      label: "Data Início",
+    },
+  },
+  {
+    accessorKey: "dataFim",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Data Fim" />
+    ),
+    cell: ({ row }) => <span>{row.getValue("dataFim")}</span>,
+    meta: {
+      label: "Data Fim",
+    },
+  },
+  {
     accessorKey: "criadoPor",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Criado Por" />
     ),
     cell: ({ row }) => <span>{row.getValue("criadoPor")}</span>,
+    meta: {
+      label: "Criado Por",
+    },
   },
   {
     id: "actions",

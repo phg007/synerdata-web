@@ -36,6 +36,18 @@ const editMedicalCertificateSchema = z.object({
     .string()
     .min(1, "O motivo é obrigatório")
     .max(255, "O motivo deve ter no máximo 255 caracteres"),
+  cid: z
+    .string()
+    .optional()
+    .refine(
+      (value) =>
+        value === undefined ||
+        value === "" ||
+        /^([A-TV-Z][0-9]{2})(\.[0-9A-Z]{1,2})?$/.test(value),
+      {
+        message: "O CID deve seguir o formato válido (ex: J45.0)",
+      }
+    ),
   dataInicio: z.string().min(1, "A data de início é obrigatória"),
   dataFim: z.string().min(1, "A data de fim é obrigatória"),
 });
@@ -64,6 +76,7 @@ export default function UpdateMedicalCertificatePage({
     resolver: zodResolver(editMedicalCertificateSchema),
     defaultValues: {
       motivo: "",
+      cid: "",
       dataInicio: "",
       dataFim: "",
     },
@@ -77,6 +90,7 @@ export default function UpdateMedicalCertificatePage({
 
       form.reset({
         motivo: medicalCertificate.motivo,
+        cid: medicalCertificate.cid || "",
         dataInicio: `${anoInicio}-${mesInicio}-${diaInicio}`,
         dataFim: `${anoFim}-${mesFim}-${diaFim}`,
       });
@@ -146,38 +160,13 @@ export default function UpdateMedicalCertificatePage({
               >
                 <FormField
                   control={form.control}
-                  name="dataInicio"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Data de Início</FormLabel>
-                      <FormControl>
-                        <Input type="date" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="dataFim"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Data de Fim</FormLabel>
-                      <FormControl>
-                        <Input type="date" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
                   name="motivo"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Motivo do Atestado</FormLabel>
+                      <FormLabel>
+                        Motivo do Atestado{" "}
+                        <span className="text-red-500">*</span>
+                      </FormLabel>
                       <FormControl>
                         <Input
                           {...field}
@@ -188,6 +177,54 @@ export default function UpdateMedicalCertificatePage({
                     </FormItem>
                   )}
                 />
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <FormField
+                    control={form.control}
+                    name="cid"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>CID</FormLabel>
+                        <FormControl>
+                          <Input {...field} placeholder="Ex: J45.0" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="dataInicio"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>
+                          Data de Início <span className="text-red-500">*</span>
+                        </FormLabel>
+                        <FormControl>
+                          <Input type="date" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="dataFim"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>
+                          Data de Fim <span className="text-red-500">*</span>
+                        </FormLabel>
+                        <FormControl>
+                          <Input type="date" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
 
                 <div className="flex justify-end space-x-4 pt-6 border-t">
                   <Button type="submit" disabled={isPending}>

@@ -30,13 +30,19 @@ export const columns: ColumnDef<ProjectObjectResponse>[] = [
       <DataTableColumnHeader column={column} title="Descrição" />
     ),
     cell: ({ row }) => <span>{row.getValue("descricao")}</span>,
+    meta: {
+      label: "Descrição",
+    },
   },
   {
     accessorKey: "dataInicio",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Início" />
+      <DataTableColumnHeader column={column} title="Data Início" />
     ),
     cell: ({ row }) => <span>{row.getValue("dataInicio")}</span>,
+    meta: {
+      label: "Data Início",
+    },
   },
   {
     accessorKey: "cno",

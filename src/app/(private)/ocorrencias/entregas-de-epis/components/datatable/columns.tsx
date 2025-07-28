@@ -12,6 +12,8 @@ export const columns: ColumnDef<EpiDeliveryObjectResponse>[] = [
       <DataTableColumnHeader column={column} title="ID" />
     ),
     cell: ({ row }) => <span>{row.getValue("id")}</span>,
+    enableSorting: false,
+    enableHiding: false,
   },
   {
     accessorFn: (row) => row.funcionario?.nome,
@@ -20,6 +22,9 @@ export const columns: ColumnDef<EpiDeliveryObjectResponse>[] = [
       <DataTableColumnHeader column={column} title="Funcionário" />
     ),
     cell: ({ row }) => <span>{row.getValue("funcionario.nome")}</span>,
+    meta: {
+      label: "Funcionário",
+    },
   },
   {
     accessorFn: (row) => row.epis?.map((e) => e.nome).join(", "),
@@ -42,6 +47,9 @@ export const columns: ColumnDef<EpiDeliveryObjectResponse>[] = [
       <DataTableColumnHeader column={column} title="Entregue Por" />
     ),
     cell: ({ row }) => <span>{row.getValue("entreguePor")}</span>,
+    meta: {
+      label: "Entregue Por",
+    },
   },
   {
     accessorKey: "data",
@@ -56,6 +64,9 @@ export const columns: ColumnDef<EpiDeliveryObjectResponse>[] = [
       <DataTableColumnHeader column={column} title="Criado Por" />
     ),
     cell: ({ row }) => <span>{row.getValue("criadoPor")}</span>,
+    meta: {
+      label: "Criado Por",
+    },
   },
   {
     id: "actions",

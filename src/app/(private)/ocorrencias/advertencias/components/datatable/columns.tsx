@@ -12,6 +12,8 @@ export const columns: ColumnDef<WarningObjectResponse>[] = [
       <DataTableColumnHeader column={column} title="ID" />
     ),
     cell: ({ row }) => <span>{row.getValue("id")}</span>,
+    enableSorting: false,
+    enableHiding: false,
   },
   {
     accessorFn: (row) => row.funcionario?.nome,
@@ -20,6 +22,9 @@ export const columns: ColumnDef<WarningObjectResponse>[] = [
       <DataTableColumnHeader column={column} title="Funcionário" />
     ),
     cell: ({ row }) => <span>{row.getValue("funcionario.nome")}</span>,
+    meta: {
+      label: "Funcionário",
+    },
   },
   {
     accessorKey: "data",

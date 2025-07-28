@@ -10,8 +10,12 @@ import { EpiObjectResponse } from "../../interfaces/epi-interfaces";
 export const columns: ColumnDef<EpiObjectResponse>[] = [
   {
     accessorKey: "id",
-    header: "ID",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="ID" />
+    ),
     cell: ({ row }) => row.getValue("id"),
+    enableSorting: false,
+    enableHiding: false,
   },
 
   {

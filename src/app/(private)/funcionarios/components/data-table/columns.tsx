@@ -40,6 +40,9 @@ export const columns: ColumnDef<EmployeeObjectResponse>[] = [
         <span className="text-nowrap font-mono text-sm">{formattedCPF}</span>
       );
     },
+    meta: {
+      label: "CPF",
+    },
   },
   {
     id: "funcao",
@@ -50,6 +53,9 @@ export const columns: ColumnDef<EmployeeObjectResponse>[] = [
     cell: ({ row }) => (
       <span className="truncate">{row.getValue("funcao")}</span>
     ),
+    meta: {
+      label: "Função",
+    },
   },
   {
     id: "setor",
@@ -83,6 +89,9 @@ export const columns: ColumnDef<EmployeeObjectResponse>[] = [
 
       return <Badge variant={regimeInfo.variant}>{regimeInfo.label}</Badge>;
     },
+    meta: {
+      label: "Regime Contratação",
+    },
   },
   {
     accessorKey: "salario",
@@ -100,6 +109,9 @@ export const columns: ColumnDef<EmployeeObjectResponse>[] = [
         </span>
       );
     },
+    meta: {
+      label: "Salário",
+    },
   },
   {
     accessorKey: "dataAdmissao",
@@ -107,9 +119,12 @@ export const columns: ColumnDef<EmployeeObjectResponse>[] = [
       <DataTableColumnHeader column={column} title="Admissão" />
     ),
     cell: ({ row }) => {
-      const data = row.getValue("dataAdmissao") as string;
-      const dataFormatada = new Date(data).toLocaleDateString("pt-BR");
-      return <span className="text-nowrap">{dataFormatada}</span>;
+      return (
+        <span className="text-nowrap">{row.getValue("dataAdmissao")}</span>
+      );
+    },
+    meta: {
+      label: "Data Admissão",
     },
   },
   {
@@ -144,6 +159,9 @@ export const columns: ColumnDef<EmployeeObjectResponse>[] = [
     cell: ({ row }) => {
       const carga = row.getValue("cargaHoraria") as number;
       return <span className="text-nowrap">{carga}h/sem</span>;
+    },
+    meta: {
+      label: "Carga Horária",
     },
   },
   {
@@ -180,6 +198,9 @@ export const columns: ColumnDef<EmployeeObjectResponse>[] = [
         <span className="text-muted-foreground text-xs">-</span>
       );
     },
+    meta: {
+      label: "Necessidades Especiais",
+    },
   },
   {
     accessorKey: "criadoPor",
@@ -187,6 +208,9 @@ export const columns: ColumnDef<EmployeeObjectResponse>[] = [
       <DataTableColumnHeader column={column} title="Criado por" />
     ),
     cell: ({ row }) => <span>{row.getValue("criadoPor")}</span>,
+    meta: {
+      label: "Criado Por",
+    },
   },
   {
     id: "actions",
