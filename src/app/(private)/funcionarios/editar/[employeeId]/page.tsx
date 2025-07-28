@@ -69,105 +69,120 @@ import { RoleObjectResponse } from "@/app/(private)/empresas/funcoes/interfaces/
 import { getRolesByCompany } from "@/app/(private)/empresas/funcoes/services/get-roles-by-company";
 import { NumericFormat } from "react-number-format";
 
-const formSchema = z.object({
-  nome: z.string().min(1, "Nome é obrigatório"),
-  email: z.string().email("Email inválido"),
-  cpf: z
-    .string()
-    .min(11, "CPF inválido")
-    .refine((val) => isValidCPF(val), {
-      message: "CPF inválido",
+const formSchema = z
+  .object({
+    nome: z.string().min(1, "Nome é obrigatório"),
+    email: z.string().email("Email inválido"),
+    cpf: z
+      .string()
+      .min(11, "CPF inválido")
+      .refine((val) => isValidCPF(val), {
+        message: "CPF inválido",
+      }),
+    carteiraIdentidade: z.string().min(1, "RG é obrigatório"),
+    dataNascimento: z.string().min(1, "Data de nascimento é obrigatória"),
+    sexo: z.nativeEnum(Sexo, { required_error: "Sexo é obrigatório" }),
+    estadoCivil: z.nativeEnum(EstadoCivil, {
+      required_error: "Estado civil é obrigatório",
     }),
-  carteiraIdentidade: z.string().min(1, "RG é obrigatório"),
-  dataNascimento: z.string().min(1, "Data de nascimento é obrigatória"),
-  sexo: z.nativeEnum(Sexo, { required_error: "Sexo é obrigatório" }),
-  estadoCivil: z.nativeEnum(EstadoCivil, {
-    required_error: "Estado civil é obrigatório",
-  }),
-  grauInstrucao: z.nativeEnum(GrauInstrucao, {
-    required_error: "Grau de instrução é obrigatório",
-  }),
-  naturalidade: z.string().min(1, "Naturalidade é obrigatória"),
-  nacionalidade: z.string().min(1, "Nacionalidade é obrigatória"),
-  altura: z
-    .number({
-      required_error: "Altura é obrigatória",
-      invalid_type_error: "Altura deve ser um número",
-    })
-    .min(0.5, "Altura deve estar entre 0,5m e 3m")
-    .max(3, "Altura deve estar entre 0,5m e 3m"),
-  peso: z
-    .number({
-      required_error: "Peso é obrigatório",
-      invalid_type_error: "Peso deve ser um número",
-    })
-    .min(20, "Peso deve estar entre 20kg e 300kg")
-    .max(300, "Peso deve estar entre 20kg e 300kg"),
-  filhos: z.boolean(),
-  quantidadeFilhos: z.number().optional(),
-  filhosAbaixoDe21: z.boolean().optional(),
-  nomePai: z.string().optional(),
-  nomeMae: z.string().min(1, "Nome da mãe é obrigatório"),
-  necessidadesEspeciais: z.boolean(),
-  tipoDeficiencia: z.string().optional(),
-  pis: z.string().min(11, "PIS inválido"),
-  ctpsNumero: z
-    .string()
-    .min(1, "Número da CTPS é obrigatório")
-    .max(7, "Número da CTPS inválido"),
-  ctpsSerie: z
-    .string()
-    .min(1, "Série da CTPS é obrigatória")
-    .max(4, "Série da CTPS inválida"),
-  certificadoReservista: z
-    .string()
-    .min(1, "Certificado de reservista é obrigatório"),
-  regimeContratacao: z.nativeEnum(RegimeContratacao, {
-    required_error: "Regime de contratação é obrigatório",
-  }),
-  dataAdmissao: z.string().min(1, "Data de admissão é obrigatória"),
-  salario: z.number().min(0.01, "Salário deve ser maior que zero"),
-  valorAlimentacao: z.number().min(0, "Valor alimentação deve ser maior que 0"),
-  valorTransporte: z.number().min(0, "Valor transporte deve ser maior que 0"),
-  funcao: z.string().min(1, "Função é obrigatória"),
-  setor: z.string().min(1, "Setor é obrigatório"),
-  gestor: z.string().min(1, "Gestor é obrigatório"),
-  cbo: z.string().min(1, "CBO é obrigatório"),
-  cargaHoraria: z
-    .number({
-      required_error: "Carga horária é obrigatória",
-      invalid_type_error: "Carga horária deve ser um número",
-    })
-    .min(1, "Carga horária deve estar no mínimo 1h")
-    .max(44, "Carga horária deve estar no máximo 44h"),
-  escala: z.nativeEnum(Escala, { required_error: "Escala é obrigatória" }),
-  centroCusto: z.string().optional(),
-  dataExameAdmissional: z.string(),
-  vencimentoExperiencia1: z.string().optional(),
-  vencimentoExperiencia2: z.string().optional(),
-  dataUltimoASO: z.string().optional(),
-  dataExameDemissional: z.string().optional(),
-  celular: z.string().min(15, "Celular inválido"),
-  telefone: z.string().optional(),
-  rua: z.string().min(1, "Rua é obrigatória"),
-  numero: z.string().min(1, "Número é obrigatório"),
-  complemento: z.string().optional(),
-  bairro: z.string().min(1, "Bairro é obrigatório"),
-  cidade: z.string().min(1, "Cidade é obrigatória"),
-  estado: z.string().min(2, "Estado é obrigatório"),
-  cep: z.string().min(8, "CEP inválido"),
-  quantidadeOnibus: z.number().optional(),
-  latitude: z
-    .number()
-    .min(-90, "Latitude deve estar entre -90 e +90 graus")
-    .max(90, "Latitude deve estar entre -90 e +90 graus")
-    .optional(),
-  longitude: z
-    .number()
-    .min(-180, "Longitude deve estar entre -180 e +180 graus")
-    .max(180, "Longitude deve estar entre -180 e +180 graus")
-    .optional(),
-});
+    grauInstrucao: z.nativeEnum(GrauInstrucao, {
+      required_error: "Grau de instrução é obrigatório",
+    }),
+    naturalidade: z.string().min(1, "Naturalidade é obrigatória"),
+    nacionalidade: z.string().min(1, "Nacionalidade é obrigatória"),
+    altura: z
+      .number({
+        required_error: "Altura é obrigatória",
+        invalid_type_error: "Altura deve ser um número",
+      })
+      .min(0.5, "Altura deve estar entre 0,5m e 3m")
+      .max(3, "Altura deve estar entre 0,5m e 3m"),
+    peso: z
+      .number({
+        required_error: "Peso é obrigatório",
+        invalid_type_error: "Peso deve ser um número",
+      })
+      .min(20, "Peso deve estar entre 20kg e 300kg")
+      .max(300, "Peso deve estar entre 20kg e 300kg"),
+    filhos: z.boolean(),
+    quantidadeFilhos: z.number().optional(),
+    filhosAbaixoDe21: z.boolean().optional(),
+    nomePai: z.string().optional(),
+    nomeMae: z.string().min(1, "Nome da mãe é obrigatório"),
+    necessidadesEspeciais: z.boolean(),
+    tipoDeficiencia: z.string().optional(),
+    pis: z.string().min(11, "PIS inválido"),
+    ctpsNumero: z
+      .string()
+      .min(1, "Número da CTPS é obrigatório")
+      .max(7, "Número da CTPS inválido"),
+    ctpsSerie: z
+      .string()
+      .min(1, "Série da CTPS é obrigatória")
+      .max(4, "Série da CTPS inválida"),
+    certificadoReservista: z
+      .string()
+      .min(1, "Certificado de reservista é obrigatório"),
+    regimeContratacao: z.nativeEnum(RegimeContratacao, {
+      required_error: "Regime de contratação é obrigatório",
+    }),
+    dataAdmissao: z.string().min(1, "Data de admissão é obrigatória"),
+    salario: z.number().min(0.01, "Salário deve ser maior que zero"),
+    valorAlimentacao: z
+      .number()
+      .min(0, "Valor alimentação deve ser maior que 0"),
+    valorTransporte: z.number().min(0, "Valor transporte deve ser maior que 0"),
+    funcao: z.string().min(1, "Função é obrigatória"),
+    setor: z.string().min(1, "Setor é obrigatório"),
+    gestor: z.string().min(1, "Gestor é obrigatório"),
+    cbo: z.string().min(1, "CBO é obrigatório"),
+    cargaHoraria: z
+      .number({
+        required_error: "Carga horária é obrigatória",
+        invalid_type_error: "Carga horária deve ser um número",
+      })
+      .min(1, "Carga horária deve estar no mínimo 1h")
+      .max(44, "Carga horária deve estar no máximo 44h"),
+    escala: z.nativeEnum(Escala, { required_error: "Escala é obrigatória" }),
+    centroCusto: z.string().optional(),
+    dataExameAdmissional: z.string().optional(),
+    vencimentoExperiencia1: z.string().optional(),
+    vencimentoExperiencia2: z.string().optional(),
+    dataUltimoASO: z.string().optional(),
+    dataExameDemissional: z.string().optional(),
+    celular: z.string().min(15, "Celular inválido"),
+    telefone: z.string().optional(),
+    rua: z.string().min(1, "Rua é obrigatória"),
+    numero: z.string().min(1, "Número é obrigatório"),
+    complemento: z.string().optional(),
+    bairro: z.string().min(1, "Bairro é obrigatório"),
+    cidade: z.string().min(1, "Cidade é obrigatória"),
+    estado: z.string().min(2, "Estado é obrigatório"),
+    cep: z.string().min(8, "CEP inválido"),
+    quantidadeOnibus: z.number().optional(),
+    latitude: z
+      .number()
+      .min(-90, "Latitude deve estar entre -90 e +90 graus")
+      .max(90, "Latitude deve estar entre -90 e +90 graus")
+      .optional(),
+    longitude: z
+      .number()
+      .min(-180, "Longitude deve estar entre -180 e +180 graus")
+      .max(180, "Longitude deve estar entre -180 e +180 graus")
+      .optional(),
+  })
+  .superRefine((data, ctx) => {
+    if (
+      data.regimeContratacao === RegimeContratacao.CLT &&
+      !data.dataExameAdmissional
+    ) {
+      ctx.addIssue({
+        path: ["dataExameAdmissional"],
+        code: z.ZodIssueCode.custom,
+        message: "Data do exame admissional é obrigatória para regime CLT",
+      });
+    }
+  });
 
 type UpdateEmployeeFormData = z.infer<typeof formSchema>;
 
@@ -359,7 +374,7 @@ export default function UpdateEmployeePage({
         dataUltimoASO: formatDate(employee.dataUltimoASO) || "",
         funcao: employee.funcao.id,
         setor: employee.setor.id,
-        dataExameAdmissional: formatDate(employee.dataExameAdmissional),
+        dataExameAdmissional: formatDate(employee.dataExameAdmissional) || "",
         vencimentoExperiencia1:
           formatDate(employee.vencimentoExperiencia1) || "",
         vencimentoExperiencia2:
@@ -477,6 +492,7 @@ export default function UpdateEmployeePage({
       pis: data.pis.replace(/\D/g, ""),
       carteiraIdentidade: data.carteiraIdentidade.replace(/\D/g, ""),
       dataUltimoASO: data.dataUltimoASO?.trim() || undefined,
+      dataExameAdmissional: data.dataExameAdmissional?.trim() || undefined,
       vencimentoExperiencia1: data.vencimentoExperiencia1?.trim() || undefined,
       vencimentoExperiencia2: data.vencimentoExperiencia2?.trim() || undefined,
       dataExameDemissional: data.dataExameDemissional?.trim() || undefined,
@@ -1481,10 +1497,7 @@ export default function UpdateEmployeePage({
                     name="dataExameAdmissional"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>
-                          Data do Exame Admissional{" "}
-                          <span className="text-red-500">*</span>
-                        </FormLabel>
+                        <FormLabel>Data do Exame Admissional</FormLabel>
                         <FormControl>
                           <Input type="date" {...field} />
                         </FormControl>
