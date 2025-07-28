@@ -11,7 +11,6 @@ export async function getDepartments(
   }
 
   const url = `${API_BASE_URL}/v1/empresas/${empresa}/setores`;
-  console.log("🌐 Requisição:", url);
 
   const response = await fetch(url, {
     headers: {

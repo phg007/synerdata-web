@@ -67,7 +67,6 @@ export function UserFormModal({
 
   useEffect(() => {
     if (initialData) {
-      console.log("🟡 Dados de edição recebidos:", initialData);
       form.reset({
         ...initialData,
         id: String(initialData.id),
@@ -77,7 +76,6 @@ export function UserFormModal({
   }, [initialData, form]);
 
   const onSubmit = (data: User) => {
-    console.log("🚨 SUBMIT acionado:", data);
     onAddUser({
       ...data,
       id: initialData?.id || crypto.randomUUID(),

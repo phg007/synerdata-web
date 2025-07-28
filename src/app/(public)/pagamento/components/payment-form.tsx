@@ -45,6 +45,7 @@ import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { getPaymentLink } from "../services/get-payment-link";
 import { useState } from "react";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const plansData = {
   "Ouro Insights": {
@@ -174,6 +175,9 @@ const companySchema = z.object({
   quantidadeFuncionarios: z
     .string()
     .min(1, "Quantidade de funcionários é obrigatória"),
+  aceiteTermos: z.boolean().refine((val) => val === true, {
+    message: "Você deve aceitar os termos para continuar",
+  }),
 });
 type CompanyFormData = z.infer<typeof companySchema>;
 
@@ -194,6 +198,7 @@ export default function CheckoutForm() {
       celular: "",
       tipoPlano: initialPlan,
       quantidadeFuncionarios: "0-10",
+      aceiteTermos: false,
     },
   });
 
@@ -640,6 +645,45 @@ export default function CheckoutForm() {
                     {formatCurrency(currentPrice)}
                   </span>
                 </div>
+              </div>
+
+              <div className="space-y-2 mb-4">
+                <FormField
+                  control={form.control}
+                  name="aceiteTermos"
+                  render={({ field }) => (
+                    <FormItem className="flex items-center space-x-2">
+                      <FormControl>
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                      <div className="leading-none">
+                        <FormLabel className="text-xs font-medium">
+                          Eu li e concordo com os{" "}
+                          <a
+                            href="#"
+                            target="_blank"
+                            className="underline text-primary"
+                          >
+                            termos de serviço
+                          </a>{" "}
+                          e a{" "}
+                          <a
+                            href="/politica-privacidade"
+                            target="_blank"
+                            className="underline text-primary"
+                          >
+                            política de privacidade
+                          </a>
+                          .
+                        </FormLabel>
+                        <FormMessage />
+                      </div>
+                    </FormItem>
+                  )}
+                />
               </div>
 
               <div className="flex justify-end space-x-4 pt-6 border-t">

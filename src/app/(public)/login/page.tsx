@@ -67,9 +67,6 @@ export default function LoginPage() {
 
       const session = await getSession();
 
-      console.log(session?.user.primeiroAcesso);
-      console.log(session?.user.funcao);
-
       if (session?.user?.primeiroAcesso && session?.user?.funcao === "ADMIN") {
         router.replace("/finalizar-cadastro");
       } else {
