@@ -89,9 +89,9 @@ export default function CreateEpi() {
               <Shield className="h-6 w-6 text-blue-600" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Nova Epis</h1>
+              <h1 className="text-3xl font-bold text-gray-900">Novo Epi</h1>
               <p className="text-gray-600">
-                Cadastre um novo epis para sua empresa
+                Cadastre um novo Epi para sua empresa
               </p>
             </div>
           </div>
@@ -115,7 +115,9 @@ export default function CreateEpi() {
                   name="nome"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Nome do EPI</FormLabel>
+                      <FormLabel>
+                        Nome do EPI <span className="text-red-500">*</span>
+                      </FormLabel>
                       <FormControl>
                         <Input {...field} />
                       </FormControl>
@@ -129,7 +131,9 @@ export default function CreateEpi() {
                   name="descricao"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Descrição</FormLabel>
+                      <FormLabel>
+                        Descrição <span className="text-red-500">*</span>
+                      </FormLabel>
                       <FormControl>
                         <Textarea {...field} rows={3} />
                       </FormControl>
@@ -143,7 +147,10 @@ export default function CreateEpi() {
                   name="equipamentos"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Equipamentos Inclusos</FormLabel>
+                      <FormLabel>
+                        Equipamentos Inclusos{" "}
+                        <span className="text-red-500">*</span>
+                      </FormLabel>
                       <FormControl>
                         <Textarea {...field} rows={4} />
                       </FormControl>

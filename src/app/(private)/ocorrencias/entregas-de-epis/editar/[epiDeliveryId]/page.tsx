@@ -97,8 +97,6 @@ export default function UpdateEpiDeliveryPage({
     });
   }, [delivery, form]);
 
-  console.log(`epis${z}`);
-
   const { mutateAsync: updateEpiDeliveryFn, isPending } = useMutation({
     mutationFn: updateEpiDelivery,
     onSuccess: () => {

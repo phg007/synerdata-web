@@ -45,7 +45,7 @@ export default function EPIsPage() {
             <div className="flex justify-between items-center">
               <h2 className="text-2xl font-bold">EPIs Cadastrados</h2>
               <div className="flex gap-2">
-                <Link href={"epis/adicionar"}>
+                <Link href={"epis/criar"}>
                   <Button disabled={isLoading}>
                     <Shield className="mr-2 h-4 w-4" />
                     Adicionar EPI

@@ -42,7 +42,7 @@ const editaccidentSchema = z.object({
     .string()
     .min(1, "A natureza é obrigatória")
     .max(255, "A natureza deve ter no máximo 255 caracteres"),
-  cat: z.string().optional(),
+  cat: z.string().max(25, "O cat deve ter no máximo 25 caracteres").optional(),
   medidasTomadas: z
     .string()
     .min(1, "As medidas tomadas são obrigatórias")
@@ -178,7 +178,11 @@ export default function UpdateaccidentPage({
                       <FormItem>
                         <FormLabel>Número do CAT</FormLabel>
                         <FormControl>
-                          <Input {...field} placeholder="Ex: 123456789" />
+                          <Input
+                            {...field}
+                            maxLength={25}
+                            placeholder="Ex: 123456789"
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>

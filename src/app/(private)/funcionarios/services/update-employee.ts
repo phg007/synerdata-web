@@ -28,7 +28,7 @@ export interface UpdateEmployeeFormValues {
   dataUltimoASO?: string;
   funcao: string;
   setor: string;
-  dataExameAdmissional: string;
+  dataExameAdmissional?: string;
   vencimentoExperiencia1?: string;
   vencimentoExperiencia2?: string;
   dataExameDemissional?: string;

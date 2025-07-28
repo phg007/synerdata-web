@@ -94,7 +94,6 @@ export default function UpdateEpiPage({
       });
     },
   });
-  console.log(`epiId${epiId}`);
   const onSubmit = async (data: EditEpiFormValues) => {
     await updateEPIFn({
       ...data,
@@ -145,7 +144,9 @@ export default function UpdateEpiPage({
                   name="nome"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Nome do EPI</FormLabel>
+                      <FormLabel>
+                        Nome do EPI <span className="text-red-500">*</span>
+                      </FormLabel>
                       <FormControl>
                         <Input
                           placeholder="Ex: Kit de Proteção Básico"
@@ -163,7 +164,9 @@ export default function UpdateEpiPage({
                   name="descricao"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Descrição</FormLabel>
+                      <FormLabel>
+                        Descrição <span className="text-red-500">*</span>
+                      </FormLabel>
                       <FormControl>
                         <Textarea
                           placeholder="Descrição detalhada do kit de EPI e sua finalidade"
@@ -182,7 +185,10 @@ export default function UpdateEpiPage({
                   name="equipamentos"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Equipamentos Inclusos</FormLabel>
+                      <FormLabel>
+                        Equipamentos Inclusos{" "}
+                        <span className="text-red-500">*</span>
+                      </FormLabel>
                       <FormControl>
                         <Textarea
                           placeholder="Liste os equipamentos inclusos no kit (ex: Capacete, Luvas de Segurança, Óculos de Proteção)"
