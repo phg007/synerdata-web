@@ -1,6 +1,6 @@
 "use client";
 
-import { User } from "lucide-react";
+import { UploadIcon, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -44,12 +44,20 @@ export default function EmployeesPage() {
           <div className="space-y-4">
             <div className="flex justify-between items-center">
               <h2 className="text-2xl font-bold">Funcionários Cadastrados</h2>
-              <Link href={"funcionarios/criar"}>
-                <Button>
-                  <User className="mr-2 h-4 w-4" />
-                  Adicionar Funcionário
-                </Button>
-              </Link>
+              <div className="space-x-2">
+                <Link href={"funcionarios/importar"}>
+                  <Button>
+                    <UploadIcon className="mr-2 h-4 w-4" />
+                    Importar
+                  </Button>
+                </Link>
+                <Link href={"funcionarios/criar"}>
+                  <Button>
+                    <User className="mr-2 h-4 w-4" />
+                    Adicionar Funcionário
+                  </Button>
+                </Link>
+              </div>
             </div>
             {isLoading && employees.length === 0 ? (
               <div className="space-y-3">
