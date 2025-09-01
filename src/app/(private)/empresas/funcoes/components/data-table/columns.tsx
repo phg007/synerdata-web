@@ -13,7 +13,6 @@ export const columns: ColumnDef<RoleObjectResponse>[] = [
     ),
     cell: ({ row }) => <div className="text-nowrap">{row.getValue("id")}</div>,
     enableSorting: false,
-    enableHiding: false,
   },
   {
     accessorKey: "nome",
