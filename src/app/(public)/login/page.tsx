@@ -70,7 +70,11 @@ export default function LoginPage() {
       if (session?.user?.primeiroAcesso && session?.user?.funcao === "ADMIN") {
         router.replace("/finalizar-cadastro");
       } else {
-        router.replace("/relatorio");
+        if (session?.user?.funcao === "SUPER_ADMIN") {
+          router.replace("/admin/empresas");
+        } else {
+          router.replace("/relatorio");
+        }
       }
     }
   }
