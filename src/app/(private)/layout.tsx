@@ -1,16 +1,22 @@
-"use client";
+import { cookies } from "next/headers";
+import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/sidebar/app-sidebar";
+import { SessionWrapper } from "@/components/providers/session-wrapper";
 
-import Navbar from "@/components/navbar";
-import { SessionProvider } from "next-auth/react";
-import { ReactNode } from "react";
+export default async function PrivateLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const cookieStore = await cookies();
+  const defaultOpen = cookieStore.get("sidebar_state")?.value !== "false";
 
-export default function PrivateLayout({ children }: { children: ReactNode }) {
   return (
-    <SessionProvider>
-      <div className="flex flex-col h-screen">
-        <Navbar />
-        <main className="flex-1 ">{children}</main>
-      </div>
-    </SessionProvider>
+    <SessionWrapper>
+      <SidebarProvider defaultOpen={defaultOpen}>
+        <AppSidebar />
+        <SidebarInset className="overflow-hidden">{children}</SidebarInset>
+      </SidebarProvider>
+    </SessionWrapper>
   );
 }

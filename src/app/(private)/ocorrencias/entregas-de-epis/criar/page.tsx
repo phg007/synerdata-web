@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { ArrowLeft, Loader2, ShieldCheck } from "lucide-react";
+import { ArrowLeft, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { useForm } from "react-hook-form";
@@ -43,6 +43,16 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { MultiSelect } from "@/components/ui/multi-select";
+import { SidebarTrigger } from "@/components/ui/sidebar";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+import { Separator } from "@/components/ui/separator";
 
 const schema = z.object({
   funcionarioId: z
@@ -104,158 +114,176 @@ export default function CreateEpiDeliveryPage() {
   });
 
   return (
-    <div className="py-8">
-      <div className="container mx-auto max-w-4xl px-4">
-        <div className="mb-8">
-          <Link
-            href="/ocorrencias/entregas-de-epis"
-            className="mb-4 inline-flex items-center text-sm text-muted-foreground hover:text-foreground"
-          >
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Voltar para Entregas
-          </Link>
-          <div className="flex items-center space-x-3">
-            <div className="rounded-lg bg-blue-100 p-2">
-              <ShieldCheck className="h-6 w-6 text-blue-600" />
-            </div>
-            <h1 className="text-3xl font-bold text-gray-900">
-              Nova Entrega de EPIs
-            </h1>
-          </div>
+    <div className="flex h-full flex-col overflow-hidden">
+      <header className="flex h-16 shrink-0 items-center gap-2">
+        <div className="flex items-center gap-2 px-4">
+          <SidebarTrigger className="-ml-1" />
+          <Separator orientation="vertical" className="mr-2 h-4" />
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem className="hidden md:block">
+                <BreadcrumbLink href="/ocorrencias/entregas-de-epis">
+                  Entregas de EPIs
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator className="hidden md:block" />
+              <BreadcrumbItem>
+                <BreadcrumbPage>Criar</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
         </div>
+        <div className="ml-auto flex items-center gap-2 px-4">
+          <Button asChild variant="outline" size="sm">
+            <Link href="/ocorrencias/entregas-de-epis">
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Voltar
+            </Link>
+          </Button>
+        </div>
+      </header>
+      <div className="flex-1 overflow-auto p-4 pt-0">
+        <div className="container mx-auto max-w-4xl">
+          <Card>
+            <CardHeader>
+              <CardTitle>Informações da Entrega</CardTitle>
+              <CardDescription>
+                Selecione o funcionário e os EPIs entregues
+              </CardDescription>
+            </CardHeader>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Informações da Entrega</CardTitle>
-            <CardDescription>
-              Selecione o funcionário e os EPIs entregues
-            </CardDescription>
-          </CardHeader>
+            <CardContent className="pt-6">
+              <Form {...form}>
+                <form
+                  onSubmit={form.handleSubmit((data) => mutateAsync(data))}
+                  className="space-y-6"
+                >
+                  <div className="grid gap-6 md:grid-cols-2">
+                    <FormField
+                      control={form.control}
+                      name="funcionarioId"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            Funcionário <span className="text-red-500">*</span>
+                          </FormLabel>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                            {...field}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Selecione o funcionário" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {employees.map((employee) => (
+                                <SelectItem
+                                  key={employee.id}
+                                  value={employee.id}
+                                >
+                                  {employee.nome}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-          <CardContent className="pt-6">
-            <Form {...form}>
-              <form
-                onSubmit={form.handleSubmit((data) => mutateAsync(data))}
-                className="space-y-6"
-              >
-                <div className="grid gap-6 md:grid-cols-2">
+                    <FormField
+                      control={form.control}
+                      name="data"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            Data da Entrega{" "}
+                            <span className="text-red-500">*</span>
+                          </FormLabel>
+                          <Input
+                            type="date"
+                            max={new Date().toISOString().split("T")[0]}
+                            {...field}
+                          />
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
                   <FormField
                     control={form.control}
-                    name="funcionarioId"
+                    name="epis"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>
-                          Funcionário <span className="text-red-500">*</span>
+                          EPIs <span className="text-red-500">*</span>
                         </FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                          {...field}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Selecione o funcionário" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {employees.map((employee) => (
-                              <SelectItem key={employee.id} value={employee.id}>
-                                {employee.nome}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                        <FormControl>
+                          <MultiSelect<EpiObjectResponse>
+                            items={epis}
+                            value={field.value || []}
+                            onChange={field.onChange}
+                            getItemValue={(epi) => epi.id}
+                            getItemLabel={(epi) => epi.nome}
+                            placeholder="Selecione os EPIs"
+                            searchPlaceholder="Buscar EPIs..."
+                            emptyMessage="Nenhum EPI encontrado."
+                          />
+                        </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
 
-                  <FormField
-                    control={form.control}
-                    name="data"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>
-                          Data da Entrega{" "}
-                          <span className="text-red-500">*</span>
-                        </FormLabel>
-                        <Input type="date" {...field} />
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
+                  <div className="grid gap-6 md:grid-cols-2">
+                    <FormField
+                      control={form.control}
+                      name="motivo"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            Motivo <span className="text-red-500">*</span>
+                          </FormLabel>
+                          <Input {...field} />
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="entreguePor"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            Entregue Por <span className="text-red-500">*</span>
+                          </FormLabel>
+                          <Input {...field} />
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
 
-                <FormField
-                  control={form.control}
-                  name="epis"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>
-                        EPIs <span className="text-red-500">*</span>
-                      </FormLabel>
-                      <FormControl>
-                        <MultiSelect<EpiObjectResponse>
-                          items={epis}
-                          value={field.value || []}
-                          onChange={field.onChange}
-                          getItemValue={(epi) => epi.id}
-                          getItemLabel={(epi) => epi.nome}
-                          placeholder="Selecione os EPIs"
-                          searchPlaceholder="Buscar EPIs..."
-                          emptyMessage="Nenhum EPI encontrado."
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <div className="grid gap-6 md:grid-cols-2">
-                  <FormField
-                    control={form.control}
-                    name="motivo"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>
-                          Motivo <span className="text-red-500">*</span>
-                        </FormLabel>
-                        <Input {...field} />
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="entreguePor"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>
-                          Entregue Por <span className="text-red-500">*</span>
-                        </FormLabel>
-                        <Input {...field} />
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <div className="flex justify-end border-t pt-6">
-                  <Button type="submit" disabled={isPending}>
-                    {isPending ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Cadastrando...
-                      </>
-                    ) : (
-                      "Cadastrar Entrega"
-                    )}
-                  </Button>
-                </div>
-              </form>
-            </Form>
-          </CardContent>
-        </Card>
+                  <div className="flex justify-end border-t pt-6">
+                    <Button type="submit" disabled={isPending}>
+                      {isPending ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Cadastrando...
+                        </>
+                      ) : (
+                        "Cadastrar Entrega"
+                      )}
+                    </Button>
+                  </div>
+                </form>
+              </Form>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );

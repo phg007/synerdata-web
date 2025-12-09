@@ -2,7 +2,6 @@
 
 import { Building } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useQuery } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
@@ -11,6 +10,14 @@ import { DataTable } from "./components/data-table/data-table";
 import { getBranchesByCompany } from "./services/get-branches-by-company";
 import { BranchObjectResponse } from "./interfaces/branch-interface";
 import Link from "next/link";
+import { SidebarTrigger } from "@/components/ui/sidebar";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbList,
+  BreadcrumbPage,
+} from "@/components/ui/breadcrumb";
+import { Separator } from "@/components/ui/separator";
 
 export default function BranchesPage() {
   const { data: session, status } = useSession();
@@ -38,40 +45,50 @@ export default function BranchesPage() {
   }
 
   return (
-    <div className="container mx-auto p-4">
-      <Card className="bg-white h-full">
-        <CardContent className="p-4 h-full">
-          <div className="space-y-4">
-            <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-bold">Filiais Cadastradas</h2>
-              <Link href={"filiais/criar"}>
-                <Button>
-                  <Building className="mr-2 h-4 w-4" />
-                  Adicionar Filial
-                </Button>
-              </Link>
+    <div className="flex h-full flex-col overflow-hidden">
+      <header className="flex h-16 shrink-0 items-center gap-2">
+        <div className="flex items-center gap-2 px-4">
+          <SidebarTrigger className="-ml-1" />
+          <Separator orientation="vertical" className="mr-2 h-4" />
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbPage>Filiais</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+        </div>
+        <div className="ml-auto flex items-center gap-2 px-4">
+          <Button asChild size="sm">
+            <Link href={"filiais/criar"}>
+              <Building className="mr-2 h-4 w-4" />
+              Adicionar Filial
+            </Link>
+          </Button>
+        </div>
+      </header>
+      <div className="flex-1 overflow-hidden p-4 pt-0">
+        <div className="flex h-full flex-col overflow-hidden rounded-xl border bg-background shadow-sm">
+          {isLoading && branches.length === 0 ? (
+            <div className="space-y-3 p-4">
+              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-10 w-full" />
             </div>
-            {isLoading && branches.length === 0 ? (
-              <div className="space-y-3">
-                <Skeleton className="h-10 w-full" />
-                <Skeleton className="h-10 w-full" />
-                <Skeleton className="h-10 w-full" />
-                <Skeleton className="h-10 w-full" />
-                <Skeleton className="h-10 w-full" />
-              </div>
-            ) : isError ? (
-              <div className="p-4 text-center">
-                <p className="text-amber-500">
-                  {"Não foi possível buscar as filiais"}
-                </p>
-                <DataTable columns={columns} data={branches} />
-              </div>
-            ) : (
+          ) : isError ? (
+            <div className="p-4 text-center">
+              <p className="text-amber-500">
+                {"Não foi possível buscar as filiais"}
+              </p>
               <DataTable columns={columns} data={branches} />
-            )}
-          </div>
-        </CardContent>
-      </Card>
+            </div>
+          ) : (
+            <DataTable columns={columns} data={branches} />
+          )}
+        </div>
+      </div>
     </div>
   );
 }
