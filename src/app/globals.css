@@ -24,6 +24,14 @@
     --input: 0 0% 89.8%;
     --ring: 267 100% 64%;
     --radius: 0.75rem;
+    --sidebar-background: 270 72% 22%;
+    --sidebar-foreground: 0 0% 100%;
+    --sidebar-primary: 267 100% 64%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 270 50% 30%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 270 50% 35%;
+    --sidebar-ring: 267 100% 64%;
   }
 
   .dark {
@@ -46,6 +54,14 @@
     --border: 0 0% 14.9%;
     --input: 0 0% 14.9%;
     --ring: 267 100% 64%;
+    --sidebar-background: 270 72% 18%;
+    --sidebar-foreground: 0 0% 100%;
+    --sidebar-primary: 267 100% 64%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 270 50% 25%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 270 50% 30%;
+    --sidebar-ring: 267 100% 64%;
   }
 
   * {
@@ -190,4 +206,27 @@ tbody tr:hover {
 
 .table-container::-webkit-scrollbar-thumb:hover {
   background: #a1a1a1;
+}
+
+/* Scrollbar customizada para a sidebar */
+[data-sidebar="content"] {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--sidebar-accent)) transparent;
+}
+
+[data-sidebar="content"]::-webkit-scrollbar {
+  width: 6px;
+}
+
+[data-sidebar="content"]::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+[data-sidebar="content"]::-webkit-scrollbar-thumb {
+  background: hsl(var(--sidebar-accent));
+  border-radius: 3px;
+}
+
+[data-sidebar="content"]::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--sidebar-border));
 }

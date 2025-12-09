@@ -5,7 +5,7 @@ import { Config } from "tailwindcss";
 
 /** @type {import('tailwindcss').Config} */
 const config: Config = {
-  darkMode: "class",
+  darkMode: ["class", "class"],
   content: [
     "./pages/**/*.{ts,tsx}",
     "./components/**/*.{ts,tsx}",
@@ -56,6 +56,16 @@ const config: Config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        sidebar: {
+          DEFAULT: "hsl(var(--sidebar-background))",
+          foreground: "hsl(var(--sidebar-foreground))",
+          primary: "hsl(var(--sidebar-primary))",
+          "primary-foreground": "hsl(var(--sidebar-primary-foreground))",
+          accent: "hsl(var(--sidebar-accent))",
+          "accent-foreground": "hsl(var(--sidebar-accent-foreground))",
+          border: "hsl(var(--sidebar-border))",
+          ring: "hsl(var(--sidebar-ring))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -64,51 +74,28 @@ const config: Config = {
       },
       keyframes: {
         "accordion-down": {
-          from: { height: "0" },
-          to: { height: "var(--radix-accordion-content-height)" },
+          from: {
+            height: "0",
+          },
+          to: {
+            height: "var(--radix-accordion-content-height)",
+          },
         },
         "accordion-up": {
-          from: { height: "var(--radix-accordion-content-height)" },
-          to: { height: "0" },
+          from: {
+            height: "var(--radix-accordion-content-height)",
+          },
+          to: {
+            height: "0",
+          },
         },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
       },
-      typography: (theme: (path: string) => string) => ({
-        DEFAULT: {
-          css: {
-            maxWidth: "65ch",
-            color: theme("colors.gray.600"),
-            h1: {
-              color: "#2A0F55",
-              fontWeight: "600",
-            },
-            h2: {
-              color: "#2A0F55",
-              fontWeight: "600",
-              fontSize: theme("fontSize.2xl"),
-              marginTop: theme("spacing.8"),
-              marginBottom: theme("spacing.4"),
-            },
-            h3: {
-              color: "#2A0F55",
-              fontWeight: "600",
-            },
-            h4: {
-              color: "#2A0F55",
-              fontWeight: "600",
-            },
-            a: {
-              color: "#7C3AED",
-              "&:hover": {
-                color: "#6D28D9",
-              },
-            },
-          },
-        },
-      }),
+      typography:
+        '(theme: (path: string) => string) => ({\\\\\\\\n        DEFAULT: {\\\\\\\\n          css: {\\\\\\\\n            maxWidth: "65ch",\\\\\\\\n            color: theme("colors.gray.600"),\\\\\\\\n            h1: {\\\\\\\\n              color: "#2A0F55",\\\\\\\\n              fontWeight: "600",\\\\\\\\n            },\\\\\\\\n            h2: {\\\\\\\\n              color: "#2A0F55",\\\\\\\\n              fontWeight: "600",\\\\\\\\n              fontSize: theme("fontSize.2xl"),\\\\\\\\n              marginTop: theme("spacing.8"),\\\\\\\\n              marginBottom: theme("spacing.4"),\\\\\\\\n            },\\\\\\\\n            h3: {\\\\\\\\n              color: "#2A0F55",\\\\\\\\n              fontWeight: "600",\\\\\\\\n            },\\\\\\\\n            h4: {\\\\\\\\n              color: "#2A0F55",\\\\\\\\n              fontWeight: "600",\\\\\\\\n            },\\\\\\\\n            a: {\\\\\\\\n              color: "#7C3AED",\\\\\\\\n              "&:hover": {\\\\\\\\n                color: "#6D28D9",\\\\\\\\n              },\\\\\\\\n            },\\\\\\\\n          },\\\\\\\\n        },\\\\\\\\n      })',
     },
   },
   plugins: [tailwindcssAnimate, tailwindTypography],

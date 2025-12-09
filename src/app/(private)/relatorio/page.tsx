@@ -4,6 +4,14 @@ import { getPbUrlByCompany } from "./services/get-pburl-by-company";
 import CustomerReport from "./components/customer-report";
 import { useSession } from "next-auth/react";
 import { useQuery } from "@tanstack/react-query";
+import { SidebarTrigger } from "@/components/ui/sidebar";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbList,
+  BreadcrumbPage,
+} from "@/components/ui/breadcrumb";
+import { Separator } from "@/components/ui/separator";
 
 export default function DashboardPage() {
   const { data: session, status } = useSession();
@@ -27,8 +35,25 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="h-full">
-      <CustomerReport pbUrl={pbUrl!} />
+    <div className="flex h-full flex-col overflow-hidden">
+      <header className="flex h-16 shrink-0 items-center gap-2">
+        <div className="flex items-center gap-2 px-4">
+          <SidebarTrigger className="-ml-1" />
+          <Separator orientation="vertical" className="mr-2 h-4" />
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbPage>Relatório</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+        </div>
+      </header>
+      <div className="flex-1 overflow-hidden p-4 pt-0">
+        <div className="flex h-full flex-col overflow-hidden rounded-xl border bg-background shadow-sm">
+          <CustomerReport pbUrl={pbUrl!} />
+        </div>
+      </div>
     </div>
   );
 }

@@ -22,7 +22,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { ArrowLeft, Loader2, UserX } from "lucide-react";
+import { ArrowLeft, Loader2 } from "lucide-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import Link from "next/link";
@@ -40,6 +40,16 @@ import {
 } from "../services/get-employees-by-company";
 import { createTermination } from "../services/create-termination";
 import { Textarea } from "@/components/ui/textarea";
+import { SidebarTrigger } from "@/components/ui/sidebar";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+import { Separator } from "@/components/ui/separator";
 
 const createTerminationSchema = z.object({
   data: z.string().min(1, "A data de demissão é obrigatória"),
@@ -111,181 +121,204 @@ export default function CreateTerminationPage() {
   };
 
   return (
-    <div className="py-8">
-      <div className="container mx-auto px-4 max-w-4xl">
-        <div className="mb-8">
-          <Link
-            href="/ocorrencias/rescisoes"
-            className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground mb-4"
-          >
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Voltar para Rescisões
-          </Link>
-          <div className="flex items-center space-x-3">
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <UserX className="h-6 w-6 text-blue-600" />
-            </div>
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">
-                Nova Rescisão
-              </h1>
-              <p className="text-gray-600">
-                Cadastre uma nova rescisão de funcionário
-              </p>
-            </div>
-          </div>
+    <div className="flex h-full flex-col overflow-hidden">
+      <header className="flex h-16 shrink-0 items-center gap-2">
+        <div className="flex items-center gap-2 px-4">
+          <SidebarTrigger className="-ml-1" />
+          <Separator orientation="vertical" className="mr-2 h-4" />
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem className="hidden md:block">
+                <BreadcrumbLink href="/ocorrencias/rescisoes">
+                  Rescisões
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator className="hidden md:block" />
+              <BreadcrumbItem>
+                <BreadcrumbPage>Criar</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
         </div>
+        <div className="ml-auto flex items-center gap-2 px-4">
+          <Button asChild variant="outline" size="sm">
+            <Link href="/ocorrencias/rescisoes">
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Voltar
+            </Link>
+          </Button>
+        </div>
+      </header>
+      <div className="flex-1 overflow-auto p-4 pt-0">
+        <div className="container mx-auto max-w-4xl">
+          <Card>
+            <CardHeader>
+              <CardTitle>Informações da Rescisão</CardTitle>
+              <CardDescription>
+                Preencha os dados abaixo para cadastrar uma rescisão
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="pt-6">
+              <Form {...form}>
+                <form
+                  onSubmit={form.handleSubmit(onSubmit)}
+                  className="space-y-6"
+                >
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <FormField
+                      control={form.control}
+                      name="funcionarioId"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            Funcionário <span className="text-red-500">*</span>
+                          </FormLabel>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                            {...field}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Selecione o funcionário" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {employees.map((employee) => (
+                                <SelectItem
+                                  key={employee.id}
+                                  value={employee.id}
+                                >
+                                  {employee.nome}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Informações da Rescisão</CardTitle>
-            <CardDescription>
-              Preencha os dados abaixo para cadastrar uma rescisão
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="pt-6">
-            <Form {...form}>
-              <form
-                onSubmit={form.handleSubmit(onSubmit)}
-                className="space-y-6"
-              >
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <FormField
-                    control={form.control}
-                    name="funcionarioId"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>
-                          Funcionário <span className="text-red-500">*</span>
-                        </FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                          {...field}
-                        >
+                    <FormField
+                      control={form.control}
+                      name="data"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            Data da Demissão{" "}
+                            <span className="text-red-500">*</span>
+                          </FormLabel>
                           <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Selecione o funcionário" />
-                            </SelectTrigger>
+                            <Input
+                              type="date"
+                              max={new Date().toISOString().split("T")[0]}
+                              {...field}
+                            />
                           </FormControl>
-                          <SelectContent>
-                            {employees.map((employee) => (
-                              <SelectItem key={employee.id} value={employee.id}>
-                                {employee.nome}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
 
-                  <FormField
-                    control={form.control}
-                    name="data"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>
-                          Data da Demissão{" "}
-                          <span className="text-red-500">*</span>
-                        </FormLabel>
-                        <FormControl>
-                          <Input type="date" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <FormField
+                      control={form.control}
+                      name="motivoInterno"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            Motivo Interno{" "}
+                            <span className="text-red-500">*</span>
+                          </FormLabel>
+                          <FormControl>
+                            <Textarea
+                              {...field}
+                              placeholder="Ex: performance"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <FormField
-                    control={form.control}
-                    name="motivoInterno"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>
-                          Motivo Interno <span className="text-red-500">*</span>
-                        </FormLabel>
-                        <FormControl>
-                          <Textarea {...field} placeholder="Ex: performance" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                    <FormField
+                      control={form.control}
+                      name="motivoTrabalhista"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            Motivo Trabalhista{" "}
+                            <span className="text-red-500">*</span>
+                          </FormLabel>
+                          <FormControl>
+                            <Textarea
+                              {...field}
+                              placeholder="Ex: acordo mútuo"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
 
-                  <FormField
-                    control={form.control}
-                    name="motivoTrabalhista"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>
-                          Motivo Trabalhista{" "}
-                          <span className="text-red-500">*</span>
-                        </FormLabel>
-                        <FormControl>
-                          <Textarea {...field} placeholder="Ex: acordo mútuo" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <FormField
+                      control={form.control}
+                      name="acaoTrabalhista"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            Ação Trabalhista{" "}
+                            <span className="text-red-500">*</span>
+                          </FormLabel>
+                          <FormControl>
+                            <Input {...field} placeholder="" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <FormField
-                    control={form.control}
-                    name="acaoTrabalhista"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>
-                          Ação Trabalhista{" "}
-                          <span className="text-red-500">*</span>
-                        </FormLabel>
-                        <FormControl>
-                          <Input {...field} placeholder="" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                    <FormField
+                      control={form.control}
+                      name="formaDemissao"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            Forma de Demissão{" "}
+                            <span className="text-red-500">*</span>
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              placeholder="Ex: sem justa causa"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
 
-                  <FormField
-                    control={form.control}
-                    name="formaDemissao"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>
-                          Forma de Demissão{" "}
-                          <span className="text-red-500">*</span>
-                        </FormLabel>
-                        <FormControl>
-                          <Input {...field} placeholder="Ex: sem justa causa" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <div className="flex justify-end space-x-4 pt-6 border-t">
-                  <Button type="submit" disabled={isPending}>
-                    {isPending ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Cadastrando...
-                      </>
-                    ) : (
-                      "Cadastrar Rescisão"
-                    )}
-                  </Button>
-                </div>
-              </form>
-            </Form>
-          </CardContent>
-        </Card>
+                  <div className="flex justify-end space-x-4 pt-6 border-t">
+                    <Button type="submit" disabled={isPending}>
+                      {isPending ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Cadastrando...
+                        </>
+                      ) : (
+                        "Cadastrar Rescisão"
+                      )}
+                    </Button>
+                  </div>
+                </form>
+              </Form>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );

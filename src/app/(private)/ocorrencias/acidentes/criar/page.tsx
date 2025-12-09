@@ -23,7 +23,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { AlertTriangle, ArrowLeft, Loader2 } from "lucide-react";
+import { ArrowLeft, Loader2 } from "lucide-react";
 
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { createAccident } from "../services/create-accident";
@@ -40,6 +40,16 @@ import {
   EmployeeObjectResponse,
   getEmployeesByCompany,
 } from "../services/get-employees-by-company";
+import { SidebarTrigger } from "@/components/ui/sidebar";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+import { Separator } from "@/components/ui/separator";
 
 const createAccidentSchema = z.object({
   descricao: z
@@ -109,90 +119,138 @@ export default function CreateAccident() {
   };
 
   return (
-    <div className="py-8">
-      <div className="container mx-auto px-4 max-w-4xl">
-        <div className="mb-8">
-          <Link
-            href="/ocorrencias/acidentes"
-            className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground mb-4"
-          >
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Voltar para Acidentes
-          </Link>
-          <div className="flex items-center space-x-3">
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <AlertTriangle className="h-6 w-6 text-blue-600" />
-            </div>
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">
-                Novo Acidente
-              </h1>
-              <p className="text-gray-600">
-                Cadastre um novo Acidente para sua empresa
-              </p>
-            </div>
-          </div>
+    <div className="flex h-full flex-col overflow-hidden">
+      <header className="flex h-16 shrink-0 items-center gap-2">
+        <div className="flex items-center gap-2 px-4">
+          <SidebarTrigger className="-ml-1" />
+          <Separator orientation="vertical" className="mr-2 h-4" />
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem className="hidden md:block">
+                <BreadcrumbLink href="/ocorrencias/acidentes">
+                  Acidentes
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator className="hidden md:block" />
+              <BreadcrumbItem>
+                <BreadcrumbPage>Criar</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
         </div>
+        <div className="ml-auto flex items-center gap-2 px-4">
+          <Button asChild variant="outline" size="sm">
+            <Link href="/ocorrencias/acidentes">
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Voltar
+            </Link>
+          </Button>
+        </div>
+      </header>
+      <div className="flex-1 overflow-auto p-4 pt-0">
+        <div className="container mx-auto max-w-4xl">
+          <Card>
+            <CardHeader>
+              <CardTitle>Novo Acidente</CardTitle>
+              <CardDescription>
+                Cadastre um novo Acidente para sua empresa
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="pt-6">
+              <Form {...form}>
+                <form
+                  onSubmit={form.handleSubmit(onSubmit)}
+                  className="space-y-6"
+                >
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <FormField
+                      control={form.control}
+                      name="funcionarioId"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            Funcionário <span className="text-red-500">*</span>
+                          </FormLabel>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                            {...field}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Selecione o funcionário" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {employees.map((employee) => (
+                                <SelectItem
+                                  key={employee.id}
+                                  value={employee.id}
+                                >
+                                  {employee.nome}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Novo Acidente</CardTitle>
-            <CardDescription>
-              Cadastre um novo Acidente para sua empresa
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="pt-6">
-            <Form {...form}>
-              <form
-                onSubmit={form.handleSubmit(onSubmit)}
-                className="space-y-6"
-              >
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <FormField
-                    control={form.control}
-                    name="funcionarioId"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>
-                          Funcionário <span className="text-red-500">*</span>
-                        </FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                          {...field}
-                        >
+                    <FormField
+                      control={form.control}
+                      name="data"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            Data do Acidente{" "}
+                            <span className="text-red-500">*</span>
+                          </FormLabel>
                           <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Selecione o funcionário" />
-                            </SelectTrigger>
+                            <Input
+                              type="date"
+                              max={new Date().toISOString().split("T")[0]}
+                              {...field}
+                              placeholder="Selecione a data"
+                            />
                           </FormControl>
-                          <SelectContent>
-                            {employees.map((employee) => (
-                              <SelectItem key={employee.id} value={employee.id}>
-                                {employee.nome}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="cat"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Número do CAT</FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              maxLength={25}
+                              placeholder="Ex: 123456789"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
 
                   <FormField
                     control={form.control}
-                    name="data"
+                    name="natureza"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>
-                          Data do Acidente{" "}
+                          Natureza do Acidente{" "}
                           <span className="text-red-500">*</span>
                         </FormLabel>
                         <FormControl>
                           <Input
-                            type="date"
                             {...field}
-                            placeholder="Selecione a data"
+                            placeholder="Ex: Queda, Corte, Queimadura, etc."
                           />
                         </FormControl>
                         <FormMessage />
@@ -202,100 +260,63 @@ export default function CreateAccident() {
 
                   <FormField
                     control={form.control}
-                    name="cat"
+                    name="descricao"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Número do CAT</FormLabel>
+                        <FormLabel>
+                          Descrição do Acidente{" "}
+                          <span className="text-red-500">*</span>
+                        </FormLabel>
                         <FormControl>
-                          <Input
+                          <Textarea
                             {...field}
-                            maxLength={25}
-                            placeholder="Ex: 123456789"
+                            rows={4}
+                            placeholder="Descreva detalhadamente como o acidente ocorreu..."
                           />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-                </div>
 
-                <FormField
-                  control={form.control}
-                  name="natureza"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>
-                        Natureza do Acidente{" "}
-                        <span className="text-red-500">*</span>
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          placeholder="Ex: Queda, Corte, Queimadura, etc."
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="descricao"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>
-                        Descrição do Acidente{" "}
-                        <span className="text-red-500">*</span>
-                      </FormLabel>
-                      <FormControl>
-                        <Textarea
-                          {...field}
-                          rows={4}
-                          placeholder="Descreva detalhadamente como o acidente ocorreu..."
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="medidasTomadas"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>
-                        Medidas Tomadas <span className="text-red-500">*</span>
-                      </FormLabel>
-                      <FormControl>
-                        <Textarea
-                          {...field}
-                          rows={4}
-                          placeholder="Descreva as medidas tomadas após o acidente..."
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <div className="flex justify-end space-x-4 pt-6 border-t">
-                  <Button type="submit" disabled={isPending}>
-                    {isPending ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Cadastrando...
-                      </>
-                    ) : (
-                      "Cadastrar Acidente"
+                  <FormField
+                    control={form.control}
+                    name="medidasTomadas"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>
+                          Medidas Tomadas{" "}
+                          <span className="text-red-500">*</span>
+                        </FormLabel>
+                        <FormControl>
+                          <Textarea
+                            {...field}
+                            rows={4}
+                            placeholder="Descreva as medidas tomadas após o acidente..."
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
                     )}
-                  </Button>
-                </div>
-              </form>
-            </Form>
-          </CardContent>
-        </Card>
+                  />
+
+                  <div className="flex justify-end space-x-4 pt-6 border-t">
+                    <Button type="submit" disabled={isPending}>
+                      {isPending ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Cadastrando...
+                        </>
+                      ) : (
+                        "Cadastrar Acidente"
+                      )}
+                    </Button>
+                  </div>
+                </form>
+              </Form>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );
