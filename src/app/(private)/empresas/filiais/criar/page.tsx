@@ -22,10 +22,20 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Loader2, Building, ArrowLeft } from "lucide-react";
+import { Loader2, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import { useMutation } from "@tanstack/react-query";
 import { createBranch } from "../services/create-branch";
+import { SidebarTrigger } from "@/components/ui/sidebar";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+import { Separator } from "@/components/ui/separator";
 import {
   formatCEP,
   formatCNPJ,
@@ -170,81 +180,114 @@ export default function CreateBranchPage() {
   };
 
   return (
-    <div className="py-8">
-      <div className="container mx-auto px-4 max-w-4xl">
-        <div className="mb-8">
-          <Link
-            href="/empresas/filiais"
-            className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground mb-4"
-          >
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Voltar para filiais
-          </Link>
-          <div className="flex items-center space-x-3">
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <Building className="h-6 w-6 text-blue-600" />
-            </div>
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">Nova Filial</h1>
-              <p className="text-gray-600">
-                Cadastre uma nova filial para sua empresa
-              </p>
-            </div>
-          </div>
+    <div className="flex h-full flex-col overflow-hidden">
+      <header className="flex h-16 shrink-0 items-center gap-2">
+        <div className="flex items-center gap-2 px-4">
+          <SidebarTrigger className="-ml-1" />
+          <Separator orientation="vertical" className="mr-2 h-4" />
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem className="hidden md:block">
+                <BreadcrumbLink href="/empresas/filiais">
+                  Filiais
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator className="hidden md:block" />
+              <BreadcrumbItem>
+                <BreadcrumbPage>Criar</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
         </div>
+        <div className="ml-auto flex items-center gap-2 px-4">
+          <Button asChild variant="outline" size="sm">
+            <Link href="/empresas/filiais">
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Voltar
+            </Link>
+          </Button>
+        </div>
+      </header>
+      <div className="flex-1 overflow-auto p-4 pt-0">
+        <div className="container mx-auto max-w-4xl">
+          <Card>
+            <CardHeader>
+              <CardTitle>Informações da Filial</CardTitle>
+              <CardDescription>
+                Preencha todos os campos obrigatórios para cadastrar a nova
+                filial
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Form {...form}>
+                <form
+                  onSubmit={form.handleSubmit(onSubmit)}
+                  className="space-y-6"
+                >
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold text-gray-900 border-b pb-2">
+                      Informações Básicas
+                    </h3>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Informações da Filial</CardTitle>
-            <CardDescription>
-              Preencha todos os campos obrigatórios para cadastrar a nova filial
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Form {...form}>
-              <form
-                onSubmit={form.handleSubmit(onSubmit)}
-                className="space-y-6"
-              >
-                <div className="space-y-4">
-                  <h3 className="text-lg font-semibold text-gray-900 border-b pb-2">
-                    Informações Básicas
-                  </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <FormField
+                        control={form.control}
+                        name="nome"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>
+                              Nome da Filial{" "}
+                              <span className="text-red-500">*</span>
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                placeholder="Ex: Filial Centro"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <FormField
+                        control={form.control}
+                        name="cnpj"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>
+                              CNPJ <span className="text-red-500">*</span>
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                placeholder="00.000.000/0000-00"
+                                {...field}
+                                onChange={(e) => {
+                                  field.onChange(e);
+                                  handleCnpjChange(e);
+                                }}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
                     <FormField
                       control={form.control}
-                      name="nome"
+                      name="dataFundacao"
                       render={({ field }) => (
-                        <FormItem>
+                        <FormItem className="md:w-1/2">
                           <FormLabel>
-                            Nome da Filial{" "}
+                            Data de Fundação{" "}
                             <span className="text-red-500">*</span>
                           </FormLabel>
                           <FormControl>
-                            <Input placeholder="Ex: Filial Centro" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="cnpj"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>
-                            CNPJ <span className="text-red-500">*</span>
-                          </FormLabel>
-                          <FormControl>
                             <Input
-                              placeholder="00.000.000/0000-00"
+                              type="date"
+                              max={new Date().toISOString().split("T")[0]}
                               {...field}
-                              onChange={(e) => {
-                                field.onChange(e);
-                                handleCnpjChange(e);
-                              }}
                             />
                           </FormControl>
                           <FormMessage />
@@ -253,207 +296,138 @@ export default function CreateBranchPage() {
                     />
                   </div>
 
-                  <FormField
-                    control={form.control}
-                    name="dataFundacao"
-                    render={({ field }) => (
-                      <FormItem className="md:w-1/2">
-                        <FormLabel>
-                          Data de Fundação{" "}
-                          <span className="text-red-500">*</span>
-                        </FormLabel>
-                        <FormControl>
-                          <Input type="date" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold text-gray-900 border-b pb-2">
+                      Endereço
+                    </h3>
 
-                <div className="space-y-4">
-                  <h3 className="text-lg font-semibold text-gray-900 border-b pb-2">
-                    Endereço
-                  </h3>
-
-                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="rua"
-                      render={({ field }) => (
-                        <FormItem className="md:col-span-2">
-                          <FormLabel>
-                            Rua <span className="text-red-500">*</span>
-                          </FormLabel>
-                          <FormControl>
-                            <Input placeholder="Rua" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="numero"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>
-                            Número <span className="text-red-500">*</span>
-                          </FormLabel>
-                          <FormControl>
-                            <Input placeholder="123" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="complemento"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Complemento</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Apto, sala..." {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="bairro"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>
-                            Bairro <span className="text-red-500">*</span>
-                          </FormLabel>
-                          <FormControl>
-                            <Input placeholder="Bairro" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="cidade"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>
-                            Cidade <span className="text-red-500">*</span>
-                          </FormLabel>
-                          <FormControl>
-                            <Input placeholder="Cidade" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="estado"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>
-                            Estado <span className="text-red-500">*</span>
-                          </FormLabel>
-                          <Select
-                            onValueChange={field.onChange}
-                            defaultValue={field.value}
-                          >
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                      <FormField
+                        control={form.control}
+                        name="rua"
+                        render={({ field }) => (
+                          <FormItem className="md:col-span-2">
+                            <FormLabel>
+                              Rua <span className="text-red-500">*</span>
+                            </FormLabel>
                             <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Selecione o estado" />
-                              </SelectTrigger>
+                              <Input placeholder="Rua" {...field} />
                             </FormControl>
-                            <SelectContent>
-                              {estados.map(({ uf, nome }) => (
-                                <SelectItem key={uf} value={uf}>
-                                  {nome}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
 
-                  <FormField
-                    control={form.control}
-                    name="cep"
-                    render={({ field }) => (
-                      <FormItem className="md:w-1/3">
-                        <FormLabel>
-                          CEP <span className="text-red-500">*</span>
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="00000-000"
-                            {...field}
-                            onChange={(e) => {
-                              field.onChange(e);
-                              handleCepChange(e);
-                            }}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
+                      <FormField
+                        control={form.control}
+                        name="numero"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>
+                              Número <span className="text-red-500">*</span>
+                            </FormLabel>
+                            <FormControl>
+                              <Input placeholder="123" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
 
-                <div className="space-y-4">
-                  <h3 className="text-lg font-semibold text-gray-900 border-b pb-2">
-                    Contato
-                  </h3>
+                      <FormField
+                        control={form.control}
+                        name="complemento"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Complemento</FormLabel>
+                            <FormControl>
+                              <Input placeholder="Apto, sala..." {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <FormField
+                        control={form.control}
+                        name="bairro"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>
+                              Bairro <span className="text-red-500">*</span>
+                            </FormLabel>
+                            <FormControl>
+                              <Input placeholder="Bairro" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="cidade"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>
+                              Cidade <span className="text-red-500">*</span>
+                            </FormLabel>
+                            <FormControl>
+                              <Input placeholder="Cidade" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="estado"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>
+                              Estado <span className="text-red-500">*</span>
+                            </FormLabel>
+                            <Select
+                              onValueChange={field.onChange}
+                              defaultValue={field.value}
+                            >
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Selecione o estado" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                {estados.map(({ uf, nome }) => (
+                                  <SelectItem key={uf} value={uf}>
+                                    {nome}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
                     <FormField
                       control={form.control}
-                      name="telefone"
+                      name="cep"
                       render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Telefone</FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder="(00) 0000-0000"
-                              {...field}
-                              onChange={(e) => {
-                                field.onChange(e);
-                                handleHomePhoneChange(e);
-                              }}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="celular"
-                      render={({ field }) => (
-                        <FormItem>
+                        <FormItem className="md:w-1/3">
                           <FormLabel>
-                            Celular <span className="text-red-500">*</span>
+                            CEP <span className="text-red-500">*</span>
                           </FormLabel>
                           <FormControl>
                             <Input
-                              placeholder="(00) 00000-0000"
+                              placeholder="00000-000"
                               {...field}
                               onChange={(e) => {
                                 field.onChange(e);
-                                handleMobilePhoneChange(e);
+                                handleCepChange(e);
                               }}
                             />
                           </FormControl>
@@ -462,24 +436,76 @@ export default function CreateBranchPage() {
                       )}
                     />
                   </div>
-                </div>
 
-                <div className="flex justify-end space-x-4 pt-6 border-t">
-                  <Button type="submit" disabled={isPending}>
-                    {isPending ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Cadastrando...
-                      </>
-                    ) : (
-                      "Cadastrar Filial"
-                    )}
-                  </Button>
-                </div>
-              </form>
-            </Form>
-          </CardContent>
-        </Card>
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold text-gray-900 border-b pb-2">
+                      Contato
+                    </h3>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <FormField
+                        control={form.control}
+                        name="telefone"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Telefone</FormLabel>
+                            <FormControl>
+                              <Input
+                                placeholder="(00) 0000-0000"
+                                {...field}
+                                onChange={(e) => {
+                                  field.onChange(e);
+                                  handleHomePhoneChange(e);
+                                }}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="celular"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>
+                              Celular <span className="text-red-500">*</span>
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                placeholder="(00) 00000-0000"
+                                {...field}
+                                onChange={(e) => {
+                                  field.onChange(e);
+                                  handleMobilePhoneChange(e);
+                                }}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex justify-end space-x-4 pt-6 border-t">
+                    <Button type="submit" disabled={isPending}>
+                      {isPending ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Cadastrando...
+                        </>
+                      ) : (
+                        "Cadastrar Filial"
+                      )}
+                    </Button>
+                  </div>
+                </form>
+              </Form>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );

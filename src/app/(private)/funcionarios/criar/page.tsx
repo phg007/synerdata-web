@@ -23,6 +23,16 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Loader2, User, ArrowLeft } from "lucide-react";
+import { SidebarTrigger } from "@/components/ui/sidebar";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { createEmployee } from "../services/create-employee";
@@ -393,498 +403,79 @@ export default function CreateEmployeePage() {
   };
 
   return (
-    <div className="py-8">
-      <div className="container mx-auto px-4 max-w-4xl">
-        <div className="mb-8">
-          <Link
-            href="/funcionarios"
-            className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground mb-4"
-          >
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Voltar para funcionários
-          </Link>
-          <div className="flex items-center space-x-3">
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <User className="h-6 w-6 text-blue-600" />
-            </div>
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">
-                Novo Funcionário
-              </h1>
-              <p className="text-gray-600">
-                Cadastre um novo funcionário para sua empresa
-              </p>
+    <div className="flex h-full flex-col overflow-hidden">
+      <header className="flex h-16 shrink-0 items-center gap-2">
+        <div className="flex items-center gap-2 px-4">
+          <SidebarTrigger className="-ml-1" />
+          <Separator orientation="vertical" className="mr-2 h-4" />
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem className="hidden md:block">
+                <BreadcrumbLink href="/funcionarios">
+                  Funcionários
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator className="hidden md:block" />
+              <BreadcrumbItem>
+                <BreadcrumbPage>Criar</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+        </div>
+        <div className="ml-auto flex items-center gap-2 px-4">
+          <Button asChild variant="outline" size="sm">
+            <Link href="/funcionarios">
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Voltar
+            </Link>
+          </Button>
+        </div>
+      </header>
+
+      <div className="flex-1 overflow-auto p-4 pt-0">
+        <div className="container mx-auto max-w-4xl">
+          <div className="mb-8">
+            <div className="flex items-center space-x-3">
+              <div className="p-2 bg-blue-100 rounded-lg">
+                <User className="h-6 w-6 text-blue-600" />
+              </div>
+              <div>
+                <h1 className="text-3xl font-bold text-gray-900">
+                  Novo Funcionário
+                </h1>
+                <p className="text-gray-600">
+                  Cadastre um novo funcionário para sua empresa
+                </p>
+              </div>
             </div>
           </div>
-        </div>
 
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <User className="mr-2 h-5 w-5" />
-                  Informações Pessoais
-                </CardTitle>
-                <CardDescription>
-                  Dados pessoais e de identificação do funcionário
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="nome"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>
-                          Nome Completo <span className="text-red-500">*</span>
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="Nome completo do funcionário"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>
-                          Email <span className="text-red-500">*</span>
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            type="email"
-                            placeholder="funcionario@empresa.com"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="cpf"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>
-                          CPF <span className="text-red-500">*</span>
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="000.000.000-00"
-                            {...field}
-                            onChange={(e) => {
-                              field.onChange(e);
-                              handleCPFChange(e);
-                            }}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="carteiraIdentidade"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>
-                          RG <span className="text-red-500">*</span>
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="00.000.000-0"
-                            {...field}
-                            onChange={(e) => {
-                              field.onChange(e);
-                              handleRGChange(e);
-                            }}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="dataNascimento"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>
-                          Data de Nascimento{" "}
-                          <span className="text-red-500">*</span>
-                        </FormLabel>
-                        <FormControl>
-                          <Input type="date" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="sexo"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>
-                          Sexo <span className="text-red-500">*</span>
-                        </FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                          {...field}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Selecione o sexo" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value={Sexo.MASCULINO}>
-                              Masculino
-                            </SelectItem>
-                            <SelectItem value={Sexo.FEMININO}>
-                              Feminino
-                            </SelectItem>
-                            <SelectItem value={Sexo.OUTRO}>Outro</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="estadoCivil"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>
-                          Estado Civil <span className="text-red-500">*</span>
-                        </FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                          {...field}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Selecione o estado civil" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value={EstadoCivil.SOLTEIRO}>
-                              Solteiro(a)
-                            </SelectItem>
-                            <SelectItem value={EstadoCivil.CASADO}>
-                              Casado(a)
-                            </SelectItem>
-                            <SelectItem value={EstadoCivil.DIVORCIADO}>
-                              Divorciado(a)
-                            </SelectItem>
-                            <SelectItem value={EstadoCivil.VIUVO}>
-                              Viúvo(a)
-                            </SelectItem>
-                            <SelectItem value={EstadoCivil.UNIAO_ESTAVEL}>
-                              União Estável
-                            </SelectItem>
-                            <SelectItem value={EstadoCivil.SEPARADO}>
-                              Separado
-                            </SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="grauInstrucao"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>
-                          Grau de Instrução{" "}
-                          <span className="text-red-500">*</span>
-                        </FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                          {...field}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Selecione a escolaridade" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value={GrauInstrucao.FUNDAMENTAL}>
-                              Fundamental
-                            </SelectItem>
-                            <SelectItem value={GrauInstrucao.MEDIO}>
-                              Médio
-                            </SelectItem>
-                            <SelectItem value={GrauInstrucao.SUPERIOR}>
-                              Superior
-                            </SelectItem>
-                            <SelectItem value={GrauInstrucao.POS_GRADUACAO}>
-                              Pós-graduação
-                            </SelectItem>
-                            <SelectItem value={GrauInstrucao.MESTRADO}>
-                              Mestrado
-                            </SelectItem>
-                            <SelectItem value={GrauInstrucao.DOUTORADO}>
-                              Doutorado
-                            </SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="naturalidade"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>
-                          Naturalidade <span className="text-red-500">*</span>
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="Cidade de nascimento"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="nacionalidade"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>
-                          Nacionalidade <span className="text-red-500">*</span>
-                        </FormLabel>
-                        <FormControl>
-                          <Input placeholder="Nacionalidade" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="altura"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>
-                          Altura (m) <span className="text-red-500">*</span>
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            step="0.01"
-                            placeholder="1.75"
-                            {...field}
-                            onChange={(e) => {
-                              field.onChange(e);
-                              handleHeightChange(e);
-                            }}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="peso"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>
-                          Peso (kg) <span className="text-red-500">*</span>
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            step="0.1"
-                            placeholder="70.5"
-                            {...field}
-                            onChange={(e) => {
-                              field.onChange(e);
-                              handleWeightChange(e);
-                            }}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="filhos"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-row items-start space-x-3 space-y-0 p-4">
-                        <FormControl>
-                          <Checkbox
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                          />
-                        </FormControl>
-                        <div className="space-y-1 leading-none">
-                          <FormLabel>Possui filhos?</FormLabel>
-                        </div>
-                      </FormItem>
-                    )}
-                  />
-
-                  {form.watch("filhos") && (
-                    <>
-                      <FormField
-                        control={form.control}
-                        name="quantidadeFilhos"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Quantidade de Filhos</FormLabel>
-                            <FormControl>
-                              <Input
-                                type="number"
-                                min="0"
-                                placeholder="0"
-                                {...field}
-                                onChange={(e) =>
-                                  field.onChange(
-                                    Number.parseInt(e.target.value) || 0
-                                  )
-                                }
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={form.control}
-                        name="filhosAbaixoDe21"
-                        render={({ field }) => (
-                          <FormItem className="flex flex-row items-start space-x-3 space-y-0 p-4">
-                            <FormControl>
-                              <Checkbox
-                                checked={field.value}
-                                onCheckedChange={field.onChange}
-                              />
-                            </FormControl>
-                            <div className="space-y-1 leading-none">
-                              <FormLabel>Filhos abaixo de 21 anos?</FormLabel>
-                            </div>
-                          </FormItem>
-                        )}
-                      />
-                    </>
-                  )}
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="nomePai"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Nome do Pai</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="Nome completo do pai"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="nomeMae"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>
-                          Nome da Mãe <span className="text-red-500">*</span>
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="Nome completo da mãe"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <div className="space-y-4">
-                  <FormField
-                    control={form.control}
-                    name="necessidadesEspeciais"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
-                        <FormControl>
-                          <Checkbox
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                          />
-                        </FormControl>
-                        <div className="space-y-1 leading-none">
-                          <FormLabel>Possui necessidades especiais?</FormLabel>
-                          <FormDescription>
-                            Marque se o funcionário possui alguma deficiência ou
-                            necessidade especial
-                          </FormDescription>
-                        </div>
-                      </FormItem>
-                    )}
-                  />
-
-                  {form.watch("necessidadesEspeciais") && (
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <User className="mr-2 h-5 w-5" />
+                    Informações Pessoais
+                  </CardTitle>
+                  <CardDescription>
+                    Dados pessoais e de identificação do funcionário
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <FormField
                       control={form.control}
-                      name="tipoDeficiencia"
+                      name="nome"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Tipo de Deficiência</FormLabel>
+                          <FormLabel>
+                            Nome Completo{" "}
+                            <span className="text-red-500">*</span>
+                          </FormLabel>
                           <FormControl>
-                            <Textarea
-                              placeholder="Descreva o tipo de deficiência ou necessidade especial"
+                            <Input
+                              placeholder="Nome completo do funcionário"
                               {...field}
                             />
                           </FormControl>
@@ -892,850 +483,1318 @@ export default function CreateEmployeePage() {
                         </FormItem>
                       )}
                     />
-                  )}
-                </div>
-              </CardContent>
-            </Card>
 
-            <Card>
-              <CardHeader>
-                <CardTitle>Documentos</CardTitle>
-                <CardDescription>
-                  Documentos pessoais e trabalhistas
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="pis"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>
-                          PIS <span className="text-red-500">*</span>
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="000.00000.00-0"
+                    <FormField
+                      control={form.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            Email <span className="text-red-500">*</span>
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              type="email"
+                              placeholder="funcionario@empresa.com"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="cpf"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            CPF <span className="text-red-500">*</span>
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="000.000.000-00"
+                              {...field}
+                              onChange={(e) => {
+                                field.onChange(e);
+                                handleCPFChange(e);
+                              }}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="carteiraIdentidade"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            RG <span className="text-red-500">*</span>
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="00.000.000-0"
+                              {...field}
+                              onChange={(e) => {
+                                field.onChange(e);
+                                handleRGChange(e);
+                              }}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="dataNascimento"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            Data de Nascimento{" "}
+                            <span className="text-red-500">*</span>
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              type="date"
+                              max={new Date().toISOString().split("T")[0]}
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="sexo"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            Sexo <span className="text-red-500">*</span>
+                          </FormLabel>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
                             {...field}
-                            onChange={(e) => {
-                              field.onChange(e);
-                              handlePISChange(e);
-                            }}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Selecione o sexo" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value={Sexo.MASCULINO}>
+                                Masculino
+                              </SelectItem>
+                              <SelectItem value={Sexo.FEMININO}>
+                                Feminino
+                              </SelectItem>
+                              <SelectItem value={Sexo.OUTRO}>Outro</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                  <FormField
-                    control={form.control}
-                    name="ctpsNumero"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>
-                          CTPS Número <span className="text-red-500">*</span>
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="0000000"
-                            maxLength={7}
+                    <FormField
+                      control={form.control}
+                      name="estadoCivil"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            Estado Civil <span className="text-red-500">*</span>
+                          </FormLabel>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
                             {...field}
-                            onChange={(e) => {
-                              field.onChange(e);
-                              handleCTPS(e);
-                            }}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Selecione o estado civil" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value={EstadoCivil.SOLTEIRO}>
+                                Solteiro(a)
+                              </SelectItem>
+                              <SelectItem value={EstadoCivil.CASADO}>
+                                Casado(a)
+                              </SelectItem>
+                              <SelectItem value={EstadoCivil.DIVORCIADO}>
+                                Divorciado(a)
+                              </SelectItem>
+                              <SelectItem value={EstadoCivil.VIUVO}>
+                                Viúvo(a)
+                              </SelectItem>
+                              <SelectItem value={EstadoCivil.UNIAO_ESTAVEL}>
+                                União Estável
+                              </SelectItem>
+                              <SelectItem value={EstadoCivil.SEPARADO}>
+                                Separado
+                              </SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                  <FormField
-                    control={form.control}
-                    name="ctpsSerie"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>
-                          CTPS Série <span className="text-red-500">*</span>
-                        </FormLabel>
-                        <FormControl>
-                          <Input placeholder="0000" maxLength={4} {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
+                    <FormField
+                      control={form.control}
+                      name="grauInstrucao"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            Grau de Instrução{" "}
+                            <span className="text-red-500">*</span>
+                          </FormLabel>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                            {...field}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Selecione a escolaridade" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value={GrauInstrucao.FUNDAMENTAL}>
+                                Fundamental
+                              </SelectItem>
+                              <SelectItem value={GrauInstrucao.MEDIO}>
+                                Médio
+                              </SelectItem>
+                              <SelectItem value={GrauInstrucao.SUPERIOR}>
+                                Superior
+                              </SelectItem>
+                              <SelectItem value={GrauInstrucao.POS_GRADUACAO}>
+                                Pós-graduação
+                              </SelectItem>
+                              <SelectItem value={GrauInstrucao.MESTRADO}>
+                                Mestrado
+                              </SelectItem>
+                              <SelectItem value={GrauInstrucao.DOUTORADO}>
+                                Doutorado
+                              </SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
 
-                <FormField
-                  control={form.control}
-                  name="certificadoReservista"
-                  render={({ field }) => (
-                    <FormItem className="md:w-1/2">
-                      <FormLabel>
-                        Certificado de Reservista{" "}
-                        <span className="text-red-500">*</span>
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="Número do certificado de reservista"
-                          {...field}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="naturalidade"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            Naturalidade <span className="text-red-500">*</span>
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="Cidade de nascimento"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="nacionalidade"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            Nacionalidade{" "}
+                            <span className="text-red-500">*</span>
+                          </FormLabel>
+                          <FormControl>
+                            <Input placeholder="Nacionalidade" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="altura"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            Altura (m) <span className="text-red-500">*</span>
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              step="0.01"
+                              placeholder="1.75"
+                              {...field}
+                              onChange={(e) => {
+                                field.onChange(e);
+                                handleHeightChange(e);
+                              }}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="peso"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            Peso (kg) <span className="text-red-500">*</span>
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              step="0.1"
+                              placeholder="70.5"
+                              {...field}
+                              onChange={(e) => {
+                                field.onChange(e);
+                                handleWeightChange(e);
+                              }}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="filhos"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-row items-start space-x-3 space-y-0 p-4">
+                          <FormControl>
+                            <Checkbox
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                            />
+                          </FormControl>
+                          <div className="space-y-1 leading-none">
+                            <FormLabel>Possui filhos?</FormLabel>
+                          </div>
+                        </FormItem>
+                      )}
+                    />
+
+                    {form.watch("filhos") && (
+                      <>
+                        <FormField
+                          control={form.control}
+                          name="quantidadeFilhos"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Quantidade de Filhos</FormLabel>
+                              <FormControl>
+                                <Input
+                                  type="number"
+                                  min="0"
+                                  placeholder="0"
+                                  {...field}
+                                  onChange={(e) =>
+                                    field.onChange(
+                                      Number.parseInt(e.target.value) || 0
+                                    )
+                                  }
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
                         />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
+
+                        <FormField
+                          control={form.control}
+                          name="filhosAbaixoDe21"
+                          render={({ field }) => (
+                            <FormItem className="flex flex-row items-start space-x-3 space-y-0 p-4">
+                              <FormControl>
+                                <Checkbox
+                                  checked={field.value}
+                                  onCheckedChange={field.onChange}
+                                />
+                              </FormControl>
+                              <div className="space-y-1 leading-none">
+                                <FormLabel>Filhos abaixo de 21 anos?</FormLabel>
+                              </div>
+                            </FormItem>
+                          )}
+                        />
+                      </>
+                    )}
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="nomePai"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Nome do Pai</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="Nome completo do pai"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="nomeMae"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            Nome da Mãe <span className="text-red-500">*</span>
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="Nome completo da mãe"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="space-y-4">
+                    <FormField
+                      control={form.control}
+                      name="necessidadesEspeciais"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                          <FormControl>
+                            <Checkbox
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                            />
+                          </FormControl>
+                          <div className="space-y-1 leading-none">
+                            <FormLabel>
+                              Possui necessidades especiais?
+                            </FormLabel>
+                            <FormDescription>
+                              Marque se o funcionário possui alguma deficiência
+                              ou necessidade especial
+                            </FormDescription>
+                          </div>
+                        </FormItem>
+                      )}
+                    />
+
+                    {form.watch("necessidadesEspeciais") && (
+                      <FormField
+                        control={form.control}
+                        name="tipoDeficiencia"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Tipo de Deficiência</FormLabel>
+                            <FormControl>
+                              <Textarea
+                                placeholder="Descreva o tipo de deficiência ou necessidade especial"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Documentos</CardTitle>
+                  <CardDescription>
+                    Documentos pessoais e trabalhistas
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="pis"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            PIS <span className="text-red-500">*</span>
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="000.00000.00-0"
+                              {...field}
+                              onChange={(e) => {
+                                field.onChange(e);
+                                handlePISChange(e);
+                              }}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="ctpsNumero"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            CTPS Número <span className="text-red-500">*</span>
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="0000000"
+                              maxLength={7}
+                              {...field}
+                              onChange={(e) => {
+                                field.onChange(e);
+                                handleCTPS(e);
+                              }}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="ctpsSerie"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            CTPS Série <span className="text-red-500">*</span>
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="0000"
+                              maxLength={4}
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <FormField
+                    control={form.control}
+                    name="certificadoReservista"
+                    render={({ field }) => (
+                      <FormItem className="md:w-1/2">
+                        <FormLabel>
+                          Certificado de Reservista{" "}
+                          <span className="text-red-500">*</span>
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Número do certificado de reservista"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Informações Profissionais</CardTitle>
+                  <CardDescription>
+                    Dados relacionados ao trabalho e função
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="regimeContratacao"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            Regime de Contratação{" "}
+                            <span className="text-red-500">*</span>
+                          </FormLabel>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                            {...field}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Selecione o regime" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value={RegimeContratacao.CLT}>
+                                CLT
+                              </SelectItem>
+                              <SelectItem value={RegimeContratacao.PJ}>
+                                Pessoa Jurídica
+                              </SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="dataAdmissao"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            Data de Admissão{" "}
+                            <span className="text-red-500">*</span>
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              type="date"
+                              max={new Date().toISOString().split("T")[0]}
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="salario"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            Salário (R$) <span className="text-red-500">*</span>
+                          </FormLabel>
+                          <FormControl>
+                            <NumericFormat
+                              customInput={Input}
+                              thousandSeparator="."
+                              decimalSeparator=","
+                              decimalScale={2}
+                              fixedDecimalScale
+                              allowNegative={false}
+                              value={field.value}
+                              onValueChange={(values) => {
+                                const { floatValue } = values;
+                                field.onChange(floatValue ?? 0);
+                              }}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="valorAlimentacao"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            Valor Alimentação (R$){" "}
+                            <span className="text-red-500">*</span>
+                          </FormLabel>
+                          <FormControl>
+                            <NumericFormat
+                              customInput={Input}
+                              thousandSeparator="."
+                              decimalSeparator=","
+                              decimalScale={2}
+                              fixedDecimalScale
+                              allowNegative={false}
+                              value={field.value}
+                              onValueChange={(values) => {
+                                const { floatValue } = values;
+                                field.onChange(floatValue ?? 0);
+                              }}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="valorTransporte"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            Valor Transporte (R$){" "}
+                            <span className="text-red-500">*</span>
+                          </FormLabel>
+                          <FormControl>
+                            <NumericFormat
+                              customInput={Input}
+                              thousandSeparator="."
+                              decimalSeparator=","
+                              decimalScale={2}
+                              fixedDecimalScale
+                              allowNegative={false}
+                              value={field.value}
+                              onValueChange={(values) => {
+                                const { floatValue } = values;
+                                field.onChange(floatValue ?? 0);
+                              }}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="funcao"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            Função <span className="text-red-500">*</span>
+                          </FormLabel>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                            {...field}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Função do funcionário" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {roles.map(({ id, nome }) => (
+                                <SelectItem key={id} value={id}>
+                                  {nome}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="setor"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            Setor <span className="text-red-500">*</span>
+                          </FormLabel>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                            {...field}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Selecione o setor de trabalho" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {departments.map(({ id, nome }) => (
+                                <SelectItem key={id} value={id}>
+                                  {nome}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="gestor"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            Gestor <span className="text-red-500">*</span>
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="Nome do gestor direto"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="cbo"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            CBO <span className="text-red-500">*</span>
+                          </FormLabel>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                            {...field}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Selecione o cbo" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {cbos.map(({ id, nome }) => (
+                                <SelectItem key={id} value={id}>
+                                  {nome}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="cargaHoraria"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            Carga Horária Semanal{" "}
+                            <span className="text-red-500">*</span>
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              min="1"
+                              max="44"
+                              placeholder="40"
+                              {...field}
+                              onChange={(e) =>
+                                field.onChange(
+                                  Number.parseInt(e.target.value) || 0
+                                )
+                              }
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="escala"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            Escala de Trabalho{" "}
+                            <span className="text-red-500">*</span>
+                          </FormLabel>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                            {...field}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Selecione a escala" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value={Escala.SEIS_UM}>
+                                6x1
+                              </SelectItem>
+                              <SelectItem value={Escala.DOZE_TRINTA_SEIS}>
+                                12x36
+                              </SelectItem>
+                              <SelectItem value={Escala.QUATRO_TRES}>
+                                4x3
+                              </SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="centroCusto"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Centro de Custo</FormLabel>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                            {...field}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Selecione o centro de custo" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {costCenters.map(({ id, nome }) => (
+                                <SelectItem key={id} value={id}>
+                                  {nome}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="vencimentoExperiencia1"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            Vencimento 1º Período de Experiência
+                          </FormLabel>
+                          <FormControl>
+                            <Input type="date" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="vencimentoExperiencia2"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            Vencimento 2º Período de Experiência
+                          </FormLabel>
+                          <FormControl>
+                            <Input type="date" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="dataExameAdmissional"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Data do Exame Admissional</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="date"
+                              max={new Date().toISOString().split("T")[0]}
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="dataUltimoASO"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Data do Último ASO</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="date"
+                              max={new Date().toISOString().split("T")[0]}
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="dataExameDemissional"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Data do Exame Demissional</FormLabel>
+                          <FormControl>
+                            <Input type="date" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Contato</CardTitle>
+                  <CardDescription>
+                    Informações de contato do funcionário
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="celular"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            Celular <span className="text-red-500">*</span>
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="(00) 00000-0000"
+                              {...field}
+                              onChange={(e) => {
+                                field.onChange(e);
+                                handleMobilePhoneChange(e);
+                              }}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="telefone"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Telefone Residencial</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="(00) 0000-0000"
+                              {...field}
+                              onChange={(e) => {
+                                field.onChange(e);
+                                handlePhoneChange(e);
+                              }}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Endereço</CardTitle>
+                  <CardDescription>
+                    Endereço residencial do funcionário
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="rua"
+                      render={({ field }) => (
+                        <FormItem className="md:col-span-2">
+                          <FormLabel>
+                            Rua <span className="text-red-500">*</span>
+                          </FormLabel>
+                          <FormControl>
+                            <Input placeholder="Rua" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="numero"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            Número <span className="text-red-500">*</span>
+                          </FormLabel>
+                          <FormControl>
+                            <Input placeholder="123" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="complemento"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Complemento</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Apto, casa..." {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="bairro"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            Bairro <span className="text-red-500">*</span>
+                          </FormLabel>
+                          <FormControl>
+                            <Input placeholder="Bairro" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="cidade"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            Cidade <span className="text-red-500">*</span>
+                          </FormLabel>
+                          <FormControl>
+                            <Input placeholder="Cidade" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="estado"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            Estado <span className="text-red-500">*</span>
+                          </FormLabel>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                            {...field}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Selecione o estado" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {estados.map(({ uf, nome }) => (
+                                <SelectItem key={uf} value={uf}>
+                                  {nome}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="cep"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            CEP <span className="text-red-500">*</span>
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="00000-000"
+                              {...field}
+                              onChange={(e) => {
+                                field.onChange(e);
+                                handleCepChange(e);
+                              }}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="quantidadeOnibus"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Quantidade de Ônibus</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              min="0"
+                              placeholder="0"
+                              {...field}
+                              onChange={(e) =>
+                                field.onChange(
+                                  Number.parseInt(e.target.value) || 0
+                                )
+                              }
+                            />
+                          </FormControl>
+                          <FormDescription>
+                            Quantos ônibus o funcionário pega para chegar ao
+                            trabalho
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="latitude"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Latitude</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              step="0.000001"
+                              placeholder="-23.550520"
+                              {...field}
+                              value={field.value || ""}
+                              onChange={(e) => {
+                                const value = e.target.value;
+                                if (value === "") {
+                                  field.onChange(undefined);
+                                } else if (validateLatitude(value)) {
+                                  field.onChange(Number.parseFloat(value));
+                                }
+                              }}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                          <FormDescription>
+                            Valor entre -90 e +90 graus
+                          </FormDescription>
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="longitude"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Longitude</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              step="0.000001"
+                              placeholder="-46.633309"
+                              {...field}
+                              value={field.value || ""}
+                              onChange={(e) => {
+                                const value = e.target.value;
+                                if (value === "") {
+                                  field.onChange(undefined);
+                                } else if (validateLongitude(value)) {
+                                  field.onChange(Number.parseFloat(value));
+                                }
+                              }}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                          <FormDescription>
+                            Valor entre -180 e +180 graus
+                          </FormDescription>
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+
+              <div className="flex justify-end">
+                <Button type="submit" disabled={isPending}>
+                  {isPending ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Cadastrando...
+                    </>
+                  ) : (
+                    "Cadastrar Funcionário"
                   )}
-                />
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Informações Profissionais</CardTitle>
-                <CardDescription>
-                  Dados relacionados ao trabalho e função
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="regimeContratacao"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>
-                          Regime de Contratação{" "}
-                          <span className="text-red-500">*</span>
-                        </FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                          {...field}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Selecione o regime" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value={RegimeContratacao.CLT}>
-                              CLT
-                            </SelectItem>
-                            <SelectItem value={RegimeContratacao.PJ}>
-                              Pessoa Jurídica
-                            </SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="dataAdmissao"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>
-                          Data de Admissão{" "}
-                          <span className="text-red-500">*</span>
-                        </FormLabel>
-                        <FormControl>
-                          <Input type="date" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="salario"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>
-                          Salário (R$) <span className="text-red-500">*</span>
-                        </FormLabel>
-                        <FormControl>
-                          <NumericFormat
-                            customInput={Input}
-                            thousandSeparator="."
-                            decimalSeparator=","
-                            decimalScale={2}
-                            fixedDecimalScale
-                            allowNegative={false}
-                            value={field.value}
-                            onValueChange={(values) => {
-                              const { floatValue } = values;
-                              field.onChange(floatValue ?? 0);
-                            }}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="valorAlimentacao"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>
-                          Valor Alimentação (R$){" "}
-                          <span className="text-red-500">*</span>
-                        </FormLabel>
-                        <FormControl>
-                          <NumericFormat
-                            customInput={Input}
-                            thousandSeparator="."
-                            decimalSeparator=","
-                            decimalScale={2}
-                            fixedDecimalScale
-                            allowNegative={false}
-                            value={field.value}
-                            onValueChange={(values) => {
-                              const { floatValue } = values;
-                              field.onChange(floatValue ?? 0);
-                            }}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="valorTransporte"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>
-                          Valor Transporte (R$){" "}
-                          <span className="text-red-500">*</span>
-                        </FormLabel>
-                        <FormControl>
-                          <NumericFormat
-                            customInput={Input}
-                            thousandSeparator="."
-                            decimalSeparator=","
-                            decimalScale={2}
-                            fixedDecimalScale
-                            allowNegative={false}
-                            value={field.value}
-                            onValueChange={(values) => {
-                              const { floatValue } = values;
-                              field.onChange(floatValue ?? 0);
-                            }}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="funcao"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>
-                          Função <span className="text-red-500">*</span>
-                        </FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                          {...field}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Função do funcionário" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {roles.map(({ id, nome }) => (
-                              <SelectItem key={id} value={id}>
-                                {nome}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="setor"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>
-                          Setor <span className="text-red-500">*</span>
-                        </FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                          {...field}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Selecione o setor de trabalho" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {departments.map(({ id, nome }) => (
-                              <SelectItem key={id} value={id}>
-                                {nome}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="gestor"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>
-                          Gestor <span className="text-red-500">*</span>
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="Nome do gestor direto"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="cbo"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>
-                          CBO <span className="text-red-500">*</span>
-                        </FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                          {...field}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Selecione o cbo" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {cbos.map(({ id, nome }) => (
-                              <SelectItem key={id} value={id}>
-                                {nome}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="cargaHoraria"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>
-                          Carga Horária Semanal{" "}
-                          <span className="text-red-500">*</span>
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            min="1"
-                            max="44"
-                            placeholder="40"
-                            {...field}
-                            onChange={(e) =>
-                              field.onChange(
-                                Number.parseInt(e.target.value) || 0
-                              )
-                            }
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="escala"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>
-                          Escala de Trabalho{" "}
-                          <span className="text-red-500">*</span>
-                        </FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                          {...field}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Selecione a escala" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value={Escala.SEIS_UM}>6x1</SelectItem>
-                            <SelectItem value={Escala.DOZE_TRINTA_SEIS}>
-                              12x36
-                            </SelectItem>
-                            <SelectItem value={Escala.QUATRO_TRES}>
-                              4x3
-                            </SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="centroCusto"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Centro de Custo</FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                          {...field}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Selecione o centro de custo" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {costCenters.map(({ id, nome }) => (
-                              <SelectItem key={id} value={id}>
-                                {nome}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="vencimentoExperiencia1"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>
-                          Vencimento 1º Período de Experiência
-                        </FormLabel>
-                        <FormControl>
-                          <Input type="date" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="vencimentoExperiencia2"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>
-                          Vencimento 2º Período de Experiência
-                        </FormLabel>
-                        <FormControl>
-                          <Input type="date" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="dataExameAdmissional"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Data do Exame Admissional</FormLabel>
-                        <FormControl>
-                          <Input type="date" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="dataUltimoASO"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Data do Último ASO</FormLabel>
-                        <FormControl>
-                          <Input type="date" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="dataExameDemissional"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Data do Exame Demissional</FormLabel>
-                        <FormControl>
-                          <Input type="date" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Contato</CardTitle>
-                <CardDescription>
-                  Informações de contato do funcionário
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="celular"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>
-                          Celular <span className="text-red-500">*</span>
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="(00) 00000-0000"
-                            {...field}
-                            onChange={(e) => {
-                              field.onChange(e);
-                              handleMobilePhoneChange(e);
-                            }}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="telefone"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Telefone Residencial</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="(00) 0000-0000"
-                            {...field}
-                            onChange={(e) => {
-                              field.onChange(e);
-                              handlePhoneChange(e);
-                            }}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Endereço</CardTitle>
-                <CardDescription>
-                  Endereço residencial do funcionário
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="rua"
-                    render={({ field }) => (
-                      <FormItem className="md:col-span-2">
-                        <FormLabel>
-                          Rua <span className="text-red-500">*</span>
-                        </FormLabel>
-                        <FormControl>
-                          <Input placeholder="Rua" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="numero"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>
-                          Número <span className="text-red-500">*</span>
-                        </FormLabel>
-                        <FormControl>
-                          <Input placeholder="123" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="complemento"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Complemento</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Apto, casa..." {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="bairro"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>
-                          Bairro <span className="text-red-500">*</span>
-                        </FormLabel>
-                        <FormControl>
-                          <Input placeholder="Bairro" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="cidade"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>
-                          Cidade <span className="text-red-500">*</span>
-                        </FormLabel>
-                        <FormControl>
-                          <Input placeholder="Cidade" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="estado"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>
-                          Estado <span className="text-red-500">*</span>
-                        </FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                          {...field}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Selecione o estado" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {estados.map(({ uf, nome }) => (
-                              <SelectItem key={uf} value={uf}>
-                                {nome}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="cep"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>
-                          CEP <span className="text-red-500">*</span>
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="00000-000"
-                            {...field}
-                            onChange={(e) => {
-                              field.onChange(e);
-                              handleCepChange(e);
-                            }}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="quantidadeOnibus"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Quantidade de Ônibus</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            min="0"
-                            placeholder="0"
-                            {...field}
-                            onChange={(e) =>
-                              field.onChange(
-                                Number.parseInt(e.target.value) || 0
-                              )
-                            }
-                          />
-                        </FormControl>
-                        <FormDescription>
-                          Quantos ônibus o funcionário pega para chegar ao
-                          trabalho
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="latitude"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Latitude</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            step="0.000001"
-                            placeholder="-23.550520"
-                            {...field}
-                            value={field.value || ""}
-                            onChange={(e) => {
-                              const value = e.target.value;
-                              if (value === "") {
-                                field.onChange(undefined);
-                              } else if (validateLatitude(value)) {
-                                field.onChange(Number.parseFloat(value));
-                              }
-                            }}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                        <FormDescription>
-                          Valor entre -90 e +90 graus
-                        </FormDescription>
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="longitude"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Longitude</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            step="0.000001"
-                            placeholder="-46.633309"
-                            {...field}
-                            value={field.value || ""}
-                            onChange={(e) => {
-                              const value = e.target.value;
-                              if (value === "") {
-                                field.onChange(undefined);
-                              } else if (validateLongitude(value)) {
-                                field.onChange(Number.parseFloat(value));
-                              }
-                            }}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                        <FormDescription>
-                          Valor entre -180 e +180 graus
-                        </FormDescription>
-                      </FormItem>
-                    )}
-                  />
-                </div>
-              </CardContent>
-            </Card>
-
-            <div className="flex justify-end">
-              <Button type="submit" disabled={isPending}>
-                {isPending ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Cadastrando...
-                  </>
-                ) : (
-                  "Cadastrar Funcionário"
-                )}
-              </Button>
-            </div>
-          </form>
-        </Form>
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </div>
       </div>
     </div>
   );

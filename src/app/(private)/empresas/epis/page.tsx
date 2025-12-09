@@ -2,15 +2,21 @@
 
 import { Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { DataTable } from "./components/datatable/data-table";
-import { Skeleton } from "@/components/ui/skeleton";
 import { useQuery } from "@tanstack/react-query";
 import { getEPIsByCompany } from "@/app/(private)/empresas/epis/services/get-epis-by-company";
 import { useSession } from "next-auth/react";
 import { columns } from "./components/datatable/columns";
 import Link from "next/link";
 import { EpiObjectResponse } from "./interfaces/epi-interfaces";
+import { SidebarTrigger } from "@/components/ui/sidebar";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbList,
+  BreadcrumbPage,
+} from "@/components/ui/breadcrumb";
+import { Separator } from "@/components/ui/separator";
 
 export default function EPIsPage() {
   const { data: session, status } = useSession();
@@ -28,53 +34,65 @@ export default function EPIsPage() {
 
   if (status === "loading" || isLoading) {
     return (
-      <div className="flex items-center justify-center h-full min-h-[600px]">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
-          <p className="text-slate-600">Carregando...</p>
+      <div className="flex h-full flex-col overflow-hidden">
+        <header className="flex h-16 shrink-0 items-center gap-2">
+          <div className="flex items-center gap-2 px-4">
+            <SidebarTrigger className="-ml-1" />
+            <Separator orientation="vertical" className="mr-2 h-4" />
+            <Breadcrumb>
+              <BreadcrumbList>
+                <BreadcrumbItem>
+                  <BreadcrumbPage>EPIs</BreadcrumbPage>
+                </BreadcrumbItem>
+              </BreadcrumbList>
+            </Breadcrumb>
+          </div>
+        </header>
+        <div className="flex flex-1 items-center justify-center">
+          <div className="text-center">
+            <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-b-2 border-indigo-600"></div>
+            <p className="text-slate-600">Carregando...</p>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto p-4">
-      <Card className="bg-white h-full">
-        <CardContent className="p-4 h-full">
-          <div className="space-y-4 h-full">
-            <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-bold">EPIs Cadastrados</h2>
-              <div className="flex gap-2">
-                <Link href={"epis/criar"}>
-                  <Button disabled={isLoading}>
-                    <Shield className="mr-2 h-4 w-4" />
-                    Adicionar EPI
-                  </Button>
-                </Link>
-              </div>
-            </div>
+    <div className="flex h-full flex-col overflow-hidden">
+      <header className="flex h-16 shrink-0 items-center gap-2">
+        <div className="flex items-center gap-2 px-4">
+          <SidebarTrigger className="-ml-1" />
+          <Separator orientation="vertical" className="mr-2 h-4" />
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbPage>EPIs</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+        </div>
+        <div className="ml-auto flex items-center gap-2 px-4">
+          <Button asChild disabled={isLoading} size="sm">
+            <Link href="/empresas/epis/criar">
+              <Shield className="mr-2 h-4 w-4" />
+              Adicionar EPI
+            </Link>
+          </Button>
+        </div>
+      </header>
 
-            {isLoading && epis.length === 0 ? (
-              <div className="space-y-3">
-                <Skeleton className="h-10 w-full" />
-                <Skeleton className="h-10 w-full" />
-                <Skeleton className="h-10 w-full" />
-                <Skeleton className="h-10 w-full" />
-                <Skeleton className="h-10 w-full" />
-              </div>
-            ) : isError ? (
-              <div className="p-4 text-center">
-                <p className="text-amber-500">
-                  {"Não foi possível buscar as filiais"}
-                </p>
-                <DataTable columns={columns} data={epis} />
-              </div>
-            ) : (
-              <DataTable columns={columns} data={epis} />
-            )}
-          </div>
-        </CardContent>
-      </Card>
+      <div className="flex-1 overflow-hidden p-4 pt-0">
+        <div className="flex h-full flex-col overflow-hidden rounded-xl border bg-background shadow-sm">
+          {isError ? (
+            <div className="flex flex-1 items-center justify-center p-4">
+              <p className="text-amber-500">Não foi possível buscar os EPIs</p>
+            </div>
+          ) : (
+            <DataTable columns={columns} data={epis} />
+          )}
+        </div>
+      </div>
     </div>
   );
 }
