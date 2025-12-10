@@ -16,6 +16,7 @@ import {
   BreadcrumbItem,
   BreadcrumbList,
   BreadcrumbPage,
+  BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
 
@@ -52,6 +53,10 @@ export default function BranchesPage() {
           <Separator orientation="vertical" className="mr-2 h-4" />
           <Breadcrumb>
             <BreadcrumbList>
+              <BreadcrumbItem className="hidden md:block">
+                <span className="text-muted-foreground">Empresa</span>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator className="hidden md:block" />
               <BreadcrumbItem>
                 <BreadcrumbPage>Filiais</BreadcrumbPage>
               </BreadcrumbItem>

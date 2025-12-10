@@ -24,20 +24,20 @@ export function DataTablePagination<TData>({
 }: DataTablePaginationProps<TData>) {
   const pageSize = table.getState().pagination.pageSize;
   const pageIndex = table.getState().pagination.pageIndex;
+  const pageCount = table.getPageCount() !== 0 ? table.getPageCount() : 1;
   const totalRows = table.getCoreRowModel().rows.length;
 
   const start = totalRows === 0 ? 0 : pageIndex * pageSize + 1;
   const end = Math.min((pageIndex + 1) * pageSize, totalRows);
 
   return (
-    <div className="flex items-center justify-end px-2">
-      <div className="flex-1 text-sm text-muted-foreground">
+    <div className="flex flex-col gap-3 px-2 md:flex-row md:items-center md:justify-between md:gap-0">
+      <div className="text-center text-sm text-muted-foreground md:text-left md:flex-1">
         Exibindo {start}–{end} de {totalRows} resultados
       </div>
 
-      <div className="flex items-center space-x-6 lg:space-x-8">
-        <div className="flex items-center space-x-2">
-          <p className="text-sm font-medium">Linhas por página</p>
+      <div className="flex flex-col items-center gap-3 md:flex-row md:gap-6 lg:gap-8">
+        <div className="flex items-center gap-2">
           <Select
             value={`${table.getState().pagination.pageSize}`}
             onValueChange={(value) => {
@@ -55,15 +55,15 @@ export function DataTablePagination<TData>({
               ))}
             </SelectContent>
           </Select>
+          <p className="hidden text-sm font-medium md:block">
+            Linhas por página
+          </p>
+          <p className="text-sm text-muted-foreground md:hidden">por página</p>
         </div>
-        <div className="flex w-[100px] items-center justify-center text-sm font-medium">
-          Página {table.getState().pagination.pageIndex + 1} de{" "}
-          {table.getPageCount() !== 0 ? table.getPageCount() : 1}
-        </div>
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center gap-1 md:gap-2">
           <Button
             variant="outline"
-            className="hidden h-8 w-8 p-0 lg:flex"
+            className="h-8 w-8 p-0"
             onClick={() => table.setPageIndex(0)}
             disabled={!table.getCanPreviousPage()}
           >
@@ -79,6 +79,13 @@ export function DataTablePagination<TData>({
             <span className="sr-only">Página anterior</span>
             <ChevronLeft className="h-4 w-4" />
           </Button>
+          <span className="px-2 text-sm font-medium whitespace-nowrap">
+            <span className="hidden md:inline">Página </span>
+            {pageIndex + 1}
+            <span className="md:hidden"> / </span>
+            <span className="hidden md:inline"> de </span>
+            {pageCount}
+          </span>
           <Button
             variant="outline"
             className="h-8 w-8 p-0"
@@ -90,7 +97,7 @@ export function DataTablePagination<TData>({
           </Button>
           <Button
             variant="outline"
-            className="hidden h-8 w-8 p-0 lg:flex"
+            className="h-8 w-8 p-0"
             onClick={() => table.setPageIndex(table.getPageCount() - 1)}
             disabled={!table.getCanNextPage()}
           >
