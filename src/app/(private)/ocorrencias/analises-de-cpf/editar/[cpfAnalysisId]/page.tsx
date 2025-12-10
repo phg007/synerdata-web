@@ -114,6 +114,10 @@ export default function UpdateCpfAnalysisPage({
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem className="hidden md:block">
+                <span className="text-muted-foreground">Ocorrências</span>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator className="hidden md:block" />
+              <BreadcrumbItem className="hidden md:block">
                 <BreadcrumbLink href="/ocorrencias/analises-de-cpf">
                   Análises de CPF
                 </BreadcrumbLink>

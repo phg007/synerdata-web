@@ -121,6 +121,10 @@ export default function UpdateEpiPage({
             <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem className="hidden md:block">
+                  <span className="text-muted-foreground">Empresa</span>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator className="hidden md:block" />
+                <BreadcrumbItem className="hidden md:block">
                   <BreadcrumbLink href="/empresas/epis">EPIs</BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator className="hidden md:block" />
@@ -149,6 +153,10 @@ export default function UpdateEpiPage({
           <Separator orientation="vertical" className="mr-2 h-4" />
           <Breadcrumb>
             <BreadcrumbList>
+              <BreadcrumbItem className="hidden md:block">
+                <span className="text-muted-foreground">Empresa</span>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator className="hidden md:block" />
               <BreadcrumbItem className="hidden md:block">
                 <BreadcrumbLink href="/empresas/epis">EPIs</BreadcrumbLink>
               </BreadcrumbItem>

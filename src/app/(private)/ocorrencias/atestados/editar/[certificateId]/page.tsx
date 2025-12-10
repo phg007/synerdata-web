@@ -137,6 +137,10 @@ export default function UpdateMedicalCertificatePage({
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem className="hidden md:block">
+                <span className="text-muted-foreground">Ocorrências</span>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator className="hidden md:block" />
+              <BreadcrumbItem className="hidden md:block">
                 <BreadcrumbLink href="/ocorrencias/atestados">
                   Atestados
                 </BreadcrumbLink>
