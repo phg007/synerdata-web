@@ -78,7 +78,7 @@ export default function EmployeesPage() {
           <Button asChild variant="outline" size="sm">
             <Link href="/funcionarios/importar">
               <UploadIcon className="h-4 w-4 md:mr-2" />
-              <span className="md:inline">Importar</span>
+              <span className="hidden md:inline">Importar</span>
             </Link>
           </Button>
           <Button asChild size="sm">

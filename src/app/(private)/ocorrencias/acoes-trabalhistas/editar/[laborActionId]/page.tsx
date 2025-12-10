@@ -162,6 +162,10 @@ export default function UpdateLaborActionPage({
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem className="hidden md:block">
+                <span className="text-muted-foreground">Ocorrências</span>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator className="hidden md:block" />
+              <BreadcrumbItem className="hidden md:block">
                 <BreadcrumbLink href="/ocorrencias/acoes-trabalhistas">
                   Ações Trabalhistas
                 </BreadcrumbLink>

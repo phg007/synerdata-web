@@ -118,6 +118,10 @@ export default function UpdateProjectPage({
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem className="hidden md:block">
+                <span className="text-muted-foreground">Empresa</span>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator className="hidden md:block" />
+              <BreadcrumbItem className="hidden md:block">
                 <BreadcrumbLink href="/empresas/projetos">
                   Projetos
                 </BreadcrumbLink>
