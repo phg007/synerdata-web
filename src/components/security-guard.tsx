@@ -111,43 +111,7 @@ export function SecurityGuard() {
       return originalWindowOpen.call(window, url, ...args);
     };
 
-    // 3. Monitor for suspicious redirects
-    const originalLocationAssign = window.location.assign;
-    const originalLocationReplace = window.location.replace;
-
-    Object.defineProperty(window.location, "assign", {
-      value: function (url: string) {
-        const isSuspicious = SUSPICIOUS_KEYWORDS.some((keyword) =>
-          url.toLowerCase().includes(keyword)
-        );
-
-        if (isSuspicious) {
-          console.warn("[SecurityGuard] Blocked suspicious redirect:", url);
-          reportSecurityViolation("redirect_blocked", url);
-          return;
-        }
-
-        return originalLocationAssign.call(window.location, url);
-      },
-    });
-
-    Object.defineProperty(window.location, "replace", {
-      value: function (url: string) {
-        const isSuspicious = SUSPICIOUS_KEYWORDS.some((keyword) =>
-          url.toLowerCase().includes(keyword)
-        );
-
-        if (isSuspicious) {
-          console.warn("[SecurityGuard] Blocked suspicious redirect:", url);
-          reportSecurityViolation("redirect_blocked", url);
-          return;
-        }
-
-        return originalLocationReplace.call(window.location, url);
-      },
-    });
-
-    // 4. Check for suspicious elements on load
+    // 3. Check for suspicious elements on load
     const checkExistingElements = () => {
       const currentHostname = window.location.hostname;
       const allowedDomains = [currentHostname, ...ALLOWED_DOMAINS];

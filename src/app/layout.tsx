@@ -23,13 +23,11 @@ export default function RootLayout({
   return (
     <html lang="pt-br">
       <head>
-        {/* Fallback CSP via meta tag (in case headers are stripped) */}
+        {/* Fallback CSP via meta tag (frame-ancestors and X-Frame-Options only work via HTTP headers) */}
         <meta
           httpEquiv="Content-Security-Policy"
-          content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' https://viacep.com.br https://*.uploadthing.com https://api.synnerdata.com.br; frame-ancestors 'self'; form-action 'self'; base-uri 'self';"
+          content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' https://viacep.com.br https://*.uploadthing.com https://api.synnerdata.com.br; form-action 'self'; base-uri 'self';"
         />
-        <meta httpEquiv="X-Content-Type-Options" content="nosniff" />
-        <meta httpEquiv="X-Frame-Options" content="SAMEORIGIN" />
         <meta name="referrer" content="strict-origin-when-cross-origin" />
       </head>
       <body className={inter.className}>
