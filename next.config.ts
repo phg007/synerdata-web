@@ -38,7 +38,7 @@ const securityHeaders = [
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: blob: https:",
       "font-src 'self' data:",
-      "connect-src 'self' https://viacep.com.br https://*.uploadthing.com https://api.synnerdata.com.br",
+      "connect-src 'self' https://viacep.com.br https://*.uploadthing.com https://*.synnerdata.com.br",
       "frame-ancestors 'self'",
       "form-action 'self'",
       "base-uri 'self'",
