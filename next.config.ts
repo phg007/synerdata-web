@@ -1,6 +1,10 @@
 import type { NextConfig } from "next";
 import { resolve } from "path";
 
+// =============================================================================
+// SECURITY HEADERS
+// Headers que NÃO afetam tráfego pago (Google Ads, Facebook Pixel, etc.)
+// =============================================================================
 const securityHeaders = [
   {
     key: "X-DNS-Prefetch-Control",
@@ -28,23 +32,27 @@ const securityHeaders = [
   },
   {
     key: "Permissions-Policy",
-    value: "camera=(), microphone=(), geolocation=(), browsing-topics=()",
+    value: "camera=(), microphone=(), geolocation=()",
   },
-  {
-    key: "Content-Security-Policy",
-    value: [
-      "default-src 'self'",
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
-      "style-src 'self' 'unsafe-inline'",
-      "img-src 'self' data: blob: https:",
-      "font-src 'self' data:",
-      "connect-src 'self' https://viacep.com.br https://*.uploadthing.com https://api.synnerdata.com.br",
-      "frame-ancestors 'self'",
-      "form-action 'self'",
-      "base-uri 'self'",
-      "upgrade-insecure-requests",
-    ].join("; "),
-  },
+  // =============================================================================
+  // CSP (desativado - afeta tráfego pago)
+  // Para ativar: adicione os domínios de tráfego pago (Google, Facebook, etc.)
+  // =============================================================================
+  // {
+  //   key: "Content-Security-Policy",
+  //   value: [
+  //     "default-src 'self'",
+  //     "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.googletagmanager.com https://*.facebook.net",
+  //     "style-src 'self' 'unsafe-inline'",
+  //     "img-src 'self' data: blob: https:",
+  //     "font-src 'self' data:",
+  //     "connect-src 'self' https://viacep.com.br https://*.uploadthing.com https://*.synnerdata.com.br https://*.google-analytics.com https://*.facebook.com",
+  //     "frame-ancestors 'self'",
+  //     "form-action 'self'",
+  //     "base-uri 'self'",
+  //     "upgrade-insecure-requests",
+  //   ].join("; "),
+  // },
 ];
 
 const nextConfig: NextConfig = {
