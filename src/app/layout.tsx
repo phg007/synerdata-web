@@ -2,6 +2,8 @@ import "@/app/globals.css";
 import { Inter } from "next/font/google";
 import { Toaster } from "sonner";
 import ClientLayout from "./client-layout";
+// Para ativar proteção contra scripts maliciosos, descomente:
+// import { SecurityGuard } from "@/components/security-guard";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,6 +21,8 @@ export default function RootLayout({
   return (
     <html lang="pt-br">
       <body className={inter.className}>
+        {/* Para ativar proteção contra scripts maliciosos, descomente: */}
+        {/* <SecurityGuard /> */}
         <ClientLayout>{children}</ClientLayout>
         <Toaster richColors />
       </body>
